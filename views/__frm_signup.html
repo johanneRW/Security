@@ -1,0 +1,69 @@
+% import x
+% import variables
+
+<form id="frm_signup" autocomplete="off" class="flex flex-col gap-2 w-1/2 mx-auto">
+    <div id="message"></div>
+    
+    <div class="flex flex-col">
+        <label for="user_username" class="flex">
+            <span>Username</span>    
+            <span class="ml-auto text-neutral-400">{{variables.USER_USERNAME_MIN}} to {{variables.USER_USERNAME_MAX}} characters</span>            
+        </label>
+        <input 
+        name="user_username" 
+        type="text" 
+        mix-check="{{variables.USER_USERNAME_REGEX}}">
+    </div>
+
+    <div class="flex flex-col">
+        <label for="user_first_name" class="flex">
+            <span>first name</span>  
+            <span class="ml-auto text-neutral-400">{{variables.USER_FIRST_NAME_MIN}} to {{variables.USER_FIRST_NAME_MAX}} characters</span>              
+        </label>
+        <input 
+        name="user_first_name" 
+        type="text" 
+        mix-check="{{variables.USER_REGEX}}">
+    </div>
+
+    <div class="flex flex-col">
+        <label for="user_last_name" class="flex">
+            <span>last name</span>
+            <span class="ml-auto text-neutral-400">{{variables.USER_LAST_NAME_MIN}} to {{variables.USER_LAST_NAME_MAX}} characters</span>                
+        </label>
+        <input 
+        name="user_last_name" 
+        type="text" 
+        mix-check="{{variables.USER_REGEX}}">
+    </div>
+
+    <div class="flex flex-col">
+        <label for="user_email" class="flex">
+            <span>email</span>                
+        </label>
+        <input 
+        name="user_email" 
+        type="email" 
+        mix-check="{{variables.USER_EMAIL_REGEX}}">
+    </div>
+
+    <div class="flex flex-col">
+        <label for="user_password" class="flex">
+            <span>password</span>
+            <span class="ml-auto text-neutral-400">{{variables.USER_PASSWORD_MIN}} to {{variables.USER_PASSWORD_MAX}} characters</span>
+        </label>
+        <input 
+        maxlength={{variables.USER_PASSWORD_MAX}}
+        name="user_password" 
+        type="password"
+        mix-check="{{variables.USER_PASSWORD_REGEX}}">
+    </div>               
+    <button
+    mix-post="/signup" 
+    mix-data="#frm_signup"
+    mix-default="Signup"
+    mix-await="Please wait ...">
+        Signup
+    </button>
+</form>
+

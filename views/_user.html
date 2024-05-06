@@ -1,0 +1,36 @@
+% import x
+% import variables
+
+<div id="{{user['user_pk']}}" class="user">
+
+    <form id="user_{{user['user_pk']}}">
+
+        <label for="user_first_name">Name:</label>
+        <input name="user_first_name" value="{{user['user_first_name']}}" mix-check="{{variables.USER_REGEX}}" >
+        <!-- <input name="user_first_name" value="{{user['user_first_name']}}" mix-check="{{variables.USER_REGEX}}" mix-blur
+            mix-put="/users/{{user['user_pk']}}" mix-data="#user_{{user['user_pk']}}"> -->
+
+        <label for="user_last_name">Last Name:</label>
+        % last_name = user['user_last_name'] if 'user_last_name' in user else ''
+        <input name="user_last_name" value="{{last_name}}" mix-check="{{variables.USER_REGEX}}" >
+
+        <label for="user_username">Username:</label>
+        % username = user['user_username'] if 'user_username' in user else ''
+        <input name="user_username" value="{{username}}" mix-check="{{variables.USER_USERNAME_REGEX}}">
+        
+            <label for="user_email">Email:</label>
+        % email = user['user_email'] if 'user_email' in user else ''
+        <input name="user_email" value="{{email}}" mix-check="{{variables.EMAIL_REGEX}}">
+
+        % end
+
+    </form>
+
+    <button mix-put="/users/{{user['user_pk']}}" mix-data="#user_{{user['user_pk']}}" mix-default="Save" mix-await="Updating user...">
+        Save
+    </button>
+
+    <button mix-delete="/users/{{user['user_pk']}}" mix-default="Delete" mix-await="Deleting...">
+        Delete
+    </button>
+</div>

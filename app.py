@@ -1,0 +1,246 @@
+# path to bottle main package to replace
+# /home/bottlesite/.local/lib/python3.10/site-packages/bottle.py
+
+# import pathlib
+# import sys
+# sys.path.insert(0, str(pathlib.Path(__file__).parent.resolve())+"/bottle")
+#TODO: importer allfabetisk
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+import smtplib
+import uuid
+from bottle import default_app, get, post, request, response, run, static_file, template, put 
+import x
+from icecream import ic
+import bcrypt
+import json
+import credentials
+import time
+import variables
+
+##############################
+@get("/app.css")
+def _():
+    return static_file("app.css", ".")
+
+
+##############################
+@get("/<file_name>.js")
+def _(file_name):
+    return static_file(file_name+".js", ".")
+
+
+##############################
+@get("/test")
+def _():
+    return [{"name":"one"}]
+
+
+##############################
+@get("/images/<item_splash_image>")
+def _(item_splash_image):
+    return static_file(item_splash_image, "images")
+
+##############################
+import routes.signup
+import routes.login
+import routes.profile
+import routes.get_more_items
+import routes.toggle_block
+import routes.update_user
+import routes.get_all_users
+
+
+##############################
+""" @get("/")
+def _():
+    try:
+        db = x.db()
+        q = db.execute("SELECT * FROM items ORDER BY item_created_at LIMIT 0, ?", (variables.ITEMS_PER_PAGE,))
+        items = q.fetchall()
+        ic(items)
+        is_logged = False
+        try:    
+            x.validate_user_logged()
+            is_logged = True
+        except:
+            pass
+
+        return template("index.html", items=items, mapbox_token=credentials.MAPBOX_TOKEN, 
+                        is_logged=is_logged)
+    except Exception as ex:
+        ic(ex)
+        return ex
+    finally:
+        if "db" in locals(): db.close()
+ """
+@get("/")
+def _():
+    try:
+        db = x.db()
+        q = db.execute("SELECT * FROM items ORDER BY item_created_at LIMIT 0, ?", (variables.ITEMS_PER_PAGE,))
+        items = q.fetchall()
+        ic(items)
+        is_logged = False
+        user=""
+        try:    
+            x.validate_user_logged()
+            user = request.get_cookie("user", secret=credentials.COOKIE_SECRET)
+            is_logged = True
+        except:
+            pass
+
+        return template("index.html", items=items, mapbox_token=credentials.MAPBOX_TOKEN, 
+                        is_logged=is_logged,user=user)
+    except Exception as ex:
+        ic(ex)
+        return ex
+    finally:
+        if "db" in locals(): db.close()
+
+
+##############################
+@get("/login")
+def _():
+    x.no_cache()
+    return template("login.html")
+
+
+##############################
+@get("/logout")
+def _():
+    response.delete_cookie("user")
+    response.status = 303
+    response.set_header('Location', '/login')
+    return
+
+#TODO: måske er denne bedre?
+# @get("/logout")
+# def _():
+#     response.add_header("Cache-Control", "no-cache, no-store, must-revalidate")
+#     response.add_header("Pragma", "no-cache")
+#     response.add_header("Expires", 0)    
+#     response.delete_cookie("user")
+#     response.status = 303
+#     response.set_header("Location", "/")
+#     return """
+#                 <template mix-repalce mix-redirect="/">
+
+#                 </template>
+#                 """
+
+##############################
+#TODO: i et af projekterne er det en api? er der en grund til dette, eller var det for at vise hvad man også kunne gøre, signup skal laves om til en route
+#TODO: ændre på mailen der sendes og subject i den
+#TODO: se om email-funtionene ikke kan forekles
+# @post("/signup")
+# def _():
+#     try:
+#         user_first_name = request.forms.get("user_first_name", "")
+#         user_email=request.forms.get("user_email", "")
+#         user_password =  request.forms.get("user_password", "").encode()
+#         user_verification_key = uuid.uuid4().hex
+        
+#         hashed_password = bcrypt.hashpw(user_password)
+        
+ 
+#         db = x.db()
+#         q = db.execute("INSERT INTO users VALUES(?, ?, ?, ?,?,?)", 
+#                        (user_first_name, user_email, hashed_password, 0, user_verification_key))
+#         db.commit()
+#         message = MIMEMultipart()
+#         message["To"] = credentials.DEFAULT_EMAIL
+#         message["From"] = credentials.DEFAULT_EMAIL
+#         message["Subject"] = 'Testing my email'
+
+
+#         email_body = template("email_welcome",user_verification_key=user_verification_key)
+#         messageText = MIMEText(email_body, 'html')
+#         message.attach(messageText)
+
+
+#         email = credentials.DEFAULT_EMAIL
+#         password = credentials.EMAIL_PASSWORD
+
+
+#         server = smtplib.SMTP('smtp.gmail.com:587')
+#         server.ehlo('Gmail')
+#         server.starttls()
+#         server.login(email,password)
+#         from_email = credentials.DEFAULT_EMAIL
+#         to_email  = credentials.DEFAULT_EMAIL
+#         server.sendmail(from_email,to_email,message.as_string())
+#         server.quit()
+#         return """
+#         <template mix-target="#message">
+#             <div id="message">
+#                 User created
+#             </div>        
+#         </template>
+#         """
+#     except Exception as ex:
+#         print(ex)
+#         if "users.user_email" in str(ex):
+#              return """
+#             <template mix-target="#message">
+#             <div id="message">
+#                 Email not available
+#             </div>
+#             </template>    
+#             """           
+
+#         if "user_email invalid" in str(ex):
+#             return """
+#             <template mix-target="#message">
+#             <div id="message">
+#                 Email invalid
+#             </div>
+#             </template>    
+#             """
+#     finally:
+#         if "db" in locals(): db.close()
+
+
+
+@get("/verify/<key>")
+def _(key):
+    return template("verify_key",key=key)
+
+
+
+@put("/verify/<key>")
+def _(key):
+    db = x.db()
+    q = db.execute(
+        "UPDATE users SET user_is_verified = 1 WHERE user_verification_key = ?", 
+        (key,)
+    )
+    db.commit()
+
+    return "OK"
+
+
+@get("/signup")
+def _():
+    return template("signup")
+
+##############################
+@get("/api")
+def _():
+    return x.test()
+
+
+##############################
+try:
+    import production
+    application = default_app()
+except:
+    run(host="0.0.0.0", port=81, debug=True, reloader=True, interval=0)
+
+
+
+
+
+
+
+

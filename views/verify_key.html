@@ -1,0 +1,15 @@
+%include("_header")
+
+    <p id="message"></p>
+
+    <form id="verify">
+        <button mix-put="/verify/{{key}}" mix-data="#verify">
+            Verify
+        </button>
+    </form>
+
+    <script>
+        const mix_replace_url = "/"
+    </script>
+    
+    %include("_footer")

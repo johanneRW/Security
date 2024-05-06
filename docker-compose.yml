@@ -1,0 +1,15 @@
+version: "3.1"
+services:
+  python:
+    environment:
+      - PYTHONUNBUFFERED=1
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: bottlesite_container_my
+    ports:
+      - 81:81
+    volumes:
+      - ./:/app
+
+
