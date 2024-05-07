@@ -57,7 +57,19 @@
         name="user_password" 
         type="password"
         mix-check="{{variables.USER_PASSWORD_REGEX}}">
-    </div>               
+    </div> 
+    
+    <div>
+        <label for="role_type">Account type</label>
+        <select name="role_type" id="role_type">
+            <option name="user" value="3">user
+            </option>
+            <option name="partner" value="2">partner</option>
+        </select>
+    </div>
+
+
+
     <button
     mix-post="/signup" 
     mix-data="#frm_signup"

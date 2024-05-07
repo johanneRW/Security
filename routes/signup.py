@@ -88,7 +88,7 @@ def _():
         user_email=x.validate_email()
         user_password=x.validate_password().encode()
         hashed_password = bcrypt.hashpw(user_password, bcrypt.gensalt())
-        role_id=3
+        role_id=request.forms.get("role_type", "")
         user_created_at=int(time.time())
         user_updated_at=None
         user_verification_key=uuid.uuid4().hex
@@ -135,6 +135,7 @@ INSERT INTO users (
     user_is_verified_at,
     user_is_blocked))
         db.commit()
+        
         message = MIMEMultipart()
         message["To"] = credentials.DEFAULT_EMAIL
         message["From"] = credentials.DEFAULT_EMAIL
