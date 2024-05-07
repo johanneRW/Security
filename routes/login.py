@@ -15,10 +15,15 @@ def _():
             # "SELECT * from Users WHERE user_email=? AND user_is_verified = 1",
             # (user_email,)
         # ) TODO:skift til at tjekke email verification, evt besked ny fejl-besked hvis den ikke er
-        q = db.execute("SELECT * FROM users WHERE user_email = ? LIMIT 1", (user_email,))
+        q = db.execute("SELECT * FROM users WHERE user_email = ? AND user_is_verified = 1 LIMIT 1", (user_email,))
         user = q.fetchone()
-        if not user: raise Exception("user not found", 400)
-        if not bcrypt.checkpw(user_password.encode(), user["user_password"].encode()): raise Exception("Invalid credentials", 400)
+        if not user:
+            raise ValueError("User not found or not verified", 404)
+        
+        # Kontroller adgangskoden ved hjælp af bcrypt
+        if not bcrypt.checkpw(user_password.encode(), user["user_password"]):
+            raise ValueError("Invalid credentials", 400)
+    
         user.pop("user_password") # Do not put the user's password in the cookie
         ic(user)
         try:
@@ -39,7 +44,7 @@ def _():
         """
     except Exception as ex:
         try:
-            response.status = ex.args[1]
+            response.status = ex.args[1] if len(ex.args) > 1 else 400
             return f"""
             <template mix-target="#toast">
                 <div mix-ttl="3000" class="error">
