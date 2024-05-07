@@ -210,14 +210,16 @@ def _(key):
 
 @put("/verify/<key>")
 def _(key):
+    #TODO: tilføj try/except og tilføj fejl besked
     db = x.db()
+    user_is_verified_at=int(time.time())
     q = db.execute(
-        "UPDATE users SET user_is_verified = 1 WHERE user_verification_key = ?", 
-        (key,)
+        "UPDATE users SET user_is_verified = 1, user_is_verified_at=? WHERE user_verification_key = ?", 
+        (user_is_verified_at,key)
     )
     db.commit()
 
-    return "OK"
+    return "Account verifiyed"
 
 
 @get("/signup")

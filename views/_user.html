@@ -20,7 +20,7 @@
         
             <label for="user_email">Email:</label>
         % email = user['user_email'] if 'user_email' in user else ''
-        <input name="user_email" value="{{email}}" mix-check="{{variables.EMAIL_REGEX}}">
+        <input name="user_email" value="{{email}}" mix-check="{{variables.USER_EMAIL_REGEX}}">
 
         % end
 

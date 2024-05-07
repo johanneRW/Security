@@ -141,7 +141,7 @@ INSERT INTO users (
         message["Subject"] = 'Testing my email'
 
 
-        email_body = template("email_welcome",user_verification_key=user_verification_key)
+        email_body = template("email_welcome",user_verification_key=user_verification_key, user_first_name=user_first_name)
         messageText = MIMEText(email_body, 'html')
         message.attach(messageText)
 

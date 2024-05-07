@@ -1,15 +1,18 @@
 %include("_header")
 
-    <p id="message"></p>
-
-    <form id="verify">
-        <button mix-put="/verify/{{key}}" mix-data="#verify">
-            Verify
-        </button>
-    </form>
-
-    <script>
-        const mix_replace_url = "/"
-    </script>
+<main class="flex h-full items-center justify-center">
     
+        <p id="message"></p>
+    
+        <form id="verify">
+            <button mix-put="/verify/{{key}}" mix-data="#verify">
+                Verify
+            </button>
+        </form>
+    
+        <script>
+            const mix_replace_url = "/"
+        </script>
+        
+</main>
     %include("_footer")

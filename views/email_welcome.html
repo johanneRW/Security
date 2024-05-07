@@ -15,8 +15,20 @@
 </head>
 
 <body>
-    <h1>Welcome to the system</h1>
-    <a href="http://127.0.0.1:81/verify/{{user_verification_key}}">Click her to verify</a>
+   <section>
+        
+        <h1>Hi {{user_first_name}},</h1>
+    
+    <p>Thank you for signing up for "Home-Away". </p>
+    <p>Before you can log in to the system, you need to verify your email.</p> 
+        
+        <p>To verify your email, please click on the following link.</p>
+        <a href="http://127.0.0.1:81/verify/{{user_verification_key}}">Click her to verify</a>
+    
+    <p>Best regards</p>
+    <p>Home-Away</p>
+   </section>
+    
 </body>
 
 </html>

@@ -149,8 +149,10 @@ SET user_username ='updateuserName',  user_first_name='updateName', user_last_na
  user_email = 'updateEmail',  user_updated_at=67 WHERE user_pk='d11854217ecc42b2bb17367fe33dc8f6';         
              
 
-
-
+UPDATE users
+SET user_is_verified = 1,
+    user_is_verified_at = 2222
+WHERE user_verification_key = '18c0312bf32345aea8c4cb6b980ba958'
 
 
 
