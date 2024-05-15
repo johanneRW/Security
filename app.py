@@ -10,7 +10,7 @@ from email.mime.text import MIMEText
 import smtplib
 import uuid
 from bottle import default_app, get, post, request, response, run, static_file, template, put 
-import x
+import utils
 from icecream import ic
 import bcrypt
 import json
@@ -77,14 +77,14 @@ def _():
 @get("/")
 def _():
     try:
-        db = x.db()
+        db = utils.db()
         q = db.execute("SELECT * FROM items ORDER BY item_created_at LIMIT 0, ?", (variables.ITEMS_PER_PAGE,))
         items = q.fetchall()
         ic(items)
         is_logged = False
         user=""
         try:    
-            x.validate_user_logged()
+            utils.validate_user_logged()
             user = request.get_cookie("user", secret=credentials.COOKIE_SECRET)
             is_logged = True
         except:
@@ -102,7 +102,7 @@ def _():
 ##############################
 @get("/login")
 def _():
-    x.no_cache()
+    utils.no_cache()
     return template("login.html")
 
 
@@ -211,7 +211,7 @@ def _(key):
 @put("/verify/<key>")
 def _(key):
     #TODO: tilføj try/except og tilføj fejl besked
-    db = x.db()
+    db = utils.db()
     user_is_verified_at=int(time.time())
     q = db.execute(
         "UPDATE users SET user_is_verified = 1, user_is_verified_at=? WHERE user_verification_key = ?", 
@@ -229,7 +229,7 @@ def _():
 ##############################
 @get("/api")
 def _():
-    return x.test()
+    return utils.test()
 
 
 ##############################

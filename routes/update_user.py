@@ -1,6 +1,6 @@
 import time
 from bottle import delete, get, post, put, request,response, static_file, template
-import x
+import utils
 from icecream import ic
 import uuid
 import bcrypt 
@@ -14,12 +14,12 @@ def _(user_pk):
     try:
         user = request.get_cookie("user", secret= credentials.COOKIE_SECRET)
         if user:
-            first_name = x.validate_user_first_name()
-            last_name = x.validate_user_last_name()
-            username=x.validate_user_username()
-            email=x.validate_email()
+            first_name = utils.validate_user_first_name()
+            last_name = utils.validate_user_last_name()
+            username=utils.validate_user_username()
+            email=utils.validate_email()
             updated_at = int(time.time())
-            db = x.db()
+            db = utils.db()
             q = db.execute("""UPDATE users
                         SET user_username =?,  user_first_name=?, 
                            user_last_name=?, 

@@ -1,5 +1,5 @@
 from bottle import get, template
-import x
+import utils
 from icecream import ic
 import json
 import variables
@@ -10,7 +10,7 @@ import variables
 @get("/items/page/<page_number>")
 def _(page_number):
     try:
-        db = x.db()
+        db = utils.db()
         limit = variables.ITEMS_PER_PAGE
         #tjekker hvor mage items der skal vises for at regne ud hvormange sider der skal være i alt
         cursor = db.execute("SELECT COUNT(*) FROM items")
@@ -31,7 +31,7 @@ def _(page_number):
 
         is_logged = False
         try:
-            x.validate_user_logged()
+            utils.validate_user_logged()
             is_logged = True
         except:
             pass

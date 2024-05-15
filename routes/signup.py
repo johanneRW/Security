@@ -3,18 +3,13 @@ from email.mime.text import MIMEText
 import smtplib
 import uuid
 from bottle import default_app, get, post, request, response, run, static_file, template, put 
-import x
+import utils
 from icecream import ic
 import bcrypt
 import json
 import credentials
 import time
 import variables
-
-
-
-
-
 
 
 #der liggerr også en signup i app.py hvilken skal bruges
@@ -82,11 +77,11 @@ def _():
 
 
         user_pk=uuid.uuid4().hex
-        user_username=x.validate_user_username()
-        user_first_name=x.validate_user_first_name()
-        user_last_name=x.validate_user_last_name()
-        user_email=x.validate_email()
-        user_password=x.validate_password().encode()
+        user_username=utils.validate_user_username()
+        user_first_name=utils.validate_user_first_name()
+        user_last_name=utils.validate_user_last_name()
+        user_email=utils.validate_email()
+        user_password=utils.validate_password().encode()
         hashed_password = bcrypt.hashpw(user_password, bcrypt.gensalt())
         role_id=request.forms.get("role_type", "")
         user_created_at=int(time.time())
@@ -103,7 +98,7 @@ def _():
         
         # hashed_password = bcrypt.hashpw(user_password)
         
-        db = x.db()
+        db = utils.db()
         q = db.execute("""
 INSERT INTO users (
     user_pk,
@@ -135,11 +130,11 @@ INSERT INTO users (
     user_is_verified_at,
     user_is_blocked))
         db.commit()
-        
+
         message = MIMEMultipart()
         message["To"] = credentials.DEFAULT_EMAIL
         message["From"] = credentials.DEFAULT_EMAIL
-        message["Subject"] = 'Testing my email'
+        message["Subject"] = 'Welcome to Home-Away'
 
 
         email_body = template("email_welcome",user_verification_key=user_verification_key, user_first_name=user_first_name)
@@ -159,6 +154,7 @@ INSERT INTO users (
         to_email  = credentials.DEFAULT_EMAIL
         server.sendmail(from_email,to_email,message.as_string())
         server.quit()
+        
         return """
         <template mix-target="#message">
             <div id="message">

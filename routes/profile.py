@@ -1,6 +1,6 @@
 
 from bottle import  get,  response,  template, request
-import x
+import utils
 from icecream import ic
 import variables
 import credentials
@@ -12,9 +12,9 @@ import credentials
 #TODO:ændre til at lave om i brugeren, hvordan sørger man for at databasen bliver opdateret, sanmtiding med cookien? og skal den det?
 def _():
     try:
-        x.no_cache()
-        x.validate_user_logged()
-        db = x.db()
+        utils.no_cache()
+        utils.validate_user_logged()
+        db = utils.db()
         #q = db.execute("SELECT * FROM items ORDER BY item_created_at LIMIT 0, ?", (variables.ITEMS_PER_PAGE,))
         #items = q.fetchall()
         #ic(items) 

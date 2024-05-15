@@ -1,6 +1,6 @@
 
 from bottle import post, response, template
-import x
+import utils
 from icecream import ic
 import bcrypt
 import credentials
@@ -8,20 +8,16 @@ import credentials
 @post("/login")
 def _():
     try:
-        user_email = x.validate_email()
-        user_password = x.validate_password()
-        db = x.db()
-        # q = users_db.execute(
-            # "SELECT * from Users WHERE user_email=? AND user_is_verified = 1",
-            # (user_email,)
-        # ) TODO:skift til at tjekke email verification, evt besked ny fejl-besked hvis den ikke er
+        user_email = utils.validate_email()
+        user_password = utils.validate_password()
+        db = utils.db()
         q = db.execute("SELECT * FROM users WHERE user_email = ? AND user_is_verified = 1 LIMIT 1", (user_email,))
         user = q.fetchone()
         if not user:
             raise ValueError("User not found or not verified", 404)
         
         # Kontroller adgangskoden ved hjælp af bcrypt
-        if not bcrypt.checkpw(user_password.encode(), user["user_password"]):
+        if not bcrypt.checkpw(user_password.encode(), user["user_password"].encode()):
             raise ValueError("Invalid credentials", 400)
     
         user.pop("user_password") # Do not put the user's password in the cookie

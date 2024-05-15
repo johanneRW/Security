@@ -3,7 +3,7 @@ from email.mime.text import MIMEText
 import smtplib
 import uuid
 from bottle import default_app, get, post, request, response, run, static_file, template, put 
-import x
+import utils
 from icecream import ic
 import bcrypt
 import json
@@ -19,16 +19,16 @@ def _():
         is_logged = False
         user=""
         try:    
-            x.validate_user_logged()
+            utils.validate_user_logged()
             user = request.get_cookie("user", secret=credentials.COOKIE_SECRET)
             is_logged = True
         except:
             pass
 #TODO: der skal ikke være et dobbelt tjek her af logged
         #user = request.get_cookie("user", secret= x.cokie_secret)
-        if  x.validate_user_logged():
+        if  utils.validate_user_logged():
             #x.disable_cache()
-            db = x.db()
+            db = utils.db()
             q = db.execute("SELECT * FROM users ORDER BY user_created_at LIMIT 0, ?", (variables.USER_PER_PAGE,))
             users = q.fetchall()
             return template("users", users=users,is_logged=is_logged, user=user)
