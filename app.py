@@ -49,31 +49,12 @@ import routes.get_more_items
 import routes.toggle_block
 import routes.update_user
 import routes.get_all_users
+import routes.update_password
+import routes.request_reset_password
+
 
 
 ##############################
-""" @get("/")
-def _():
-    try:
-        db = x.db()
-        q = db.execute("SELECT * FROM items ORDER BY item_created_at LIMIT 0, ?", (variables.ITEMS_PER_PAGE,))
-        items = q.fetchall()
-        ic(items)
-        is_logged = False
-        try:    
-            x.validate_user_logged()
-            is_logged = True
-        except:
-            pass
-
-        return template("index.html", items=items, mapbox_token=credentials.MAPBOX_TOKEN, 
-                        is_logged=is_logged)
-    except Exception as ex:
-        ic(ex)
-        return ex
-    finally:
-        if "db" in locals(): db.close()
- """
 @get("/")
 def _():
     try:
@@ -130,76 +111,6 @@ def _():
 #                 """
 
 ##############################
-#TODO: i et af projekterne er det en api? er der en grund til dette, eller var det for at vise hvad man også kunne gøre, signup skal laves om til en route
-#TODO: ændre på mailen der sendes og subject i den
-#TODO: se om email-funtionene ikke kan forekles
-# @post("/signup")
-# def _():
-#     try:
-#         user_first_name = request.forms.get("user_first_name", "")
-#         user_email=request.forms.get("user_email", "")
-#         user_password =  request.forms.get("user_password", "").encode()
-#         user_verification_key = uuid.uuid4().hex
-        
-#         hashed_password = bcrypt.hashpw(user_password)
-        
- 
-#         db = x.db()
-#         q = db.execute("INSERT INTO users VALUES(?, ?, ?, ?,?,?)", 
-#                        (user_first_name, user_email, hashed_password, 0, user_verification_key))
-#         db.commit()
-#         message = MIMEMultipart()
-#         message["To"] = credentials.DEFAULT_EMAIL
-#         message["From"] = credentials.DEFAULT_EMAIL
-#         message["Subject"] = 'Testing my email'
-
-
-#         email_body = template("email_welcome",user_verification_key=user_verification_key)
-#         messageText = MIMEText(email_body, 'html')
-#         message.attach(messageText)
-
-
-#         email = credentials.DEFAULT_EMAIL
-#         password = credentials.EMAIL_PASSWORD
-
-
-#         server = smtplib.SMTP('smtp.gmail.com:587')
-#         server.ehlo('Gmail')
-#         server.starttls()
-#         server.login(email,password)
-#         from_email = credentials.DEFAULT_EMAIL
-#         to_email  = credentials.DEFAULT_EMAIL
-#         server.sendmail(from_email,to_email,message.as_string())
-#         server.quit()
-#         return """
-#         <template mix-target="#message">
-#             <div id="message">
-#                 User created
-#             </div>        
-#         </template>
-#         """
-#     except Exception as ex:
-#         print(ex)
-#         if "users.user_email" in str(ex):
-#              return """
-#             <template mix-target="#message">
-#             <div id="message">
-#                 Email not available
-#             </div>
-#             </template>    
-#             """           
-
-#         if "user_email invalid" in str(ex):
-#             return """
-#             <template mix-target="#message">
-#             <div id="message">
-#                 Email invalid
-#             </div>
-#             </template>    
-#             """
-#     finally:
-#         if "db" in locals(): db.close()
-
 
 
 @get("/verify/<key>")
@@ -220,6 +131,17 @@ def _(key):
     db.commit()
 
     return "Account verifiyed"
+
+
+@get("/reset_password/<key>")
+def _(key):
+    return template("update_password",key=key)
+
+
+@get("/request_reset_password")
+def _():
+    return template("request_reset_password")
+
 
 
 @get("/signup")

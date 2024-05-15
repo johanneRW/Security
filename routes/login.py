@@ -17,7 +17,8 @@ def _():
             raise ValueError("User not found or not verified", 404)
         
         # Kontroller adgangskoden ved hjælp af bcrypt
-        if not bcrypt.checkpw(user_password.encode(), user["user_password"].encode()):
+        #TODO: hvorfor er der nogle gange problemer med user["user_password"]?
+        if not bcrypt.checkpw(user_password.encode(), user["user_password"]):
             raise ValueError("Invalid credentials", 400)
     
         user.pop("user_password") # Do not put the user's password in the cookie

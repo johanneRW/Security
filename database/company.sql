@@ -115,6 +115,25 @@ INSERT INTO items VALUES
 ("5dbce622fa2b4f22a6f6957d07ff4959", "Church of Our Saviour", "5dbce622fa2b4f22a6f6957d07ff4959.webp", 55.6732, 12.5986, 4.3, 985, 9, 0,0,0,"d11854217ecc42b2bb17367fe33dc8f5"),
 ("5dbce622fa2b4f22a6f6957d07ff4910", "Round Tower", "5dbce622fa2b4f22a6f6957d07ff4910.webp",  55.6813, 12.5759, 4.8, 1200, 10, 0,0,0,"d11854217ecc42b2bb17367fe33dc8f5");
 
+
+
+
+DROP TABLE IF EXISTS password_reset;
+
+CREATE TABLE password_reset(
+password_reset_key     TEXT,
+password_reset_at       INTEGER,
+password_user_pk    TEXT,
+PRIMARY KEY(password_reset_key )
+)WITHOUT ROWID;
+
+
+
+
+
+
+
+
 -- (page_number - 1) * items_per_page
 -- (1 - 1) * 3 = 10 1 2
 -- (2 - 1) * 3 = 3 4 5
@@ -157,22 +176,12 @@ WHERE user_verification_key = '18c0312bf32345aea8c4cb6b980ba958';
 
 DELETE FROM users WHERE user_pk='a749ea0f2dac49f286c7377443d7148d';
 
-SELECT 
-    users.user_username,
-    users.user_email
-FROM 
-    items
-JOIN 
-    users
-ON 
-    items.item_owned_by = users.user_pk
-WHERE 
-    items.item_pk = 'd11854217ecc42b2bb17367fe33dc8f5';
+SELECT users.user_username, users.user_email 
+FROM items JOIN users ON items.item_owned_by = users.user_pk
+WHERE items.item_pk = 'd11854217ecc42b2bb17367fe33dc8f5';
 
 
-
-
-
+SELECT user_pk FROM users WHERE user_email= 'user@user.com';
 
 
 
