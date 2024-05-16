@@ -48,6 +48,7 @@ import routes.update_user
 import routes.get_all_users
 import routes.update_password
 import routes.request_reset_password
+import routes.delete_user
 
 
 

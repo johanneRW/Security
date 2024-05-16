@@ -9,6 +9,7 @@ import credentials
 
 
 @get("/profile")
+#ikke sikker på om denne skal være der
 #TODO:ændre til at lave om i brugeren, hvordan sørger man for at databasen bliver opdateret, sanmtiding med cookien? og skal den det?
 def _():
     try:

@@ -29,6 +29,8 @@ CREATE TABLE users(
     user_is_verified        INTEGER,
     user_is_verified_at     INTEGER,
     user_is_blocked         INTEGER,
+    user_is_deleted         INTEGER,
+    user_deleted_at         INTEGER,
     FOREIGN KEY(role_id) REFERENCES roles(role_id),
     PRIMARY KEY(user_pk)
 ) WITHOUT ROWID;
@@ -48,7 +50,9 @@ INSERT INTO users VALUES(
     1,
     1,
     1,
-    0
+    0,
+    0,
+    NULL
 );
 
 --partner-user
@@ -65,12 +69,14 @@ INSERT INTO users VALUES(
     2,
     1,
     1,
-    0
+    0,
+    0,
+    NULL
 );
 --user_user
 INSERT INTO users VALUES(
     "d11854217ecc42b2bb17367fe33dc8f6",
-    "userUser",
+    "useruser",
     "Just",
     "Auser",
     "user@user.com",
@@ -81,7 +87,9 @@ INSERT INTO users VALUES(
     3,
     1,
     1,
-    0
+    0,
+    0,
+    NULL
 );
 
 
@@ -184,6 +192,6 @@ WHERE items.item_pk = 'd11854217ecc42b2bb17367fe33dc8f5';
 SELECT user_pk FROM users WHERE user_email= 'user@user.com';
 
 
+SELECT * FROM users WHERE user_email = 'user@user.com' AND user_is_verified = 1 AND user_is_deleted= 0 LIMIT 1;
 
-
-
+UPDATE users SET user_is_deleted=0, user_deleted_at=NULL WHERE user_pk='d11854217ecc42b2bb17367fe33dc8f6';

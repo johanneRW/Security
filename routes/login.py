@@ -10,13 +10,13 @@ def _():
         user_email = utils.validate_email()
         user_password = utils.validate_password()
         db = utils.db()
-        q = db.execute("SELECT * FROM users WHERE user_email = ? AND user_is_verified = 1 LIMIT 1", (user_email,))
+        q = db.execute("SELECT * FROM users WHERE user_email = ? AND user_is_verified = 1 AND user_is_deleted= 0 LIMIT 1", (user_email,))
         user = q.fetchone()
         if not user:
             raise ValueError("User not found or not verified", 404)
         
         # Kontroller adgangskoden ved hjælp af bcrypt
-        #TODO: hvorfor er der nogle gange problemer med user["user_password"] når der ikke står encode efter det?
+        #TODO: hvorfor skifter det mellem at fungere med user["user_password"] når der ikke står encode efter det og når der gør? Er det kun med de "første" gemte kodeord?
         if not bcrypt.checkpw(user_password.encode(), user["user_password"].encode()):
             raise ValueError("Invalid credentials", 400)
     
@@ -35,7 +35,7 @@ def _():
         <template mix-target="frm_login" mix-replace>
             {frm_login}
         </template>
-        <template mix-redirect="/profile">
+        <template mix-redirect="/">
         </template>
         """
     except Exception as ex:

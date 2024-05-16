@@ -11,9 +11,6 @@ from send_email import send_email
 
 
 #TODO: i et af projekterne er det en api? er der en grund til dette, eller var det for at vise hvad man også kunne gøre, signup skal laves om til en route
-#TODO: ændre på mailen der sendes og subject i den
-#TODO: se om email-funtionene ikke kan forekles
-
 
 @post("/signup")
 def _():
@@ -49,12 +46,6 @@ def _():
         user_is_verified =0
         user_is_blocked =0
 
-        # user_first_name = request.forms.get("user_first_name", "")
-        # user_email=request.forms.get("user_email", "")
-        # user_password =  request.forms.get("user_password", "").encode()
-        # user_verification_key = uuid.uuid4().hex
-        
-        # hashed_password = bcrypt.hashpw(user_password)
         
         db = utils.db()
         q = db.execute("""
