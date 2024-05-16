@@ -5,9 +5,6 @@
 # import sys
 # sys.path.insert(0, str(pathlib.Path(__file__).parent.resolve())+"/bottle")
 #TODO: importer allfabetisk
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-import smtplib
 import uuid
 from bottle import default_app, get, post, request, response, run, static_file, template, put 
 import utils
@@ -95,7 +92,7 @@ def _():
     response.set_header('Location', '/login')
     return
 
-#TODO: måske er denne bedre?
+#TODO: måske er dele af denne bedre?
 # @get("/logout")
 # def _():
 #     response.add_header("Cache-Control", "no-cache, no-store, must-revalidate")

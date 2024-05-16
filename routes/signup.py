@@ -1,6 +1,3 @@
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-import smtplib
 import uuid
 from bottle import default_app, get, post, request, response, run, static_file, template, put 
 import utils
@@ -10,6 +7,7 @@ import json
 import credentials
 import time
 import variables
+from send_email import send_email
 
 
 #TODO: i et af projekterne er det en api? er der en grund til dette, eller var det for at vise hvad man også kunne gøre, signup skal laves om til en route
@@ -91,29 +89,35 @@ INSERT INTO users (
     user_is_blocked))
         db.commit()
 
-        message = MIMEMultipart()
-        message["To"] = credentials.DEFAULT_EMAIL
-        message["From"] = credentials.DEFAULT_EMAIL
-        message["Subject"] = 'Welcome to Home-Away'
+        # message = MIMEMultipart()
+        # message["To"] = credentials.DEFAULT_EMAIL
+        # message["From"] = credentials.DEFAULT_EMAIL
+        # message["Subject"] = 'Welcome to Home-Away'
 
 
-        email_body = template("email_welcome",user_verification_key=user_verification_key, user_first_name=user_first_name)
-        messageText = MIMEText(email_body, 'html')
-        message.attach(messageText)
+        # email_body = template("email_welcome",user_verification_key=user_verification_key, user_first_name=user_first_name)
+        # messageText = MIMEText(email_body, 'html')
+        # message.attach(messageText)
 
 
-        email = credentials.DEFAULT_EMAIL
-        password = credentials.EMAIL_PASSWORD
+        # email = credentials.DEFAULT_EMAIL
+        # password = credentials.EMAIL_PASSWORD
 
 
-        server = smtplib.SMTP('smtp.gmail.com:587')
-        server.ehlo('Gmail')
-        server.starttls()
-        server.login(email,password)
-        from_email = credentials.DEFAULT_EMAIL
-        to_email  = credentials.DEFAULT_EMAIL
-        server.sendmail(from_email,to_email,message.as_string())
-        server.quit()
+        # server = smtplib.SMTP('smtp.gmail.com:587')
+        # server.ehlo('Gmail')
+        # server.starttls()
+        # server.login(email,password)
+        # from_email = credentials.DEFAULT_EMAIL
+        # to_email  = credentials.DEFAULT_EMAIL
+        # server.sendmail(from_email,to_email,message.as_string())
+        # server.quit()
+
+        subject = 'Welcome to Home-Away'
+        template_name = "email_welcome"
+        template_vars = {"user_first_name": user_first_name, "user_verification_key": user_verification_key}
+        #send_email( user_email, subject, template_name, **template_vars)
+        send_email(credentials.DEFAULT_EMAIL, subject, template_name, **template_vars)
         
         return """
         <template mix-target="#message">

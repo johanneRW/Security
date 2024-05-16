@@ -1,6 +1,3 @@
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-import smtplib
 import uuid
 from bottle import default_app, get, post, request, response, run, static_file, template, put 
 import utils
@@ -10,6 +7,7 @@ import json
 import credentials
 import time
 import variables
+from send_email import send_email
 
 
 @post("/toggle_item_block/<item_uuid>")
@@ -52,33 +50,16 @@ def toggle_item_block(item_uuid):
         ic(email_template)
         
         user_first_name=user_info[0]['user_first_name']
+        user_email=user_info[0]['user_email']
         ic(user_first_name)
+        ic(user_email)
 
 
+        template_vars = {"user_first_name": user_first_name}
+        #send_email( user_email, subject, template_name, **template_vars)
+        send_email(credentials.DEFAULT_EMAIL, email_subject, email_template, **template_vars)
 
-        message = MIMEMultipart()
-        message["To"] = credentials.DEFAULT_EMAIL
-        message["From"] = credentials.DEFAULT_EMAIL
-        message["Subject"] = email_subject
-
-
-        email_body = template(email_template, user_first_name=user_first_name)
-        messageText = MIMEText(email_body, 'html')
-        message.attach(messageText)
-
-
-        email = credentials.DEFAULT_EMAIL
-        password = credentials.EMAIL_PASSWORD
-
-
-        server = smtplib.SMTP('smtp.gmail.com:587')
-        server.ehlo('Gmail')
-        server.starttls()
-        server.login(email,password)
-        from_email = credentials.DEFAULT_EMAIL
-        to_email  = credentials.DEFAULT_EMAIL
-        server.sendmail(from_email,to_email,message.as_string())
-        server.quit()
+        
 
         return f"""
             <template mix-target="#item_{item_uuid}" mix-replace>

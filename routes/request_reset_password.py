@@ -1,6 +1,4 @@
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-import smtplib
+
 import uuid
 from bottle import default_app, get, post, request, response, run, static_file, template, put 
 import utils
@@ -10,14 +8,12 @@ import json
 import credentials
 import time
 import variables
-
-
+from send_email import send_email
 
 
 @post("/request_reset_password")
 def _():
     try:
-
 
 # password_reset_key     TEXT,
 # password_reset_at       INTEGER,
@@ -45,29 +41,12 @@ def _():
         db.commit()
 
 
-        message = MIMEMultipart()
-        message["To"] = credentials.DEFAULT_EMAIL
-        message["From"] = credentials.DEFAULT_EMAIL
-        message["Subject"] = 'Reset password'
+        subject = "Reset password"
+        template_name = "email_reset_password"
+        template_vars = {"user_first_name": user_first_name, "password_reset_key": password_reset_key}
+        #send_email( user_email, subject, template_name, **template_vars)
+        send_email(credentials.DEFAULT_EMAIL, subject, template_name, **template_vars)
 
-
-        email_body = template("email_reset_password",password_reset_key=password_reset_key,user_first_name=user_first_name)
-        messageText = MIMEText(email_body, 'html')
-        message.attach(messageText)
-
-
-        email = credentials.DEFAULT_EMAIL
-        password = credentials.EMAIL_PASSWORD
-
-
-        server = smtplib.SMTP('smtp.gmail.com:587')
-        server.ehlo('Gmail')
-        server.starttls()
-        server.login(email,password)
-        from_email = credentials.DEFAULT_EMAIL
-        to_email  = credentials.DEFAULT_EMAIL
-        server.sendmail(from_email,to_email,message.as_string())
-        server.quit()
         
         return """
         <template mix-target="#message">

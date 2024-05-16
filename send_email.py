@@ -1,46 +1,35 @@
-#TODO:tjek denne op mod min kode
-import smtplib, ssl
-from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+import smtplib
+import credentials
+from bottle import template
 
-sender_email = "YOUR CREATED GMAIL ACCOUNT"
-receiver_email = "SEND TO THIS EMAIL ACCOUNT"
-password = "THE SECRET CODE YOU COPIED FROM GOOGLE ACCOUNT"
+def send_email(to_email, subject, template_name, **template_vars):
+    try:
+        # Create the email message
+        message = MIMEMultipart()
+        message["To"] = to_email
+        message["From"] = credentials.DEFAULT_EMAIL
+        message["Subject"] = subject
 
-message = MIMEMultipart("alternative")
-message["Subject"] = "multipart test"
-message["From"] = sender_email
-message["To"] = receiver_email
+        # Render the email body from template
+        email_body = template(template_name, **template_vars)
+        message_text = MIMEText(email_body, 'html')
+        message.attach(message_text)
 
-# Create the plain-text and HTML version of your message
-text = """\
-Hi,
-How are you?
-www.your_website_here.com"""
-html = """\
-<html>
-  <body>
-    <p>Hi,<br>
-       How are you?<br>
-       <a href="https://www.your_website_here.com">YOUR WEBSITE HERE</a>
-    </p>
-  </body>
-</html>
-"""
+        # Email credentials
+        email = credentials.DEFAULT_EMAIL
+        password = credentials.EMAIL_PASSWORD
 
-# Turn these into plain/html MIMEText objects
-part1 = MIMEText(text, "plain")
-part2 = MIMEText(html, "html")
+        # Send the email
+        server = smtplib.SMTP('smtp.gmail.com', 587)
+        server.ehlo()
+        server.starttls()
+        server.login(email, password)
+        server.sendmail(email, to_email, message.as_string())
+        server.quit()
 
-# Add HTML/plain-text parts to MIMEMultipart message
-# The email client will try to render the last part first
-message.attach(part1)
-message.attach(part2)
-
-# Create secure connection with server and send email
-context = ssl.create_default_context()
-with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
-    server.login(sender_email, password)
-    server.sendmail(
-        sender_email, receiver_email, message.as_string()
-    )
+        return "Email sent successfully."
+    
+    except Exception as e:
+        return f"Error sending email: {str(e)}"
