@@ -29,6 +29,7 @@ CREATE TABLE users(
     user_is_verified        INTEGER,
     user_is_verified_at     INTEGER,
     user_is_blocked         INTEGER,
+    user_blocked_updated_at         INTEGER,
     user_is_deleted         INTEGER,
     user_deleted_at         INTEGER,
     FOREIGN KEY(role_id) REFERENCES roles(role_id),
@@ -51,6 +52,7 @@ INSERT INTO users VALUES(
     1,
     1,
     0,
+    NULL,
     0,
     NULL
 );
@@ -70,6 +72,7 @@ INSERT INTO users VALUES(
     1,
     1,
     0,
+    NULL,
     0,
     NULL
 );
@@ -88,6 +91,7 @@ INSERT INTO users VALUES(
     1,
     1,
     0,
+    NULL,
     0,
     NULL
 );

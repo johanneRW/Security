@@ -43,7 +43,8 @@ import routes.signup
 import routes.login
 import routes.profile
 import routes.get_more_items
-import routes.toggle_block
+import routes.toggle_block_item
+import routes.toggle_block_user
 import routes.update_user
 import routes.get_all_users
 import routes.update_password
