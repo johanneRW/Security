@@ -20,6 +20,7 @@ def _(item_pk):
         if user:
            
             db = utils.db()
+            ratings=db.execute("DELETE FROM ratings WHERE item_pk = ?", (item_pk,))
             q = db.execute("""DELETE FROM items WHERE item_pk=?
                             """,(item_pk,))
 
@@ -29,7 +30,7 @@ def _(item_pk):
        
       
         return f"""
-        <template mix-target="#frm_item_{item_pk}" mix-replace>
+        <template mix-target="#item_{item_pk}" mix-replace>
         </template>
         """
        

@@ -97,35 +97,87 @@ INSERT INTO users VALUES(
 );
 
 
-DROP TABLE IF EXISTS items;
+
 --TODO_ændre pk til id:
+-- CREATE TABLE items(
+--     item_pk                         TEXT,
+--     item_name                       TEXT,
+--     item_splash_image               TEXT,
+--     item_lat                        TEXT,
+--     item_lon                        TEXT,
+--     item_stars                      REAL,
+--     item_price_per_night            REAL,
+--     item_created_at                 INTEGER,
+--     item_updated_at                 INTEGER,
+--     item_is_blocked                 INTEGER,
+--     item_blocked_updated_at         INTEGER,
+--     item_owned_by                   TEXT,
+--     PRIMARY KEY(item_pk)
+-- ) WITHOUT ROWID;
+DROP TABLE IF EXISTS items;
 CREATE TABLE items(
     item_pk                         TEXT,
     item_name                       TEXT,
     item_splash_image               TEXT,
     item_lat                        TEXT,
     item_lon                        TEXT,
-    item_stars                      REAL,
     item_price_per_night            REAL,
     item_created_at                 INTEGER,
     item_updated_at                 INTEGER,
     item_is_blocked                 INTEGER,
     item_blocked_updated_at         INTEGER,
     item_owned_by                   TEXT,
-    PRIMARY KEY(item_pk)
+    PRIMARY KEY(item_pk),
+    FOREIGN KEY(item_owned_by) REFERENCES users(user_pk)
 ) WITHOUT ROWID;
 
+DROP TABLE IF EXISTS ratings;
+CREATE TABLE ratings(
+    item_pk                         TEXT,
+    user_pk                         TEXT,
+    stars                           INTEGER,
+    rating_created_at               INTEGER,
+    PRIMARY KEY(item_pk, user_pk),
+    FOREIGN KEY(item_pk) REFERENCES items(item_pk),
+    FOREIGN KEY(user_pk) REFERENCES users(user_pk)
+) WITHOUT ROWID;
+
+-- INSERT INTO items VALUES
+-- ("5dbce622fa2b4f22a6f6957d07ff4951", "Christiansborg Palace", "5dbce622fa2b4f22a6f6957d07ff4951.webp", 55.6761, 12.5770, 5, 2541, 1, 0,0,0,"d11854217ecc42b2bb17367fe33dc8f5"),
+-- ("5dbce622fa2b4f22a6f6957d07ff4952", "Tivoli Gardens", "5dbce622fa2b4f22a6f6957d07ff4952.webp", 55.6736, 12.5681, 4.97, 985, 2, 0,0,0,"d11854217ecc42b2bb17367fe33dc8f5"),
+-- ("5dbce622fa2b4f22a6f6957d07ff4953", "Nyhavn", "5dbce622fa2b4f22a6f6957d07ff4953.webp", 55.6794, 12.5918, 3.45, 429, 3, 0,0,0,"d11854217ecc42b2bb17367fe33dc8f5"),
+-- ("5dbce622fa2b4f22a6f6957d07ff4954", "The Little Mermaid statue", "5dbce622fa2b4f22a6f6957d07ff4954.webp", 55.6929, 12.5998, 4, 862, 4, 0,0,0,"d11854217ecc42b2bb17367fe33dc8f5"),
+-- ("5dbce622fa2b4f22a6f6957d07ff4955", "Amalienborg Palace", "5dbce622fa2b4f22a6f6957d07ff4955.webp", 55.6846, 12.5949, 2.67, 1200, 5, 0,0,0,"d11854217ecc42b2bb17367fe33dc8f4"),
+-- ("5dbce622fa2b4f22a6f6957d07ff4956", "Copenhagen Opera House", "5dbce622fa2b4f22a6f6957d07ff4956.webp",  55.6796, 12.6021, 4.57, 1965, 6, 0,0,0,"d11854217ecc42b2bb17367fe33dc8f5"),
+-- ("5dbce622fa2b4f22a6f6957d07ff4957", "Rosenborg Castle", "5dbce622fa2b4f22a6f6957d07ff4957.webp", 55.6867, 12.5734, 4, 1700, 7, 0,0,0,"d11854217ecc42b2bb17367fe33dc8f5"),
+-- ("5dbce622fa2b4f22a6f6957d07ff4958", "The National Museum of Denmark", "5dbce622fa2b4f22a6f6957d07ff4958.webp", 55.6772, 12.5784, 5, 2100, 8, 0,0,0,"d11854217ecc42b2bb17367fe33dc8f5"),
+-- ("5dbce622fa2b4f22a6f6957d07ff4959", "Church of Our Saviour", "5dbce622fa2b4f22a6f6957d07ff4959.webp", 55.6732, 12.5986, 4.3, 985, 9, 0,0,0,"d11854217ecc42b2bb17367fe33dc8f5"),
+-- ("5dbce622fa2b4f22a6f6957d07ff4910", "Round Tower", "5dbce622fa2b4f22a6f6957d07ff4910.webp",  55.6813, 12.5759, 4.8, 1200, 10, 0,0,0,"d11854217ecc42b2bb17367fe33dc8f4");
+
 INSERT INTO items VALUES
-("5dbce622fa2b4f22a6f6957d07ff4951", "Christiansborg Palace", "5dbce622fa2b4f22a6f6957d07ff4951.webp", 55.6761, 12.5770, 5, 2541, 1, 0,0,0,"d11854217ecc42b2bb17367fe33dc8f5"),
-("5dbce622fa2b4f22a6f6957d07ff4952", "Tivoli Gardens", "5dbce622fa2b4f22a6f6957d07ff4952.webp", 55.6736, 12.5681, 4.97, 985, 2, 0,0,0,"d11854217ecc42b2bb17367fe33dc8f5"),
-("5dbce622fa2b4f22a6f6957d07ff4953", "Nyhavn", "5dbce622fa2b4f22a6f6957d07ff4953.webp", 55.6794, 12.5918, 3.45, 429, 3, 0,0,0,"d11854217ecc42b2bb17367fe33dc8f5"),
-("5dbce622fa2b4f22a6f6957d07ff4954", "The Little Mermaid statue", "5dbce622fa2b4f22a6f6957d07ff4954.webp", 55.6929, 12.5998, 4, 862, 4, 0,0,0,"d11854217ecc42b2bb17367fe33dc8f5"),
-("5dbce622fa2b4f22a6f6957d07ff4955", "Amalienborg Palace", "5dbce622fa2b4f22a6f6957d07ff4955.webp", 55.6846, 12.5949, 2.67, 1200, 5, 0,0,0,"d11854217ecc42b2bb17367fe33dc8f4"),
-("5dbce622fa2b4f22a6f6957d07ff4956", "Copenhagen Opera House", "5dbce622fa2b4f22a6f6957d07ff4956.webp",  55.6796, 12.6021, 4.57, 1965, 6, 0,0,0,"d11854217ecc42b2bb17367fe33dc8f5"),
-("5dbce622fa2b4f22a6f6957d07ff4957", "Rosenborg Castle", "5dbce622fa2b4f22a6f6957d07ff4957.webp", 55.6867, 12.5734, 4, 1700, 7, 0,0,0,"d11854217ecc42b2bb17367fe33dc8f5"),
-("5dbce622fa2b4f22a6f6957d07ff4958", "The National Museum of Denmark", "5dbce622fa2b4f22a6f6957d07ff4958.webp", 55.6772, 12.5784, 5, 2100, 8, 0,0,0,"d11854217ecc42b2bb17367fe33dc8f5"),
-("5dbce622fa2b4f22a6f6957d07ff4959", "Church of Our Saviour", "5dbce622fa2b4f22a6f6957d07ff4959.webp", 55.6732, 12.5986, 4.3, 985, 9, 0,0,0,"d11854217ecc42b2bb17367fe33dc8f5"),
-("5dbce622fa2b4f22a6f6957d07ff4910", "Round Tower", "5dbce622fa2b4f22a6f6957d07ff4910.webp",  55.6813, 12.5759, 4.8, 1200, 10, 0,0,0,"d11854217ecc42b2bb17367fe33dc8f4");
+("5dbce622fa2b4f22a6f6957d07ff4951", "Christiansborg Palace", "5dbce622fa2b4f22a6f6957d07ff4951.webp", 55.6761, 12.5770, 2541, 1, 0,0,0,"d11854217ecc42b2bb17367fe33dc8f5"),
+("5dbce622fa2b4f22a6f6957d07ff4952", "Tivoli Gardens", "5dbce622fa2b4f22a6f6957d07ff4952.webp", 55.6736, 12.5681,  985, 2, 0,0,0,"d11854217ecc42b2bb17367fe33dc8f5"),
+("5dbce622fa2b4f22a6f6957d07ff4953", "Nyhavn", "5dbce622fa2b4f22a6f6957d07ff4953.webp", 55.6794, 12.5918,  429, 3, 0,0,0,"d11854217ecc42b2bb17367fe33dc8f5"),
+("5dbce622fa2b4f22a6f6957d07ff4954", "The Little Mermaid statue", "5dbce622fa2b4f22a6f6957d07ff4954.webp", 55.6929, 12.5998,  862, 4, 0,0,0,"d11854217ecc42b2bb17367fe33dc8f5"),
+("5dbce622fa2b4f22a6f6957d07ff4955", "Amalienborg Palace", "5dbce622fa2b4f22a6f6957d07ff4955.webp", 55.6846, 12.5949,  1200, 5, 0,0,0,"d11854217ecc42b2bb17367fe33dc8f4"),
+("5dbce622fa2b4f22a6f6957d07ff4956", "Copenhagen Opera House", "5dbce622fa2b4f22a6f6957d07ff4956.webp",  55.6796, 12.6021,  1965, 6, 0,0,0,"d11854217ecc42b2bb17367fe33dc8f5"),
+("5dbce622fa2b4f22a6f6957d07ff4957", "Rosenborg Castle", "5dbce622fa2b4f22a6f6957d07ff4957.webp", 55.6867, 12.5734,  1700, 7, 0,0,0,"d11854217ecc42b2bb17367fe33dc8f5"),
+("5dbce622fa2b4f22a6f6957d07ff4958", "The National Museum of Denmark", "5dbce622fa2b4f22a6f6957d07ff4958.webp", 55.6772, 12.5784,  2100, 8, 0,0,0,"d11854217ecc42b2bb17367fe33dc8f5"),
+("5dbce622fa2b4f22a6f6957d07ff4959", "Church of Our Saviour", "5dbce622fa2b4f22a6f6957d07ff4959.webp", 55.6732, 12.5986,  985, 9, 0,0,0,"d11854217ecc42b2bb17367fe33dc8f5"),
+("5dbce622fa2b4f22a6f6957d07ff4910", "Round Tower", "5dbce622fa2b4f22a6f6957d07ff4910.webp",  55.6813, 12.5759,  1200, 10, 0,0,0,"d11854217ecc42b2bb17367fe33dc8f4");
+
+INSERT INTO ratings VALUES
+("5dbce622fa2b4f22a6f6957d07ff4951","d11854217ecc42b2bb17367fe33dc8f4", 5,1 ),
+("5dbce622fa2b4f22a6f6957d07ff4952","d11854217ecc42b2bb17367fe33dc8f4", 4.97,2),
+("5dbce622fa2b4f22a6f6957d07ff4953","d11854217ecc42b2bb17367fe33dc8f4", 3.45,3),
+("5dbce622fa2b4f22a6f6957d07ff4954","d11854217ecc42b2bb17367fe33dc8f4",  4,4),
+("5dbce622fa2b4f22a6f6957d07ff4955","d11854217ecc42b2bb17367fe33dc8f4", 2.67,5),
+("5dbce622fa2b4f22a6f6957d07ff4956", "d11854217ecc42b2bb17367fe33dc8f4", 4.57,6),
+("5dbce622fa2b4f22a6f6957d07ff4957","d11854217ecc42b2bb17367fe33dc8f4",  4,7),
+("5dbce622fa2b4f22a6f6957d07ff4958","d11854217ecc42b2bb17367fe33dc8f4", 5,8),
+("5dbce622fa2b4f22a6f6957d07ff4959","d11854217ecc42b2bb17367fe33dc8f4", 4.3,9),
+("5dbce622fa2b4f22a6f6957d07ff4910","d11854217ecc42b2bb17367fe33dc8f4", 4.8,10);
+
 
 
 
@@ -201,3 +253,10 @@ SELECT * FROM users WHERE user_email = 'user@user.com' AND user_is_verified = 1 
 UPDATE users SET user_is_deleted=0, user_deleted_at=NULL WHERE user_pk='d11854217ecc42b2bb17367fe33dc8f6';
 
 SELECT * FROM items  WHERE item_owned_by='d11854217ecc42b2bb17367fe33dc8f5' ORDER BY item_created_at;
+
+SELECT items.*, 
+            COALESCE(AVG(ratings.stars), 0) as item_stars
+            FROM items
+            LEFT JOIN ratings ON items.item_pk = ratings.item_pk
+            GROUP BY items.item_pk
+            ORDER BY items.item_created_at

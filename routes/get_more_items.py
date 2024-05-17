@@ -22,10 +22,19 @@ def _(page_number):
         next_page = int(page_number) + 1
         
         offset = (int(page_number) - 1) * limit
-        q = db.execute(f"""SELECT * FROM items 
-                           ORDER BY item_created_at 
-                           LIMIT {limit} OFFSET {offset}
-                        """)
+        # q = db.execute(f"""SELECT * FROM items 
+        #                    ORDER BY item_created_at 
+        #                    LIMIT {limit} OFFSET {offset}
+        #                 """)
+        q = db.execute(f"""
+            SELECT items.*, 
+                   COALESCE(AVG(ratings.stars), 0) as item_stars
+            FROM items
+            LEFT JOIN ratings ON items.item_pk = ratings.item_pk
+            GROUP BY items.item_pk
+            ORDER BY items.item_created_at
+            LIMIT {limit} OFFSET {offset}
+        """)
         items = q.fetchall()
         ic(items)
 

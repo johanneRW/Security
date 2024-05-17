@@ -53,7 +53,7 @@ import routes.delete_user
 import routes.user_property
 import routes.update_item
 import routes.delete_item
-
+import routes.create_item
 
 
 ##############################
@@ -61,7 +61,16 @@ import routes.delete_item
 def _():
     try:
         db = utils.db()
-        q = db.execute("SELECT * FROM items ORDER BY item_created_at LIMIT 0, ?", (variables.ITEMS_PER_PAGE,))
+        # q = db.execute("SELECT * FROM items ORDER BY item_created_at LIMIT 0, ?", (variables.ITEMS_PER_PAGE,))
+        q = db.execute("""
+            SELECT items.*, 
+            COALESCE(AVG(ratings.stars), 0) as item_stars
+            FROM items
+            LEFT JOIN ratings ON items.item_pk = ratings.item_pk
+            GROUP BY items.item_pk
+            ORDER BY items.item_created_at
+            LIMIT ?
+        """, (variables.ITEMS_PER_PAGE,))
         items = q.fetchall()
         ic(items)
         is_logged = False

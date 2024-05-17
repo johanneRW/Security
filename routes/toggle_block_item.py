@@ -29,7 +29,7 @@ def toggle_item_block(item_uuid):
 
         db = utils.db()
         updated_at = int(time.time())
-        db.execute("UPDATE items SET user_is_blocked = ?, item_blocked_updated_at = ? WHERE item_pk = ?", (new_blocked_status, updated_at, item_uuid))
+        db.execute("UPDATE items SET item_is_blocked = ?, item_blocked_updated_at = ? WHERE item_pk = ?", (new_blocked_status, updated_at, item_uuid))
         db.commit() 
         
         

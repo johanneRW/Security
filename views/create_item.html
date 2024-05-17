@@ -1,9 +1,9 @@
 %import utils
 % import variables
 
-<div id="item_{{item['item_pk']}}" class="item">
+<div id="new_item" class="item">
 
-    <form id="frm_item_{{item['item_pk']}}">
+    <form id="frm_new_item">
 
         <label for="item_name">Item Name:</label>
         <input name="item_name" value="{{item['item_name']}}" mix-check="{{variables.ITEM_NAME_REGEX}}">
@@ -26,13 +26,9 @@
         <button type="submit">Upload Images</button> -->
     
 
-    <button mix-put="/items/{{item['item_pk']}}" mix-data="#frm_item_{{item['item_pk']}}" mix-default="Save"
-        mix-await="Updating item...">
-        Save
-    </button>
-
-    <button mix-delete="/items/{{item['item_pk']}}" mix-default="Delete" mix-await="Deleting...">
-        Delete
+    <button mix-post="/items" mix-data="#frm_new_item" mix-default="Add"
+        mix-await="Creating item...">
+        Add
     </button>
 </form>
 </div>
