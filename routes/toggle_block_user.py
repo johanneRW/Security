@@ -14,8 +14,6 @@ from send_email import send_email
 def toggle_user_block(user_pk):
    
     try:
-       
-
         current_blocked_status=int(request.forms.get("user_blocked"))
         if current_blocked_status == 0:
             new_blocked_status=1

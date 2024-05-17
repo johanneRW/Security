@@ -22,8 +22,8 @@
         % email = user['user_email'] if 'user_email' in user else ''
         <input name="user_email" value="{{email}}" mix-check="{{variables.USER_EMAIL_REGEX}}">
 
-        
-        
+
+
     </form>
 
     <button mix-put="/users/{{user['user_pk']}}" mix-data="#user_{{user['user_pk']}}" mix-default="Save"
@@ -34,7 +34,7 @@
     <button mix-delete="/users/{{user['user_pk']}}" mix-default="Delete" mix-await="Deleting...">
         Delete
     </button>
-    
+
     % if get("is_logged", False):
     <form id="user_block_{{user['user_pk']}}">
         <input type="hidden" name="user_blocked" value="{{user['user_is_blocked']}}">

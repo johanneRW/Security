@@ -1,0 +1,16 @@
+%include("_header")
+
+<main class="flex">
+    <div class="w-full pb-16 px-4">
+      
+        <div id="items" class="grid grid-cols-1 lg:grid-cols-2 gap-4 pb-10">
+            % for item in items:
+                %include("_item_detail")
+            % end
+        </div>
+    </div>
+
+</main>
+
+
+%include("_footer")

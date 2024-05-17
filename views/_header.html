@@ -26,7 +26,7 @@
 
         <a href="/" class="{{ get('active_home', '') }} 
             flex items-center h-12 px-4 font-bold text-2xl text-white bg-neutral-800 rounded-md">
-            bottlesite_my
+            Home-Away
         </a>
 
         <form>
@@ -47,7 +47,7 @@
             <p>Name: {{user['user_first_name']}} logged in as: {{user['role_id']}}.</p>
 
             % if user and user['role_id'] == 2:
-                <a href="/property" class="{{ get('active_login', '') }}">
+                <a href="/user_property" class="{{ get('active_login', '') }}">
                     Your property
                 </a>
             % end

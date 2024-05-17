@@ -1,0 +1,38 @@
+%import utils
+% import variables
+
+<div id="{{item['item_pk']}}" class="item">
+
+    <form id="frm_item_{{item['item_pk']}}">
+
+        <label for="item_name">Item Name:</label>
+        <input name="item_name" value="{{item['item_name']}}" mix-check="{{variables.ITEM_NAME_REGEX}}">
+
+        <label for="item_splash_image">Splash Image:</label>
+        <input name="item_splash_image" value="{{item['item_splash_image']}}" mix-check="{{variables.ITEM_IMAGE_REGEX}}">
+
+        <label for="item_lat">Latitude:</label>
+        <input name="item_lat" value="{{item['item_lat']}}" mix-check="{{variables.ITEM_LATLON_REGEX}}">
+
+        <label for="item_lon">Longitude:</label>
+        <input name="item_lon" value="{{item['item_lon']}}" mix-check="{{variables.ITEM_LATLON_REGEX}}">
+
+        <label for="item_price_per_night">Price Per Night:</label>
+        <input name="item_price_per_night" type="number" value="{{item['item_price_per_night']}}" mix-check="{{variables.ITEM_PRICE_REGEX}}">
+
+        <!-- <label for="item_images">Additional Images:</label>
+        <input type="file" name="item_images" multiple>
+
+        <button type="submit">Upload Images</button> -->
+    
+
+    <button mix-put="/items/{{item['item_pk']}}" mix-data="#item_{{item['item_pk']}}" mix-default="Save"
+        mix-await="Updating item...">
+        Save
+    </button>
+
+    <button mix-delete="/items/{{item['item_pk']}}" mix-default="Delete" mix-await="Deleting...">
+        Delete
+    </button>
+</form>
+</div>

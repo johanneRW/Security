@@ -39,3 +39,13 @@ USER_LAST_NAME_MAX = 22
 USER_PASSWORD_MIN = 6
 USER_PASSWORD_MAX = 50
 USER_PASSWORD_REGEX = "^.{6,50}$"
+
+
+ITEM_NAME_REGEX = "^[a-zA-Z0-9\s]{1,100}$"
+ITEM_IMAGE_REGEX = "^[a-zA-Z0-9_\-]+\.(jpg|jpeg|png|gif|webp)$"
+ITEM_LATLON_REGEX = "^-?\d{1,3}\.\d+$"
+ITEM_STARS_REGEX = "^[1-5]$"
+ITEM_PRICE_REGEX = "^\d+(\.\d{1,2})?$"
+
+ITEM_NAME_MIN = 1
+ITEM_NAME_MAX = 100

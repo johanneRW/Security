@@ -116,7 +116,47 @@ def confirm_password():
 
 ##############################
 
+def validate_item_name():
+    error = f"Item name must be {variables.ITEM_NAME_MIN} to {variables.ITEM_NAME_MAX} characters"
+    item_name = request.forms.get("item_name", "").strip()
+    if not re.match(variables.ITEM_NAME_REGEX, item_name):
+        raise Exception(error, 400)
+    return item_name
 
+def validate_item_splash_image():
+    error = "Splash image must be a valid image filename (jpg, jpeg, png, gif)"
+    item_splash_image = request.forms.get("item_splash_image", "").strip()
+    if not re.match(variables.ITEM_IMAGE_REGEX, item_splash_image):
+        raise Exception(error, 400)
+    return item_splash_image
+
+def validate_item_lat():
+    error = "Latitude must be a valid decimal number"
+    item_lat = request.forms.get("item_lat", "").strip()
+    if not re.match(variables.ITEM_LATLON_REGEX, item_lat):
+        raise Exception(error, 400)
+    return item_lat
+
+def validate_item_lon():
+    error = "Longitude must be a valid decimal number"
+    item_lon = request.forms.get("item_lon", "").strip()
+    if not re.match(variables.ITEM_LATLON_REGEX, item_lon):
+        raise Exception(error, 400)
+    return item_lon
+
+def validate_item_stars():
+    error = "Stars must be an integer between 1 and 5"
+    item_stars = request.forms.get("item_stars", "").strip()
+    if not re.match(variables.ITEM_STARS_REGEX, item_stars):
+        raise Exception(error, 400)
+    return item_stars
+
+def validate_item_price_per_night():
+    error = "Price per night must be a valid number"
+    item_price_per_night = request.forms.get("item_price_per_night", "").strip()
+    if not re.match(variables.ITEM_PRICE_REGEX, item_price_per_night):
+        raise Exception(error, 400)
+    return item_price_per_night
 
 
 

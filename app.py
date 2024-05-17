@@ -50,6 +50,9 @@ import routes.get_all_users
 import routes.update_password
 import routes.request_reset_password
 import routes.delete_user
+import routes.user_property
+import routes.update_item
+import routes.delete_item
 
 
 

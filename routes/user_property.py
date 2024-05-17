@@ -10,7 +10,7 @@ import variables
 
 
 
-@get("/users")
+@get("/user_property")
 def _():
     try:
         is_logged = False
@@ -21,14 +21,17 @@ def _():
             is_logged = True
         except:
             pass
-#TODO: der skal ikke være et dobbelt tjek her af logged
-        #user = request.get_cookie("user", secret= x.cokie_secret)
+
         if  utils.validate_user_logged():
+            user_pk=user['user_pk']
+            ic(user_pk)
             #x.disable_cache()
             db = utils.db()
-            q = db.execute("SELECT * FROM users ORDER BY user_created_at LIMIT 0, ?", (variables.USER_PER_PAGE,))
-            users = q.fetchall()
-            return template("users", users=users,is_logged=is_logged, user=user)
+            q = db.execute("SELECT * FROM items  WHERE item_owned_by=? ORDER BY item_created_at", (user_pk,))
+            items = q.fetchall()
+            ic(items)
+        
+            return template("user_property", items=items,is_logged=is_logged, user=user)
         else: 
            pass
     except Exception as ex:
