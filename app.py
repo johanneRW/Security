@@ -14,6 +14,7 @@ import json
 import credentials
 import time
 import variables
+import os
 
 ##############################
 @get("/app.css")
@@ -64,7 +65,7 @@ def _():
         # q = db.execute("SELECT * FROM items ORDER BY item_created_at LIMIT 0, ?", (variables.ITEMS_PER_PAGE,))
         q = db.execute("""
             SELECT items.*, 
-            COALESCE(AVG(ratings.stars), 0) as item_stars
+                   COALESCE(AVG(ratings.stars), 0) as item_stars
             FROM items
             LEFT JOIN ratings ON items.item_pk = ratings.item_pk
             GROUP BY items.item_pk
@@ -72,6 +73,18 @@ def _():
             LIMIT ?
         """, (variables.ITEMS_PER_PAGE,))
         items = q.fetchall()
+        ic(items)
+
+        image_folder = utils.get_image_folder()
+        for item in items:
+            # Hent de tilhørende billeder fra item_images tabellen
+            q_images = db.execute("SELECT image_filename FROM item_images WHERE item_pk = ?",(item['item_pk'],))
+            ic(item['item_pk'])
+            additional_images = q_images.fetchall()
+            
+            item['item_splash_image'] = os.path.join(image_folder, item['item_splash_image'])
+            item['additional_images'] = [os.path.join(image_folder, img['image_filename']) for img in additional_images]
+
         ic(items)
         is_logged = False
         user=""

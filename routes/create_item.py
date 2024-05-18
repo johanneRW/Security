@@ -8,9 +8,15 @@ import credentials
 import time
 import variables
 from send_email import send_email
+import os
+import time
+import uuid
+from werkzeug.utils import secure_filename
+import utils
+import credentials
 
 
-#TODO: i et af projekterne er det en api? er der en grund til dette, eller var det for at vise hvad man også kunne gøre, signup skal laves om til en route
+
 
 @post("/items")
 def _():
@@ -79,10 +85,15 @@ def _():
         item = q.fetchone()
         ic(item)
 
+        
         html = template("_item_detail.html", item=item)
+        html_create=template("create_item")
         return f"""
         <template mix-target="#items" mix-bottom>
         {html}
+        </template>
+         <template mix-target="#new_item" mix-replace>
+        {html_create}
         </template>
         """
        

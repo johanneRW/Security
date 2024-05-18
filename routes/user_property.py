@@ -27,9 +27,32 @@ def _():
             ic(user_pk)
             #x.disable_cache()
             db = utils.db()
-            q = db.execute("SELECT * FROM items  WHERE item_owned_by=? ORDER BY item_created_at", (user_pk,))
-            items = q.fetchall()
+            #q = db.execute("SELECT * FROM items  WHERE item_owned_by=? ORDER BY item_created_at", (user_pk,))
+            q = db.execute("""
+                SELECT items.*, 
+                       group_concat(item_images.image_filename) AS additional_images
+                FROM items
+                LEFT JOIN item_images ON items.item_pk = item_images.item_pk
+                WHERE items.item_owned_by = ?
+                GROUP BY items.item_pk
+                ORDER BY items.item_created_at
+            """, (user_pk,))
+            results = q.fetchall()
+            ic(results)
+
+            # Strukturere dataene
+            items = []
+            for row in results:
+                item = dict(row)
+                if row['additional_images']:
+                    item['additional_images'] = row['additional_images'].split(',')
+                else:
+                    item['additional_images'] = []
+                items.append(item)
+
             ic(items)
+
+            
         
             return template("user_property", items=items,is_logged=is_logged, user=user)
         else: 

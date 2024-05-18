@@ -7,11 +7,11 @@ import json
 import credentials
 import time
 import variables
-from send_email import send_email
 
 
 
-#Dette kunne være en put når det gentlig ikke omhandler en sletning som sådan, men en soft-delet der er en opdatering af databasen. 
+
+
 @delete("/items/<item_pk>")
 def _(item_pk):
     try:
@@ -20,15 +20,16 @@ def _(item_pk):
         if user:
            
             db = utils.db()
-            ratings=db.execute("DELETE FROM ratings WHERE item_pk = ?", (item_pk,))
-            q = db.execute("""DELETE FROM items WHERE item_pk=?
+            db.execute("BEGIN")
+            db.execute("DELETE FROM ratings WHERE item_pk = ?", (item_pk,))
+            db.execute("""DELETE FROM items WHERE item_pk=?
                             """,(item_pk,))
+            db.execute("""DELETE FROM item_images WHERE item_pk=?
+                            """,(item_pk,))
+            db.commit()
+       
+               
 
-        db.commit()
-       
-             
-       
-      
         return f"""
         <template mix-target="#item_{item_pk}" mix-replace>
         </template>
