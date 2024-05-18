@@ -117,7 +117,6 @@ DROP TABLE IF EXISTS items;
 CREATE TABLE items(
     item_pk                         TEXT,
     item_name                       TEXT,
-    item_splash_image               TEXT,
     item_lat                        TEXT,
     item_lon                        TEXT,
     item_price_per_night            REAL,
@@ -154,16 +153,16 @@ CREATE TABLE ratings(
 -- ("5dbce622fa2b4f22a6f6957d07ff4910", "Round Tower", "5dbce622fa2b4f22a6f6957d07ff4910.webp",  55.6813, 12.5759, 4.8, 1200, 10, 0,0,0,"d11854217ecc42b2bb17367fe33dc8f4");
 
 INSERT INTO items VALUES
-("5dbce622fa2b4f22a6f6957d07ff4951", "Christiansborg Palace", "5dbce622fa2b4f22a6f6957d07ff4951.webp", 55.6761, 12.5770, 2541, 1, 0,0,0,"d11854217ecc42b2bb17367fe33dc8f5"),
-("5dbce622fa2b4f22a6f6957d07ff4952", "Tivoli Gardens", "5dbce622fa2b4f22a6f6957d07ff4952.webp", 55.6736, 12.5681,  985, 2, 0,0,0,"d11854217ecc42b2bb17367fe33dc8f5"),
-("5dbce622fa2b4f22a6f6957d07ff4953", "Nyhavn", "5dbce622fa2b4f22a6f6957d07ff4953.webp", 55.6794, 12.5918,  429, 3, 0,0,0,"d11854217ecc42b2bb17367fe33dc8f5"),
-("5dbce622fa2b4f22a6f6957d07ff4954", "The Little Mermaid statue", "5dbce622fa2b4f22a6f6957d07ff4954.webp", 55.6929, 12.5998,  862, 4, 0,0,0,"d11854217ecc42b2bb17367fe33dc8f5"),
-("5dbce622fa2b4f22a6f6957d07ff4955", "Amalienborg Palace", "5dbce622fa2b4f22a6f6957d07ff4955.webp", 55.6846, 12.5949,  1200, 5, 0,0,0,"d11854217ecc42b2bb17367fe33dc8f4"),
-("5dbce622fa2b4f22a6f6957d07ff4956", "Copenhagen Opera House", "5dbce622fa2b4f22a6f6957d07ff4956.webp",  55.6796, 12.6021,  1965, 6, 0,0,0,"d11854217ecc42b2bb17367fe33dc8f5"),
-("5dbce622fa2b4f22a6f6957d07ff4957", "Rosenborg Castle", "5dbce622fa2b4f22a6f6957d07ff4957.webp", 55.6867, 12.5734,  1700, 7, 0,0,0,"d11854217ecc42b2bb17367fe33dc8f5"),
-("5dbce622fa2b4f22a6f6957d07ff4958", "The National Museum of Denmark", "5dbce622fa2b4f22a6f6957d07ff4958.webp", 55.6772, 12.5784,  2100, 8, 0,0,0,"d11854217ecc42b2bb17367fe33dc8f5"),
-("5dbce622fa2b4f22a6f6957d07ff4959", "Church of Our Saviour", "5dbce622fa2b4f22a6f6957d07ff4959.webp", 55.6732, 12.5986,  985, 9, 0,0,0,"d11854217ecc42b2bb17367fe33dc8f5"),
-("5dbce622fa2b4f22a6f6957d07ff4910", "Round Tower", "5dbce622fa2b4f22a6f6957d07ff4910.webp",  55.6813, 12.5759,  1200, 10, 0,0,0,"d11854217ecc42b2bb17367fe33dc8f4");
+("5dbce622fa2b4f22a6f6957d07ff4951", "Christiansborg Palace", 55.6761, 12.5770, 2541, 1, 0,0,0,"d11854217ecc42b2bb17367fe33dc8f5"),
+("5dbce622fa2b4f22a6f6957d07ff4952", "Tivoli Gardens", 55.6736, 12.5681,  985, 2, 0,0,0,"d11854217ecc42b2bb17367fe33dc8f5"),
+("5dbce622fa2b4f22a6f6957d07ff4953", "Nyhavn", 55.6794, 12.5918,  429, 3, 0,0,0,"d11854217ecc42b2bb17367fe33dc8f5"),
+("5dbce622fa2b4f22a6f6957d07ff4954", "The Little Mermaid statue", 55.6929, 12.5998,  862, 4, 0,0,0,"d11854217ecc42b2bb17367fe33dc8f5"),
+("5dbce622fa2b4f22a6f6957d07ff4955", "Amalienborg Palace", 55.6846, 12.5949,  1200, 5, 0,0,0,"d11854217ecc42b2bb17367fe33dc8f4"),
+("5dbce622fa2b4f22a6f6957d07ff4956", "Copenhagen Opera House",  55.6796, 12.6021,  1965, 6, 0,0,0,"d11854217ecc42b2bb17367fe33dc8f5"),
+("5dbce622fa2b4f22a6f6957d07ff4957", "Rosenborg Castle", 55.6867, 12.5734,  1700, 7, 0,0,0,"d11854217ecc42b2bb17367fe33dc8f5"),
+("5dbce622fa2b4f22a6f6957d07ff4958", "The National Museum of Denmark", 55.6772, 12.5784,  2100, 8, 0,0,0,"d11854217ecc42b2bb17367fe33dc8f5"),
+("5dbce622fa2b4f22a6f6957d07ff4959", "Church of Our Saviour", 55.6732, 12.5986,  985, 9, 0,0,0,"d11854217ecc42b2bb17367fe33dc8f5"),
+("5dbce622fa2b4f22a6f6957d07ff4910", "Round Tower",  55.6813, 12.5759,  1200, 10, 0,0,0,"d11854217ecc42b2bb17367fe33dc8f4");
 
 INSERT INTO ratings VALUES
 ("5dbce622fa2b4f22a6f6957d07ff4951","d11854217ecc42b2bb17367fe33dc8f4", 5,1 ),
@@ -309,11 +308,18 @@ SELECT items.*,
 SELECT image_filename FROM item_images WHERE item_pk = '5dbce622fa2b4f22a6f6957d07ff4951';
 
 SELECT items.*, 
-                       group_concat(item_images.image_filename) AS additional_images
-                FROM items
-                LEFT JOIN item_images ON items.item_pk = item_images.item_pk
-                WHERE items.item_owned_by = 'd11854217ecc42b2bb17367fe33dc8f5'
-                
-                GROUP BY items.item_pk
-                ORDER BY items.item_created_at;
-               
+    group_concat(item_images.image_filename) AS images
+    FROM items
+    LEFT JOIN item_images ON items.item_pk = item_images.item_pk
+    WHERE items.item_owned_by = 'd11854217ecc42b2bb17367fe33dc8f5'
+    GROUP BY items.item_pk
+    ORDER BY items.item_created_at;
+
+SELECT items.*, 
+            group_concat(item_images.image_filename) AS images
+    FROM items
+    LEFT JOIN item_images ON items.item_pk = item_images.item_pk
+    WHERE items.item_owned_by = 'd11854217ecc42b2bb17367fe33dc8f5'
+      --AND items.item_pk = '5dbce622fa2b4f22a6f6957d07ff4952'
+    GROUP BY items.item_pk
+    ORDER BY items.item_created_at;               

@@ -35,9 +35,9 @@ def _():
 
 
 ##############################
-@get("/images/<item_splash_image>")
-def _(item_splash_image):
-    return static_file(item_splash_image, "images")
+@get("/images/<item_image>")
+def _(item_image):
+    return static_file(item_image, "images")
 
 ##############################
 import routes.signup
@@ -55,6 +55,8 @@ import routes.user_property
 import routes.update_item
 import routes.delete_item
 import routes.create_item
+import routes.create_image
+import routes.update_image
 
 
 ##############################
@@ -65,9 +67,11 @@ def _():
         # q = db.execute("SELECT * FROM items ORDER BY item_created_at LIMIT 0, ?", (variables.ITEMS_PER_PAGE,))
         q = db.execute("""
             SELECT items.*, 
-                   COALESCE(AVG(ratings.stars), 0) as item_stars
+                   COALESCE(AVG(ratings.stars), 0) AS item_stars,
+                   group_concat(item_images.image_filename) AS images
             FROM items
             LEFT JOIN ratings ON items.item_pk = ratings.item_pk
+            LEFT JOIN item_images ON items.item_pk = item_images.item_pk
             GROUP BY items.item_pk
             ORDER BY items.item_created_at
             LIMIT ?
@@ -77,13 +81,12 @@ def _():
 
         image_folder = utils.get_image_folder()
         for item in items:
-            # Hent de tilhørende billeder fra item_images tabellen
-            q_images = db.execute("SELECT image_filename FROM item_images WHERE item_pk = ?",(item['item_pk'],))
             ic(item['item_pk'])
-            additional_images = q_images.fetchall()
             
-            item['item_splash_image'] = os.path.join(image_folder, item['item_splash_image'])
-            item['additional_images'] = [os.path.join(image_folder, img['image_filename']) for img in additional_images]
+            item['images'] = [
+                os.path.join(image_folder, img)
+                for img in item['images'].split(',')
+            ]
 
         ic(items)
         is_logged = False
@@ -98,6 +101,7 @@ def _():
         return template("index.html", items=items, mapbox_token=credentials.MAPBOX_TOKEN, 
                         is_logged=is_logged,user=user)
     except Exception as ex:
+        raise
         ic(ex)
         return ex
     finally:

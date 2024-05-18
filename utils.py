@@ -129,13 +129,6 @@ def validate_item_name():
         raise Exception(error, 400)
     return item_name
 
-# def validate_item_splash_image():
-#     error = "Splash image must be a valid image filename (jpg, jpeg, png, gif, webp)"
-#     item_splash_image = request.forms.get("item_splash_image", "").strip()
-#     if not re.match(variables.ITEM_IMAGE_REGEX, item_splash_image):
-#         raise Exception(error, 400)
-#     return item_splash_image
-
 def validate_item_lat():
     error = "Latitude must be a decimal number"
     item_lat = request.forms.get("item_lat", "").strip()
@@ -165,48 +158,26 @@ def validate_item_price_per_night():
     return item_price_per_night
 
 
-def validate_splash_image():
-    error = "Splash image must be a valid image filename (jpg, jpeg, png, gif, webp)"
-    file = request.files.get('item_splash_image')
+def validate_image():
+    error = "image must be a valid image filename (jpg, jpeg, png, gif, webp)"
+    file = request.files.get('image')
     if file is None or not file.filename.strip():
         raise Exception(error, 400)
     
     filename = secure_filename(file.filename)
-    file_extension = filename.rsplit('.', 1)[1].lower()
-    if file_extension not in variables.ALLOWED_IMAGE_EXTENSIONS:
+    if not re.match(variables.ITEM_IMAGE_REGEX, filename):
         raise Exception(error, 400)
+    # file_extension = filename.rsplit('.', 1)[1].lower()
+    # if file_extension not in variables.ALLOWED_IMAGE_EXTENSIONS:
+    #     raise Exception(error, 400)
     
     return file, filename
 
-def validate_additional_images():
-    error = "Each additional image must be a valid image filename (jpg, jpeg, png, gif, webp)"
-    files = request.files.getall('item_images')
-    if len(files) < 3:
-        raise Exception("At least 3 additional images are required", 400)
-    
-    validated_files = []
-    for file in files:
-        if file is None or not file.filename.strip():
-            raise Exception(error, 400)
-        
-        filename = secure_filename(file.filename)
-        file_extension = filename.rsplit('.', 1)[1].lower()
-        if file_extension not in variables.ALLOWED_IMAGE_EXTENSIONS:
-            raise Exception(error, 400)
-        
-        validated_files.append((file, filename))
-    
-    return validated_files
-
-
-
-
-
-
-
-
-
-
-
-
-
+def validate_oldname():
+    error = "oldname must be a valid image filename (jpg, jpeg, png, gif, webp)"
+    oldname = request.forms.get('oldname')
+    if oldname is None or not oldname.strip():
+        raise Exception(error, 400)
+    if not re.match(variables.ITEM_IMAGE_REGEX, oldname):
+        raise Exception(error, 400)
+    return oldname

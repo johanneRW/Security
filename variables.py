@@ -49,7 +49,7 @@ STAR_MAX = 5
 ITEM_STARS_REGEX = f"^[{STAR_MIN}-{STAR_MAX}]$"
 
 
-ITEM_IMAGE_REGEX = "^[a-zA-Z0-9_\-]+\.(jpg|jpeg|png|gif|webp)$"
+ITEM_IMAGE_REGEX = "^.*\.(jpg|jpeg|png|gif|webp)$"
 ALLOWED_IMAGE_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
 
 ITEM_LATLON_REGEX = "^-?\d{1,3}\.\d+$"

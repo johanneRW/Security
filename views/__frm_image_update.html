@@ -1,0 +1,20 @@
+% if item and item.get("item_pk"):
+<dialog class="imageUpdateModal" id="imageUpdateModal_{{item['item_pk']}}">
+    <button id="close">&times;</button>
+    <section>
+        <form id="image_update_{{item['item_pk']}}">
+            <label for="image">Image:</label>
+            <input type="file" name="image" accept="image/*" mix-check="{{variables.ITEM_IMAGE_REGEX}}">
+            <input type="hidden" name="oldname" value="">
+            <div>
+                <strong>Current image:</strong>
+                <p class="filename"></p>
+            </div>
+            <button mix-put="/items/image/{{item['item_pk']}}" mix-default="Update" mix-await="Updating..." mix-data="#image_update_{{item['item_pk']}}">
+                Update
+            </button>
+            <button id="cancel">Cancel</button>
+        </form>
+    </section>
+</dialog>
+% end

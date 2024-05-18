@@ -14,31 +14,30 @@ import utils
 import credentials
 
 
-@put("/items/<item_pk>")
+@put("/items/image/<item_pk>")
 def _(item_pk): 
     try:
-        
-        item_name = utils.validate_item_name()
-        item_lat = utils.validate_item_lat()
-        item_lon = utils.validate_item_lon()
-        item_price_per_night = utils.validate_item_price_per_night()
+        image_folder = utils.get_image_folder()
         updatet_at=int(time.time())
+        
+        oldname = utils.validate_oldname()
 
-
+        # Validate and save image
+        image, image_filename = utils.validate_image()
+        image.save(os.path.join(image_folder, image_filename))
+        
         db = utils.db()
         db.execute("""
-            UPDATE items SET item_name=?, item_lat=?, item_lon=?, item_price_per_night=?, item_updated_at=?
-            WHERE item_pk=?
-        """, (
-            item_name,
-            item_lat,
-            item_lon,
-            item_price_per_night,
-            updatet_at,
-            item_pk
+            UPDATE item_images SET image_filename = ?
+            WHERE item_pk=? AND image_filename = ?
+            """, (
+            image_filename,            
+            item_pk,
+            oldname,
         ))
         db.commit()
 
+        #q = db.execute("SELECT * FROM items WHERE item_pk=? LIMIT 1", (item_pk,))
         q = db.execute("""
                 SELECT items.*, 
                        group_concat(item_images.image_filename) AS images
@@ -53,7 +52,7 @@ def _(item_pk):
         item['images'] = item['images'].split(',')
         html = template("_item_detail.html", item=item)
         return f"""
-        <template mix-target="frm_item_{item_pk}" mix-replace>
+        <template mix-target="frm_item_{item_pk}" mix-replace mix-function="closeModal">
         {html}
         </template>
         """

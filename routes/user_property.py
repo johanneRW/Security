@@ -30,7 +30,7 @@ def _():
             #q = db.execute("SELECT * FROM items  WHERE item_owned_by=? ORDER BY item_created_at", (user_pk,))
             q = db.execute("""
                 SELECT items.*, 
-                       group_concat(item_images.image_filename) AS additional_images
+                       group_concat(item_images.image_filename) AS images
                 FROM items
                 LEFT JOIN item_images ON items.item_pk = item_images.item_pk
                 WHERE items.item_owned_by = ?
@@ -44,10 +44,10 @@ def _():
             items = []
             for row in results:
                 item = dict(row)
-                if row['additional_images']:
-                    item['additional_images'] = row['additional_images'].split(',')
+                if row['images']:
+                    item['images'] = row['images'].split(',')
                 else:
-                    item['additional_images'] = []
+                    item['images'] = []
                 items.append(item)
 
             ic(items)
@@ -58,6 +58,7 @@ def _():
         else: 
            pass
     except Exception as ex:
+        raise
         ic(ex)
         return "system under maintainance"         
     finally:

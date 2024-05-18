@@ -23,7 +23,6 @@ def _():
     try:
 #     item_pk                         TEXT,
 #     item_name                       TEXT,
-#     item_splash_image               TEXT,
 #     item_lat                        TEXT,
 #     item_lon                        TEXT,
 #     item_price_per_night            REAL,
@@ -36,7 +35,6 @@ def _():
 
         item_pk=uuid.uuid4().hex
         item_name=utils.validate_item_name()
-        item_splash_image=utils.validate_item_splash_image()
         item_lat=utils.validate_item_lat()
         item_lon=utils.validate_item_lon()
         item_price_per_night=utils.validate_item_price_per_night()
@@ -55,7 +53,6 @@ def _():
             INSERT INTO items (
                 item_pk, 
                 item_name, 
-                item_splash_image, 
                 item_lat, 
                 item_lon, 
                 item_price_per_night, 
@@ -64,11 +61,10 @@ def _():
                 item_is_blocked, 
                 item_blocked_updated_at, 
                 item_owned_by
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
             item_pk, 
-            item_name, 
-            item_splash_image, 
+            item_name,
             item_lat, 
             item_lon, 
             item_price_per_night, 
@@ -87,14 +83,15 @@ def _():
 
         
         html = template("_item_detail.html", item=item)
-        html_create=template("create_item")
+       
         return f"""
-        <template mix-target="#items" mix-bottom>
+        <template mix-target="frm_item_{item_pk}" mix-bottom mix-function="updateModalEvents">
         {html}
         </template>
-         <template mix-target="#new_item" mix-replace>
-        {html_create}
+        <template mix-target="#items" mix-bottom mix-function="updateModalEvents">
+        {html}
         </template>
+        
         """
        
     except Exception as ex:
