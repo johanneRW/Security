@@ -12,11 +12,21 @@ from send_email import send_email
 
 
 #Dette kunne være en put når det gentlig ikke omhandler en sletning som sådan, men en soft-delet der er en opdatering af databasen. 
-@delete("/users/<user_pk>")
+#@delete("/users/<user_pk>")
+# Update: nu er det en PUT, fordi mixhtml ikke laver client-side validering på "mix-delete"
+@put("/users/<user_pk>/delete")
 def _(user_pk):
+    user_password = utils.validate_password()
     try:
         user = request.get_cookie("user", secret= credentials.COOKIE_SECRET)
         if user:
+            # Fetch user's password so we can validate it
+            db = utils.db()
+            q = db.execute("SELECT user_password FROM users WHERE user_pk = ? LIMIT 1", (user_pk,))
+            db_user = q.fetchone()   
+            if not bcrypt.checkpw(user_password.encode(), db_user["user_password"].encode()):
+                raise ValueError("Invalid credentials", 400)
+            
             deleted_at = int(time.time())
             #user_pk=user['user_pk']
             ic(user_pk)
@@ -59,6 +69,6 @@ def _(user_pk):
         ic(ex)
        
     finally:
-        pass
+        if "db" in locals(): db.close()
 
     
