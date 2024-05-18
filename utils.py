@@ -6,6 +6,7 @@ import re
 import sqlite3
 import credentials
 import variables
+from werkzeug.utils import secure_filename
 
 
 ##############################
@@ -20,6 +21,11 @@ def db():
     db.row_factory = dict_factory
     return db
 
+##############################
+def get_image_folder():
+    # Assuming you have a folder named 'images' in the same directory as your script
+    image_folder = "/images"
+    return str(image_folder)
 
 ##############################
 def no_cache():
@@ -123,29 +129,29 @@ def validate_item_name():
         raise Exception(error, 400)
     return item_name
 
-def validate_item_splash_image():
-    error = "Splash image must be a valid image filename (jpg, jpeg, png, gif)"
-    item_splash_image = request.forms.get("item_splash_image", "").strip()
-    if not re.match(variables.ITEM_IMAGE_REGEX, item_splash_image):
-        raise Exception(error, 400)
-    return item_splash_image
+# def validate_item_splash_image():
+#     error = "Splash image must be a valid image filename (jpg, jpeg, png, gif, webp)"
+#     item_splash_image = request.forms.get("item_splash_image", "").strip()
+#     if not re.match(variables.ITEM_IMAGE_REGEX, item_splash_image):
+#         raise Exception(error, 400)
+#     return item_splash_image
 
 def validate_item_lat():
-    error = "Latitude must be a valid decimal number"
+    error = "Latitude must be a decimal number"
     item_lat = request.forms.get("item_lat", "").strip()
     if not re.match(variables.ITEM_LATLON_REGEX, item_lat):
         raise Exception(error, 400)
     return item_lat
 
 def validate_item_lon():
-    error = "Longitude must be a valid decimal number"
+    error = "Longitude must be a decimal number"
     item_lon = request.forms.get("item_lon", "").strip()
     if not re.match(variables.ITEM_LATLON_REGEX, item_lon):
         raise Exception(error, 400)
     return item_lon
 
 def validate_item_stars():
-    error = "Stars must be an integer between 1 and 5"
+    error = f"Stars must be between {variables.STAR_MIN} and {variables.STAR_MIN}"
     item_stars = request.forms.get("item_stars", "").strip()
     if not re.match(variables.ITEM_STARS_REGEX, item_stars):
         raise Exception(error, 400)
@@ -159,7 +165,38 @@ def validate_item_price_per_night():
     return item_price_per_night
 
 
+def validate_splash_image():
+    error = "Splash image must be a valid image filename (jpg, jpeg, png, gif, webp)"
+    file = request.files.get('item_splash_image')
+    if file is None or not file.filename.strip():
+        raise Exception(error, 400)
+    
+    filename = secure_filename(file.filename)
+    file_extension = filename.rsplit('.', 1)[1].lower()
+    if file_extension not in variables.ALLOWED_IMAGE_EXTENSIONS:
+        raise Exception(error, 400)
+    
+    return file, filename
 
+def validate_additional_images():
+    error = "Each additional image must be a valid image filename (jpg, jpeg, png, gif, webp)"
+    files = request.files.getall('item_images')
+    if len(files) < 3:
+        raise Exception("At least 3 additional images are required", 400)
+    
+    validated_files = []
+    for file in files:
+        if file is None or not file.filename.strip():
+            raise Exception(error, 400)
+        
+        filename = secure_filename(file.filename)
+        file_extension = filename.rsplit('.', 1)[1].lower()
+        if file_extension not in variables.ALLOWED_IMAGE_EXTENSIONS:
+            raise Exception(error, 400)
+        
+        validated_files.append((file, filename))
+    
+    return validated_files
 
 
 

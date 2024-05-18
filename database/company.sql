@@ -14,7 +14,6 @@ INSERT INTO roles VALUES (1,'admin'), (2,'partner'), (3,'user');
 DROP TABLE IF EXISTS users;
 --TODO_ændre pk til id:
 --TODO:verification_key skal være uniqe
---TODO: tilføj is_deleted(soft delete)
 CREATE TABLE users(
     user_pk                 TEXT,
     user_username           TEXT,
@@ -192,9 +191,54 @@ PRIMARY KEY(password_reset_key )
 )WITHOUT ROWID;
 
 
+DROP TABLE IF EXISTS item_images;
+CREATE TABLE item_images (
+    image_pk TEXT ,
+    item_pk TEXT,
+    image_filename TEXT,
+    PRIMARY KEY(image_pk),
+    FOREIGN KEY (item_pk) REFERENCES items (item_pk)
+)WITHOUT ROWID;
 
+INSERT INTO item_images (image_pk, item_pk, image_filename) VALUES ('b8e3b2e6b0794d229b19bb9b95761e0d', '5dbce622fa2b4f22a6f6957d07ff4951', '5dbce622fa2b4f22a6f6957d07ff4951.webp');
+INSERT INTO item_images (image_pk, item_pk, image_filename) VALUES ('0b2b3c5b5c0a4bbca46da4d3c3f9b41e', '5dbce622fa2b4f22a6f6957d07ff4951', '5dbce622fa2b4f22a6f6957d07ff4952.webp');
+INSERT INTO item_images (image_pk, item_pk, image_filename) VALUES ('528d7f7a5d7e4d44a71b4a3b08a2f71f', '5dbce622fa2b4f22a6f6957d07ff4951', '5dbce622fa2b4f22a6f6957d07ff4953.webp');
 
+INSERT INTO item_images (image_pk, item_pk, image_filename) VALUES ('27d77f9b3d6242a9b8b4b0b5c87f7f57', '5dbce622fa2b4f22a6f6957d07ff4952', '5dbce622fa2b4f22a6f6957d07ff4952.webp');
+INSERT INTO item_images (image_pk, item_pk, image_filename) VALUES ('b2a8d9b1b1c64b5e8f3b8b7f7e9a8f88', '5dbce622fa2b4f22a6f6957d07ff4952', '5dbce622fa2b4f22a6f6957d07ff4953.webp');
+INSERT INTO item_images (image_pk, item_pk, image_filename) VALUES ('6c3f2f4e4a1a4a9e8b3b8d7f7e8a6a67', '5dbce622fa2b4f22a6f6957d07ff4952', '5dbce622fa2b4f22a6f6957d07ff4954.webp');
 
+INSERT INTO item_images (image_pk, item_pk, image_filename) VALUES ('2d3b8f9b2f2a4a4b8d3a8a7b7e9a8f89', '5dbce622fa2b4f22a6f6957d07ff4953', '5dbce622fa2b4f22a6f6957d07ff4953.webp');
+INSERT INTO item_images (image_pk, item_pk, image_filename) VALUES ('f7e7a5d2d2a8b8f5c5b5d4f4b3a8e9e9', '5dbce622fa2b4f22a6f6957d07ff4953', '5dbce622fa2b4f22a6f6957d07ff4954.webp');
+INSERT INTO item_images (image_pk, item_pk, image_filename) VALUES ('1f9a8b7c3c2b1a1e8d3b8f7f7e9a8a9a', '5dbce622fa2b4f22a6f6957d07ff4953', '5dbce622fa2b4f22a6f6957d07ff4955.webp');
+
+INSERT INTO item_images (image_pk, item_pk, image_filename) VALUES ('d7b8c3f2a9e8d5a4b4a5f5e7c7b9d8e8', '5dbce622fa2b4f22a6f6957d07ff4954', '5dbce622fa2b4f22a6f6957d07ff4954.webp');
+INSERT INTO item_images (image_pk, item_pk, image_filename) VALUES ('8c3b3a7b9b4b4b5b8a6f7f5e7c6d6a6a', '5dbce622fa2b4f22a6f6957d07ff4954', '5dbce622fa2b4f22a6f6957d07ff4955.webp');
+INSERT INTO item_images (image_pk, item_pk, image_filename) VALUES ('3b9a8b7c2c3b4a1b8d7b8f7f7e9a8b8a', '5dbce622fa2b4f22a6f6957d07ff4954', '5dbce622fa2b4f22a6f6957d07ff4956.webp');
+
+INSERT INTO item_images (image_pk, item_pk, image_filename) VALUES ('2a9b3b7c2c4a5a1e8d3b8f7f7e9a8c8a', '5dbce622fa2b4f22a6f6957d07ff4955', '5dbce622fa2b4f22a6f6957d07ff4955.webp');
+INSERT INTO item_images (image_pk, item_pk, image_filename) VALUES ('5a7b8b7c1c3a4a1f8b3b8f7f7e9a8d8a', '5dbce622fa2b4f22a6f6957d07ff4955', '5dbce622fa2b4f22a6f6957d07ff4956.webp');
+INSERT INTO item_images (image_pk, item_pk, image_filename) VALUES ('9a8b3c7b1c2a3a4e8d3b8f7f7e9a8b9a', '5dbce622fa2b4f22a6f6957d07ff4955', '5dbce622fa2b4f22a6f6957d07ff4957.webp');
+
+INSERT INTO item_images (image_pk, item_pk, image_filename) VALUES ('4a8b9c7a1b2a3c4a8d3b8f7f7e9a8c8a', '5dbce622fa2b4f22a6f6957d07ff4956', '5dbce622fa2b4f22a6f6957d07ff4956.webp');
+INSERT INTO item_images (image_pk, item_pk, image_filename) VALUES ('7a8b1c7a2b3a4a1e8d3b8f7f7e9a8d8a', '5dbce622fa2b4f22a6f6957d07ff4956', '5dbce622fa2b4f22a6f6957d07ff4957.webp');
+INSERT INTO item_images (image_pk, item_pk, image_filename) VALUES ('2b8c3b7c4a5a1a8e8d3b8f7f7e9a8c8a', '5dbce622fa2b4f22a6f6957d07ff4956', '5dbce622fa2b4f22a6f6957d07ff4958.webp');
+
+INSERT INTO item_images (image_pk, item_pk, image_filename) VALUES ('1a8b3c7a4c2a5a8e8d3b8f7f7e9a8b8a', '5dbce622fa2b4f22a6f6957d07ff4957', '5dbce622fa2b4f22a6f6957d07ff4957.webp');
+INSERT INTO item_images (image_pk, item_pk, image_filename) VALUES ('6a8b1c2a4a3a5e8d3b8f7f7e9a8c8a8a', '5dbce622fa2b4f22a6f6957d07ff4957', '5dbce622fa2b4f22a6f6957d07ff4958.webp');
+INSERT INTO item_images (image_pk, item_pk, image_filename) VALUES ('9a8b2c4a1b3a3a8e8d3b8f7f7e9a8b8a', '5dbce622fa2b4f22a6f6957d07ff4957', '5dbce622fa2b4f22a6f6957d07ff4959.webp');
+
+INSERT INTO item_images (image_pk, item_pk, image_filename) VALUES ('3a8b1c2a4b3a5a8e8d3b8f7f7e9a8c8a', '5dbce622fa2b4f22a6f6957d07ff4958', '5dbce622fa2b4f22a6f6957d07ff4958.webp');
+INSERT INTO item_images (image_pk, item_pk, image_filename) VALUES ('7a8b2c3a1a4a5e8d3b8f7f7e9a8c8a8a', '5dbce622fa2b4f22a6f6957d07ff4958', '5dbce622fa2b4f22a6f6957d07ff4959.webp');
+INSERT INTO item_images (image_pk, item_pk, image_filename) VALUES ('4a8b1c3a2a5a3e8d3b8f7f7e9a8b8a8a', '5dbce622fa2b4f22a6f6957d07ff4958', '5dbce622fa2b4f22a6f6957d07ff4910.webp');
+
+INSERT INTO item_images (image_pk, item_pk, image_filename) VALUES ('9a8b2c1a3b4a5a8e8d3b8f7f7e9a8c8a', '5dbce622fa2b4f22a6f6957d07ff4959', '5dbce622fa2b4f22a6f6957d07ff4959.webp');
+INSERT INTO item_images (image_pk, item_pk, image_filename) VALUES ('2a8b1c3a4b5a1e8d3b8f7f7e9a8c8a8a', '5dbce622fa2b4f22a6f6957d07ff4959', '5dbce622fa2b4f22a6f6957d07ff4910.webp');
+INSERT INTO item_images (image_pk, item_pk, image_filename) VALUES ('1a8b2c3a4a5a3e8d3b8f7f7e9a8b8a8a', '5dbce622fa2b4f22a6f6957d07ff4959', '5dbce622fa2b4f22a6f6957d07ff4951.webp');
+
+INSERT INTO item_images (image_pk, item_pk, image_filename) VALUES ('8a8b1c2a3b4a5a8e8d3b8f7f7e9a8c8a', '5dbce622fa2b4f22a6f6957d07ff4910', '5dbce622fa2b4f22a6f6957d07ff4910.webp');
+INSERT INTO item_images (image_pk, item_pk, image_filename) VALUES ('3a8b1c2a4a5a5e8d3b8f7f7e9a8c8a8a', '5dbce622fa2b4f22a6f6957d07ff4910', '5dbce622fa2b4f22a6f6957d07ff4951.webp');
+INSERT INTO item_images (image_pk, item_pk, image_filename) VALUES ('6a8b2c3a4b5a1e8d3b8f7f7e9a8b8a8a', '5dbce622fa2b4f22a6f6957d07ff4910', '5dbce622fa2b4f22a6f6957d07ff4952.webp');
 
 
 
@@ -259,4 +303,17 @@ SELECT items.*,
             FROM items
             LEFT JOIN ratings ON items.item_pk = ratings.item_pk
             GROUP BY items.item_pk
-            ORDER BY items.item_created_at
+            ORDER BY items.item_created_at;
+
+
+SELECT image_filename FROM item_images WHERE item_pk = '5dbce622fa2b4f22a6f6957d07ff4951';
+
+SELECT items.*, 
+                       group_concat(item_images.image_filename) AS additional_images
+                FROM items
+                LEFT JOIN item_images ON items.item_pk = item_images.item_pk
+                WHERE items.item_owned_by = 'd11854217ecc42b2bb17367fe33dc8f5'
+                
+                GROUP BY items.item_pk
+                ORDER BY items.item_created_at;
+               
