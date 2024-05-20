@@ -98,6 +98,10 @@ def _():
         except:
             pass
 
+        format = request.query.get('format')
+        if format == "json":
+            return items
+
         return template("index.html", items=items, mapbox_token=credentials.MAPBOX_TOKEN, 
                         is_logged=is_logged,user=user)
     except Exception as ex:
