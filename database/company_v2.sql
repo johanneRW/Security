@@ -44,9 +44,9 @@ CREATE TABLE user_verification_completed(
 DROP TABLE IF EXISTS password_reset_log;
 CREATE TABLE password_reset_log(
   user_pk TEXT,
-  password_reset_key TEXT,
+  password_reset_key TEXT UNIQUE,
   password_reset_at INTEGER,
-  PRIMARY KEY(user_pk),
+  PRIMARY KEY(user_pk,password_reset_key),
   CONSTRAINT user_pk_user_pk FOREIGN KEY (user_pk) REFERENCES users (user_pk)
 ) WITHOUT ROWID;
 
@@ -56,7 +56,7 @@ CREATE TABLE user_blocked_updated_log(
   user_pk TEXT ,
   user_blocked_updated_at INTEGER ,
   user_blocked_value INTEGER ,
-  PRIMARY KEY(user_pk),
+  PRIMARY KEY(user_pk,user_blocked_updated_at),
   CONSTRAINT user_pk_user_pk FOREIGN KEY (user_pk) REFERENCES users (user_pk)
 ) WITHOUT ROWID;
 
@@ -64,7 +64,7 @@ DROP TABLE IF EXISTS user_deleted_log;
 CREATE TABLE user_deleted_log(
   user_pk TEXT ,
   user_deleted_at INTEGER,
-  PRIMARY KEY(user_pk),
+  PRIMARY KEY(user_pk, user_deleted_at),
   CONSTRAINT user_pk_user_pk FOREIGN KEY (user_pk) REFERENCES users (user_pk)
 ) WITHOUT ROWID;
 
@@ -72,7 +72,7 @@ DROP TABLE IF EXISTS user_updated_log;
 CREATE TABLE user_updated_log(
   user_pk TEXT ,
   user_updated_at INTEGER,
-  PRIMARY KEY(user_pk),
+  PRIMARY KEY(user_pk,user_updated_at),
   CONSTRAINT user_pk_user_pk FOREIGN KEY (user_pk) REFERENCES users (user_pk)
 ) WITHOUT ROWID;
 
@@ -99,17 +99,17 @@ CREATE TABLE item_blocked_log(
   item_pk TEXT,
   item_blocked_updated_at INTEGER,
   item_blocked_value INTEGER,
-  PRIMARY KEY(item_pk),
+  PRIMARY KEY(item_pk, item_blocked_updated_at),
   CONSTRAINT item_pk_item_pk FOREIGN KEY (item_pk) REFERENCES items (item_pk)
 ) WITHOUT ROWID;
 
-DROP TABLE IF EXISTS item_images;
-CREATE TABLE item_images(
+DROP TABLE IF EXISTS items_images;
+CREATE TABLE items_images(
   image_pk TEXT UNIQUE,
   item_pk TEXT,
   image_filename TEXT,
   PRIMARY KEY(image_pk),
-  CONSTRAINT items_item_images
+  CONSTRAINT items_items_images
     FOREIGN KEY (item_pk) REFERENCES items (item_pk) ON DELETE No action
       ON UPDATE No action
 ) WITHOUT ROWID;
@@ -119,7 +119,7 @@ DROP TABLE IF EXISTS item_updated_log;
 CREATE TABLE item_updated_log(
   item_pk TEXT ,
   item_updated_at INTEGER,
-  PRIMARY KEY(item_pk),
+  PRIMARY KEY(item_pk,item_updated_at),
   CONSTRAINT item_pk_item_pk FOREIGN KEY (item_pk) REFERENCES items (item_pk)
 ) WITHOUT ROWID;
 
@@ -158,7 +158,7 @@ AFTER INSERT ON users
 FOR EACH ROW
 BEGIN
   INSERT INTO user_blocked_updated_log (user_pk, user_blocked_updated_at, user_blocked_value)
-  VALUES (NEW.user_pk, CURRENT_TIMESTAMP, 0);
+  VALUES (NEW.user_pk, strftime('%s', 'now'), 0);
 END;
 
 DROP TRIGGER IF EXISTS update_user;
@@ -167,7 +167,7 @@ AFTER UPDATE ON users
 FOR EACH ROW
 BEGIN
   INSERT INTO user_updated_log (user_pk, user_updated_at)
-  VALUES (NEW.item_pk, CURRENT_TIMESTAMP);
+  VALUES (NEW.user_pk, strftime('%s', 'now'));
 END;
 
 -- triggers for items
@@ -177,7 +177,7 @@ AFTER INSERT ON items
 FOR EACH ROW
 BEGIN
   INSERT INTO item_blocked_log (item_pk, item_blocked_updated_at, item_blocked_value)
-  VALUES (NEW.item_pk, CURRENT_TIMESTAMP, 0);
+  VALUES (NEW.item_pk, strftime('%s', 'now'), 0);
 END;
 
 DROP TRIGGER IF EXISTS update_item;
@@ -186,7 +186,7 @@ AFTER UPDATE ON items
 FOR EACH ROW
 BEGIN
   INSERT INTO item_updated_log (item_pk, item_updated_at)
-  VALUES (NEW.item_pk, CURRENT_TIMESTAMP);
+  VALUES (NEW.item_pk, strftime('%s', 'now'));
 END;
 
 
@@ -202,7 +202,16 @@ CREATE VIEW user_with_status AS
     COALESCE(
       (SELECT 1 FROM user_deleted_log WHERE user_deleted_log.user_pk = users.user_pk),
       0
-    ) AS user_is_deleted
+    ) AS user_is_deleted,
+    COALESCE(
+      (
+        SELECT user_blocked_value FROM user_blocked_updated_log
+        WHERE user_blocked_updated_log.user_pk = users.user_pk
+        ORDER BY user_blocked_updated_at DESC 
+        LIMIT 1
+      ),
+      0
+    ) AS user_is_blocked
   FROM
     users  
 ;
@@ -277,3 +286,4 @@ INSERT INTO items VALUES
 ("5dbce622fa2b4f22a6f6957d07ff4958", "The National Museum of Denmark", 55.6772, 12.5784,  2100, 8, "d11854217ecc42b2bb17367fe33dc8f5"),
 ("5dbce622fa2b4f22a6f6957d07ff4959", "Church of Our Saviour", 55.6732, 12.5986,  985, 9, "d11854217ecc42b2bb17367fe33dc8f5"),
 ("5dbce622fa2b4f22a6f6957d07ff4910", "Round Tower",  55.6813, 12.5759,  1200, 10, "d11854217ecc42b2bb17367fe33dc8f4");
+

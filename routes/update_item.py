@@ -23,11 +23,11 @@ def _(item_pk):
         item_lat = utils.validate_item_lat()
         item_lon = utils.validate_item_lon()
         item_price_per_night = utils.validate_item_price_per_night()
-        updatet_at=int(time.time())
+     
 
 
         db = utils.db()
-        data.update_item(db,item_name,item_lat,item_lon,item_price_per_night,updatet_at,item_pk )
+        data.update_item(db,item_name,item_lat,item_lon,item_price_per_night,item_pk )
         item = data.get_item(db, item_pk)
         
         html = template("_item_detail.html", item=item)

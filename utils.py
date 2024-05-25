@@ -89,7 +89,7 @@ def validate_user_username():
 def validate_user_first_name():
     error = f"name {variables.USER_FIRST_NAME_MIN} to {variables.USER_FIRST_NAME_MAX} characters"
     user_first_name = request.forms.get("user_first_name", "").strip()
-    if not re.match(variables.USER_REGEX, user_first_name): raise Exception(error, 400)
+    if not re.match(variables.USER_FIRST_NAME_REGEX, user_first_name): raise Exception(error, 400)
     return user_first_name
 
 ##############################
@@ -99,7 +99,7 @@ def validate_user_first_name():
 def validate_user_last_name():
   error = f"last_name {variables.USER_LAST_NAME_MIN} to {variables.USER_LAST_NAME_MAX} characters"
   user_last_name = request.forms.get("user_last_name").strip()
-  if not re.match(variables.USER_REGEX, user_last_name): raise Exception(error, 400)
+  if not re.match(variables.USER_LAST_NAME_REGEX, user_last_name): raise Exception(error, 400)
   return user_last_name
 
 ##############################

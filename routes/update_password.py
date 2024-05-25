@@ -29,7 +29,7 @@ def _(key):
             return "Invalid reset key."
 
         reset_time = reset_info['password_reset_at']
-        user_pk = reset_info['password_user_pk']
+        user_pk = reset_info['user_pk']
 
        
         if time_now - reset_time > 900:
@@ -39,12 +39,12 @@ def _(key):
         user_password = utils.validate_password().encode()
         hashed_password = bcrypt.hashpw(user_password, bcrypt.gensalt())
 
-     
         data.update_user_password(db,hashed_password, user_pk)
 
         return "Password changed successfully."
 
    except Exception as ex:
+        raise
         return f"Error: {str(ex)}"
 
    finally:

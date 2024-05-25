@@ -21,7 +21,7 @@ def _(user_pk):
             email=utils.validate_email()
             updated_at = int(time.time())
             db = utils.db()
-            data.update_user(db,username,first_name,last_name,email,updated_at,user_pk)
+            data.update_user(db,username,first_name,last_name,email,user_pk)
             
             user = data.get_user(db, user_pk)
             if not user: raise Exception("user not found", 400)
@@ -35,7 +35,7 @@ def _(user_pk):
                 is_cookie_https = False        
             response.set_cookie("user", user, secret=credentials.COOKIE_SECRET, httponly=True, secure=is_cookie_https, path="/")
 
-            html = template("_user.html", user=user )
+            html = template("_user.html", user=user,is_logged=True )
             return f"""
             <template mix-target="[id='{user_pk}']" mix-replace>
             {html}

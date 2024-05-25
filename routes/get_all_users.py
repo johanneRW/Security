@@ -27,7 +27,7 @@ def _():
         if  utils.validate_user_logged():
             #x.disable_cache()
             db = utils.db()
-            users = data.get_users(db, variables.USER_PER_PAGE)
+            users = data.get_all_users(db)
             return template("users", users=users,is_logged=is_logged, user=user)
         else: 
            pass

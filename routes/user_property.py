@@ -28,23 +28,8 @@ def _():
             ic(user_pk)
             #x.disable_cache()
             db = utils.db()
-            results =data.get_items_by_user(db, user_pk)
-            ic(results)
-
-            # Strukturere dataene
-            items = []
-            for row in results:
-                item = dict(row)
-                if row['images']:
-                    item['images'] = row['images'].split(',')
-                else:
-                    item['images'] = []
-                items.append(item)
-
+            items =data.get_items_by_user(db, user_pk)
             ic(items)
-
-            
-        
             return template("user_property", items=items,is_logged=is_logged, user=user)
         else: 
            pass

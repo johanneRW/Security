@@ -12,6 +12,7 @@ def _():
         user_password = utils.validate_password()
         db = utils.db()
         user = data.get_user_by_email(db, user_email)
+        ic(user)
         if not user:
             raise ValueError("User not found or not verified", 404)
         
