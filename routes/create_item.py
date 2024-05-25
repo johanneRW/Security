@@ -30,9 +30,6 @@ def _():
         item_lon=utils.validate_item_lon()
         item_price_per_night=utils.validate_item_price_per_night()
         item_created_at=int(time.time())
-        item_updated_at=None
-        item_is_blocked=0
-        item_blocked_updated_at=None
         item_owned_by=user['user_pk']
 
 
@@ -49,9 +46,6 @@ def _():
             item_lon, 
             item_price_per_night, 
             item_created_at, 
-            item_updated_at,
-            item_is_blocked, 
-            item_blocked_updated_at, 
             item_owned_by
         )
         

@@ -26,11 +26,8 @@ def _():
         hashed_password = bcrypt.hashpw(user_password, bcrypt.gensalt())
         role_id=request.forms.get("role_type", "")
         user_created_at=int(time.time())
-        user_updated_at=None
         user_verification_key=uuid.uuid4().hex
-        user_is_verified_at=None
-        user_is_verified =0
-        user_is_blocked =0
+
 
         
         db = utils.db()
@@ -41,12 +38,8 @@ def _():
                     user_email,
                     hashed_password,
                     role_id,
-                    user_created_at,
-                    user_updated_at,  
-                    user_verification_key,
-                    user_is_verified,
-                    user_is_verified_at,
-                    user_is_blocked)
+                    user_created_at,  
+                    user_verification_key)
 
         # message = MIMEMultipart()
         # message["To"] = credentials.DEFAULT_EMAIL

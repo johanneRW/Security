@@ -65,19 +65,9 @@ import routes.update_image
 def _():
     try:
         db = utils.db()
-        items = data.get_item_limit(db, variables.ITEMS_PER_PAGE)
+        items = data.get_items_limit_offset(db, variables.ITEMS_PER_PAGE)
         ic(items)
 
-        image_folder = utils.get_image_folder()
-        for item in items:
-            ic(item['item_pk'])
-            
-            item['images'] = [
-                os.path.join(image_folder, img)
-                for img in item['images'].split(',')
-            ]
-
-        ic(items)
         is_logged = False
         user=""
         try:    

@@ -151,4 +151,129 @@ CREATE TABLE bookings(
   CONSTRAINT item_pk_item_pk FOREIGN KEY (item_pk) REFERENCES items (item_pk)
 ) WITHOUT ROWID;
 
+-- triggers for users
+DROP TRIGGER IF EXISTS insert_user_blocked;
+CREATE TRIGGER insert_user_blocked
+AFTER INSERT ON users
+FOR EACH ROW
+BEGIN
+  INSERT INTO user_blocked_updated_log (user_pk, user_blocked_updated_at, user_blocked_value)
+  VALUES (NEW.user_pk, CURRENT_TIMESTAMP, 0);
+END;
 
+DROP TRIGGER IF EXISTS update_user;
+CREATE TRIGGER update_user
+AFTER UPDATE ON users
+FOR EACH ROW
+BEGIN
+  INSERT INTO user_updated_log (user_pk, user_updated_at)
+  VALUES (NEW.item_pk, CURRENT_TIMESTAMP);
+END;
+
+-- triggers for items
+DROP TRIGGER IF EXISTS insert_item_blocked;
+CREATE TRIGGER insert_item_blocked
+AFTER INSERT ON items
+FOR EACH ROW
+BEGIN
+  INSERT INTO item_blocked_log (item_pk, item_blocked_updated_at, item_blocked_value)
+  VALUES (NEW.item_pk, CURRENT_TIMESTAMP, 0);
+END;
+
+DROP TRIGGER IF EXISTS update_item;
+CREATE TRIGGER update_item
+AFTER UPDATE ON items
+FOR EACH ROW
+BEGIN
+  INSERT INTO item_updated_log (item_pk, item_updated_at)
+  VALUES (NEW.item_pk, CURRENT_TIMESTAMP);
+END;
+
+
+-- views
+DROP VIEW IF EXISTS user_with_status;
+CREATE VIEW user_with_status AS
+  SELECT
+    users.*,
+    COALESCE(
+      (SELECT 1 FROM user_verification_completed WHERE user_verification_completed.user_pk = users.user_pk),
+      0
+    ) AS user_is_verified,
+    COALESCE(
+      (SELECT 1 FROM user_deleted_log WHERE user_deleted_log.user_pk = users.user_pk),
+      0
+    ) AS user_is_deleted
+  FROM
+    users  
+;
+
+DROP VIEW IF EXISTS items_with_status;
+CREATE VIEW items_with_status AS
+  SELECT
+    items.*,
+    COALESCE(
+      (
+        SELECT item_blocked_value FROM item_blocked_log 
+        WHERE item_blocked_log.item_pk = items.item_pk
+        ORDER BY item_blocked_updated_at DESC 
+        LIMIT 1
+      ),
+      0
+    ) AS item_is_blocked
+  FROM
+    items  
+;
+
+
+-- initial data
+
+--admin-user
+INSERT INTO users VALUES(
+    "d11854217ecc42b2bb17367fe33dc8f4",
+    "johndoe",
+    "John",
+    "Doe",
+    "admin@company.com",
+    "$2b$12$V/cXqWN/M2vTnYUcXMB9oODcNBX/QorJekmaDkq1Z7aeD3I5ZAjfu",
+    (SELECT role_id FROM roles WHERE role_name = 'admin'),
+    1712674758
+);
+INSERT INTO user_verification_completed VALUES ("d11854217ecc42b2bb17367fe33dc8f4", 1712674758);
+
+--partner-user
+INSERT INTO users VALUES(
+    "d11854217ecc42b2bb17367fe33dc8f5",
+    "janedoe",
+    "Jane",
+    "Doe",
+    "partner@partner.com",
+    "$2b$12$V/cXqWN/M2vTnYUcXMB9oODcNBX/QorJekmaDkq1Z7aeD3I5ZAjfu",
+    (SELECT role_id FROM roles WHERE role_name = 'partner'),
+    1712674758
+);
+INSERT INTO user_verification_completed VALUES ("d11854217ecc42b2bb17367fe33dc8f5", 1712674758);
+
+--user_user
+INSERT INTO users VALUES(
+    "d11854217ecc42b2bb17367fe33dc8f6",
+    "useruser",
+    "Just",
+    "Auser",
+    "user@user.com",
+    "$2b$12$V/cXqWN/M2vTnYUcXMB9oODcNBX/QorJekmaDkq1Z7aeD3I5ZAjfu",
+    (SELECT role_id FROM roles WHERE role_name = 'user'),
+    1712674758
+);
+INSERT INTO user_verification_completed VALUES ("d11854217ecc42b2bb17367fe33dc8f6", 1712674758);
+
+INSERT INTO items VALUES
+("5dbce622fa2b4f22a6f6957d07ff4951", "Christiansborg Palace", 55.6761, 12.5770, 2541, 1, "d11854217ecc42b2bb17367fe33dc8f5"),
+("5dbce622fa2b4f22a6f6957d07ff4952", "Tivoli Gardens", 55.6736, 12.5681,  985, 2, "d11854217ecc42b2bb17367fe33dc8f5"),
+("5dbce622fa2b4f22a6f6957d07ff4953", "Nyhavn", 55.6794, 12.5918,  429, 3, "d11854217ecc42b2bb17367fe33dc8f5"),
+("5dbce622fa2b4f22a6f6957d07ff4954", "The Little Mermaid statue", 55.6929, 12.5998,  862, 4, "d11854217ecc42b2bb17367fe33dc8f5"),
+("5dbce622fa2b4f22a6f6957d07ff4955", "Amalienborg Palace", 55.6846, 12.5949,  1200, 5, "d11854217ecc42b2bb17367fe33dc8f4"),
+("5dbce622fa2b4f22a6f6957d07ff4956", "Copenhagen Opera House",  55.6796, 12.6021,  1965, 6, "d11854217ecc42b2bb17367fe33dc8f5"),
+("5dbce622fa2b4f22a6f6957d07ff4957", "Rosenborg Castle", 55.6867, 12.5734,  1700, 7, "d11854217ecc42b2bb17367fe33dc8f5"),
+("5dbce622fa2b4f22a6f6957d07ff4958", "The National Museum of Denmark", 55.6772, 12.5784,  2100, 8, "d11854217ecc42b2bb17367fe33dc8f5"),
+("5dbce622fa2b4f22a6f6957d07ff4959", "Church of Our Saviour", 55.6732, 12.5986,  985, 9, "d11854217ecc42b2bb17367fe33dc8f5"),
+("5dbce622fa2b4f22a6f6957d07ff4910", "Round Tower",  55.6813, 12.5759,  1200, 10, "d11854217ecc42b2bb17367fe33dc8f4");
