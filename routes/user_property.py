@@ -7,6 +7,7 @@ import json
 import credentials
 import time
 import variables
+from utility import data
 
 
 
@@ -27,17 +28,7 @@ def _():
             ic(user_pk)
             #x.disable_cache()
             db = utils.db()
-            #q = db.execute("SELECT * FROM items  WHERE item_owned_by=? ORDER BY item_created_at", (user_pk,))
-            q = db.execute("""
-                SELECT items.*, 
-                       group_concat(item_images.image_filename) AS images
-                FROM items
-                LEFT JOIN item_images ON items.item_pk = item_images.item_pk
-                WHERE items.item_owned_by = ?
-                GROUP BY items.item_pk
-                ORDER BY items.item_created_at
-            """, (user_pk,))
-            results = q.fetchall()
+            results =data.get_items_by_user(db, user_pk)
             ic(results)
 
             # Strukturere dataene

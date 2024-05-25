@@ -8,6 +8,7 @@ import credentials
 import time
 import variables
 from send_email import send_email
+from utility import data
 
 
 @post("/toggle_user_block/<user_pk>")
@@ -29,18 +30,10 @@ def toggle_user_block(user_pk):
         updated_at = int(time.time())
         
         db = utils.db()
-        db.execute("UPDATE users SET user_is_blocked = ?, user_blocked_updated_at = ? WHERE user_pk = ?", (new_blocked_status, updated_at, user_pk))
-        db.commit() 
+        data.toggle_block_user(db, new_blocked_status, updated_at, user_pk)
         
         
-        q = db.execute("""SELECT
-                        user_first_name,
-                        user_email
-                        FROM 
-                        users
-                        WHERE 
-                        user_pk =?""", (user_pk,))
-        user_info = q.fetchall()
+        user_info = data.get_user_name_and_email(db,user_pk)
         ic(user_info)
         ic(email_subject)
         ic(email_template)

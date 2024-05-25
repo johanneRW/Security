@@ -7,6 +7,7 @@ import json
 import credentials
 import time
 import variables
+from utility import data
 
 
 
@@ -20,13 +21,7 @@ def _(item_pk):
         if user:
            
             db = utils.db()
-            db.execute("BEGIN")
-            db.execute("DELETE FROM ratings WHERE item_pk = ?", (item_pk,))
-            db.execute("""DELETE FROM items WHERE item_pk=?
-                            """,(item_pk,))
-            db.execute("""DELETE FROM item_images WHERE item_pk=?
-                            """,(item_pk,))
-            db.commit()
+            data.delete_item(db,item_pk)
        
                
 

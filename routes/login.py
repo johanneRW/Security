@@ -3,6 +3,7 @@ import utils
 from icecream import ic
 import bcrypt
 import credentials
+from utility import data
 
 @post("/login")
 def _():
@@ -10,8 +11,7 @@ def _():
         user_email = utils.validate_email()
         user_password = utils.validate_password()
         db = utils.db()
-        q = db.execute("SELECT * FROM users WHERE user_email = ? AND user_is_verified = 1 AND user_is_deleted= 0 LIMIT 1", (user_email,))
-        user = q.fetchone()
+        user = data.get_user_by_email(db, user_email)
         if not user:
             raise ValueError("User not found or not verified", 404)
         

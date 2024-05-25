@@ -14,6 +14,7 @@ import uuid
 from werkzeug.utils import secure_filename
 import utils
 import credentials
+from utility import data
 
 
 
@@ -21,16 +22,6 @@ import credentials
 @post("/items")
 def _():
     try:
-#     item_pk                         TEXT,
-#     item_name                       TEXT,
-#     item_lat                        TEXT,
-#     item_lon                        TEXT,
-#     item_price_per_night            REAL,
-#     item_created_at                 INTEGER,
-#     item_updated_at                 INTEGER,
-#     item_is_blocked                 INTEGER,
-#     item_blocked_updated_at         INTEGER,
-#     item_owned_by                   TEXT,
         user = request.get_cookie("user", secret= credentials.COOKIE_SECRET)
 
         item_pk=uuid.uuid4().hex
@@ -49,20 +40,9 @@ def _():
 
         
         db = utils.db()
-        new_item=db.execute("""
-            INSERT INTO items (
-                item_pk, 
-                item_name, 
-                item_lat, 
-                item_lon, 
-                item_price_per_night, 
-                item_created_at, 
-                item_updated_at, 
-                item_is_blocked, 
-                item_blocked_updated_at, 
-                item_owned_by
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """, (
+        
+        data.create_item(
+            db, 
             item_pk, 
             item_name,
             item_lat, 
@@ -73,12 +53,9 @@ def _():
             item_is_blocked, 
             item_blocked_updated_at, 
             item_owned_by
-        ))
-        db.commit()
-
-
-        q=db.execute("SELECT * FROM items WHERE item_pk = ?", (item_pk,))
-        item = q.fetchone()
+        )
+        
+        item = data.get_item(db, item_pk)
         ic(item)
 
         

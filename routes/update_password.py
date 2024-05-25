@@ -10,24 +10,19 @@ import json
 import credentials
 import time
 import variables
+from utility import data
 
 
 @put("/reset_password/<key>")
 def _(key):
    #TODO: tilføj try/except og tilføj fejl besked
 
-   # password_reset_key     TEXT,
-   # password_reset_at       INTEGER,
-   # password_user_pk    TEXT,
-
    try:
        
         db = utils.db()
         time_now = int(time.time())
 
-      
-        q = db.execute("SELECT * FROM password_reset WHERE password_reset_key = ?", (key,))
-        reset_info = q.fetchone()
+        reset_info = data.get_reset_info(db,key)
 
         
         if reset_info is None:
@@ -45,8 +40,7 @@ def _(key):
         hashed_password = bcrypt.hashpw(user_password, bcrypt.gensalt())
 
      
-        db.execute("UPDATE users SET user_password = ? WHERE user_pk = ?", (hashed_password, user_pk))
-        db.commit()
+        data.update_user_password(db,hashed_password, user_pk)
 
         return "Password changed successfully."
 

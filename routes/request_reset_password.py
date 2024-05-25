@@ -9,21 +9,18 @@ import credentials
 import time
 import variables
 from send_email import send_email
+from utility import data
 
 
 @post("/request_reset_password")
 def _():
     try:
 
-# password_reset_key     TEXT,
-# password_reset_at       INTEGER,
-# password_user_pk    TEXT,
 
         user_email = utils.validate_email()
             
         db = utils.db()
-        q = db.execute("SELECT user_pk, user_first_name  FROM users WHERE user_email=? LIMIT 1", (user_email,))
-        user_info = q.fetchone()
+        user_info = data.get_user_by_email(db,user_email)
         ic(user_info)
         user_pk=user_info['user_pk']
         user_first_name=user_info['user_first_name']
@@ -37,8 +34,7 @@ def _():
         password_reset_key =uuid.uuid4().hex
         password_reset_at=int(time.time())
         
-        q = db.execute("INSERT INTO password_reset(password_reset_key,password_reset_at,password_user_pk) VALUES (?,?,?)",(password_reset_key,password_reset_at,user_pk))
-        db.commit()
+        data.create_password_reset(db,password_reset_key,password_reset_at,user_pk)
 
 
         subject = "Reset password"

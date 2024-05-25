@@ -7,6 +7,7 @@ import json
 import credentials
 import time
 import variables
+from utility import data
 
 
 
@@ -26,8 +27,7 @@ def _():
         if  utils.validate_user_logged():
             #x.disable_cache()
             db = utils.db()
-            q = db.execute("SELECT * FROM users ORDER BY user_created_at LIMIT 0, ?", (variables.USER_PER_PAGE,))
-            users = q.fetchall()
+            users = data.get_users(db, variables.USER_PER_PAGE)
             return template("users", users=users,is_logged=is_logged, user=user)
         else: 
            pass

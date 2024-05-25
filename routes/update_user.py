@@ -6,6 +6,7 @@ import uuid
 import bcrypt 
 import variables
 import credentials
+from utility import data
 
 
 
@@ -20,17 +21,9 @@ def _(user_pk):
             email=utils.validate_email()
             updated_at = int(time.time())
             db = utils.db()
-            q = db.execute("""UPDATE users
-                        SET user_username =?,  user_first_name=?, 
-                           user_last_name=?, 
-                        user_email = ?,  
-                           user_updated_at=?
-                           WHERE user_pk=?
-                            """
-            ,(username,first_name,last_name,email,updated_at,user_pk))
-            db.commit()
-            q = db.execute("SELECT * FROM users WHERE user_pk=? LIMIT 1", (user_pk,))
-            user = q.fetchone()
+            data.update_user(db,username,first_name,last_name,email,updated_at,user_pk)
+            
+            user = data.get_user(db, user_pk)
             if not user: raise Exception("user not found", 400)
             user.pop("user_password") # Do not put the user's password in the cookie
             ic(user)

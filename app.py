@@ -15,6 +15,7 @@ import credentials
 import time
 import variables
 import os
+from utility import data
 
 ##############################
 @get("/app.css")
@@ -64,19 +65,7 @@ import routes.update_image
 def _():
     try:
         db = utils.db()
-        # q = db.execute("SELECT * FROM items ORDER BY item_created_at LIMIT 0, ?", (variables.ITEMS_PER_PAGE,))
-        q = db.execute("""
-            SELECT items.*, 
-                   COALESCE(AVG(ratings.stars), 0) AS item_stars,
-                   group_concat(item_images.image_filename) AS images
-            FROM items
-            LEFT JOIN ratings ON items.item_pk = ratings.item_pk
-            LEFT JOIN item_images ON items.item_pk = item_images.item_pk
-            GROUP BY items.item_pk
-            ORDER BY items.item_created_at
-            LIMIT ?
-        """, (variables.ITEMS_PER_PAGE,))
-        items = q.fetchall()
+        items = data.get_item_limit(db, variables.ITEMS_PER_PAGE)
         ic(items)
 
         image_folder = utils.get_image_folder()
@@ -156,11 +145,7 @@ def _(key):
     #TODO: tilføj try/except og tilføj fejl besked
     db = utils.db()
     user_is_verified_at=int(time.time())
-    q = db.execute(
-        "UPDATE users SET user_is_verified = 1, user_is_verified_at=? WHERE user_verification_key = ?", 
-        (user_is_verified_at,key)
-    )
-    db.commit()
+    data.update_verification_status(db,user_is_verified_at,key)
 
     return "Account verifiyed"
 

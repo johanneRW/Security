@@ -12,6 +12,7 @@ import uuid
 from werkzeug.utils import secure_filename
 import utils
 import credentials
+from utility import data
 
 
 @put("/items/<item_pk>")
@@ -26,31 +27,9 @@ def _(item_pk):
 
 
         db = utils.db()
-        db.execute("""
-            UPDATE items SET item_name=?, item_lat=?, item_lon=?, item_price_per_night=?, item_updated_at=?
-            WHERE item_pk=?
-        """, (
-            item_name,
-            item_lat,
-            item_lon,
-            item_price_per_night,
-            updatet_at,
-            item_pk
-        ))
-        db.commit()
-
-        q = db.execute("""
-                SELECT items.*, 
-                       group_concat(item_images.image_filename) AS images
-                FROM items
-                LEFT JOIN item_images ON items.item_pk = item_images.item_pk
-                WHERE items.item_pk = ?
-                GROUP BY items.item_pk
-            """, 
-            (item_pk,)
-        )
-        item = q.fetchone()
-        item['images'] = item['images'].split(',')
+        data.update_item(db,item_name,item_lat,item_lon,item_price_per_night,updatet_at,item_pk )
+        item = data.get_item(db, item_pk)
+        
         html = template("_item_detail.html", item=item)
         return f"""
         <template mix-target="frm_item_{item_pk}" mix-replace>

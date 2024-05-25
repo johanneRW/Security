@@ -8,6 +8,7 @@ import credentials
 import time
 import variables
 from send_email import send_email
+from utility import data
 
 
 
@@ -22,8 +23,7 @@ def _(user_pk):
         if user:
             # Fetch user's password so we can validate it
             db = utils.db()
-            q = db.execute("SELECT user_password FROM users WHERE user_pk = ? LIMIT 1", (user_pk,))
-            db_user = q.fetchone()   
+            db_user = data.get_user_password   
             if not bcrypt.checkpw(user_password.encode(), db_user["user_password"].encode()):
                 raise ValueError("Invalid credentials", 400)
             
@@ -31,18 +31,8 @@ def _(user_pk):
             #user_pk=user['user_pk']
             ic(user_pk)
             db = utils.db()
-            q = db.execute("""UPDATE users
-                        SET
-                           user_is_deleted=1,
-                           user_deleted_at=?
-                           WHERE user_pk=?
-                            """
-            ,(deleted_at,user_pk,))
-
-
-
-
-        db.commit()
+            data.delete_user(db,deleted_at,user_pk)
+      
         user_first_name=user['user_first_name']   
         user_email=user['user_email'] 
         ic(user_first_name)

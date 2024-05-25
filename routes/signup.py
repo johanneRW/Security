@@ -8,6 +8,7 @@ import credentials
 import time
 import variables
 from send_email import send_email
+from utility import data
 
 
 #TODO: i et af projekterne er det en api? er der en grund til dette, eller var det for at vise hvad man også kunne gøre, signup skal laves om til en route
@@ -15,21 +16,6 @@ from send_email import send_email
 @post("/signup")
 def _():
     try:
-    # user_pk                 TEXT,
-    # user_username           TEXT,
-    # user_first_name               TEXT,
-    # user_last_name          TEXT,
-    # user_email              TEXT UNIQUE,
-    # user_password           TEXT,
-    # role_id                 INTEGER,
-    # user_created_at         INTEGER,
-    # user_updated_at         INTEGER,
-    # user_verification_key   TEXT UNIQUE,
-    # user_is_verified        INTEGER,
-    # user_is_verified_at     INTEGER,
-    # user_is_blocked         INTEGER,
-    # FOREIGN KEY(role_id) REFERENCES roles(role_id)
-
 
         user_pk=uuid.uuid4().hex
         user_username=utils.validate_user_username()
@@ -48,37 +34,19 @@ def _():
 
         
         db = utils.db()
-        q = db.execute("""
-INSERT INTO users (
-    user_pk,
-    user_username,
-    user_first_name,
-    user_last_name,
-    user_email,
-    user_password,
-    role_id,
-    user_created_at,
-    user_updated_at,
-    user_verification_key,
-    user_is_verified,
-    user_is_verified_at,
-    user_is_blocked
-) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-""", 
-    (user_pk,
-    user_username,
-    user_first_name,
-    user_last_name,
-    user_email,
-    hashed_password,
-    role_id,
-    user_created_at,
-    user_updated_at,  
-    user_verification_key,
-    user_is_verified,
-    user_is_verified_at,
-    user_is_blocked))
-        db.commit()
+        data.create_user(db,user_pk,
+                    user_username,
+                    user_first_name,
+                    user_last_name,
+                    user_email,
+                    hashed_password,
+                    role_id,
+                    user_created_at,
+                    user_updated_at,  
+                    user_verification_key,
+                    user_is_verified,
+                    user_is_verified_at,
+                    user_is_blocked)
 
         # message = MIMEMultipart()
         # message["To"] = credentials.DEFAULT_EMAIL
