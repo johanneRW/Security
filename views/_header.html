@@ -46,7 +46,7 @@
             <p>Name: {{user['user_first_name']}} logged in as: {{user['role_id']}}.</p>
 
             % if user and user['role_id'] == 2:
-                <a href="/user_property" class="{{ get('active_login', '') }}">
+                <a href="/items/user" class="{{ get('active_login', '') }}">
                     Your property
                 </a>
             % end

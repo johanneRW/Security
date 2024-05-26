@@ -11,7 +11,10 @@ from utility import email
 from utility import data
 
 
-#TODO: i et af projekterne er det en api? er der en grund til dette, eller var det for at vise hvad man også kunne gøre, signup skal laves om til en route
+@get("/signup")
+def _():
+    return template("signup")
+
 
 @post("/signup")
 def _():
@@ -106,3 +109,17 @@ def _():
 
 
 
+@get("/verify/<key>")
+def _(key):
+    return template("verify_key",key=key)
+
+
+
+@put("/verify/<key>")
+def _(key):
+    #TODO: tilføj try/except og tilføj fejl besked
+    db = utils.db()
+    user_is_verified_at=int(time.time())
+    data.update_verification_status(db,user_is_verified_at,key)
+
+    return "Account verifiyed"
