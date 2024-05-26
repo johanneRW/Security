@@ -16,6 +16,7 @@ import time
 import variables
 import os
 from utility import data
+import git
 
 ##############################
 @get("/app.css")
@@ -39,6 +40,21 @@ def _():
 @get("/images/<item_image>")
 def _(item_image):
     return static_file(item_image, "images")
+
+
+
+@get("/styles.css")
+def _():
+    return static_file("css/styles.css", ".")
+
+@post('/secret_url_for_git_hook')
+def get_update():
+    repo =get.Repo('./home_away')
+    origin = repo.remotes.origin
+    repo.create_head('main', origin.refs.main).set_tracking_branch(origin.refs.main).checkout()
+    origin.pull()
+    return ""
+    
 
 ##############################
 import routes.signup
