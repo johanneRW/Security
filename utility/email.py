@@ -13,7 +13,7 @@ def send_email(to_email, subject, template_name, **template_vars):
         message["Subject"] = subject
 
         # Render the email body from template
-        email_body = template(template_name, **template_vars)
+        email_body = template("emails/" + template_name + ".html", **template_vars)
         message_text = MIMEText(email_body, 'html')
         message.attach(message_text)
 
