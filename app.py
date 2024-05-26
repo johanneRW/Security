@@ -1,5 +1,4 @@
 #TODO: importer allfabetisk
-import uuid
 from bottle import default_app, get, post, request, response, run, static_file, template, put 
 import utils
 from icecream import ic
@@ -8,7 +7,6 @@ import json
 import credentials
 import time
 import variables
-import os
 from utility import data
 import git
 
