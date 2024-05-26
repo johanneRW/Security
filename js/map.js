@@ -22,7 +22,7 @@ function updateMap(items) {
 async function showPropertiesOnMap() {
     const response = await fetch("/?format=json");
     const items = await response.json();
-    updateMap(items);
+    updateMap(items["items"]);
 }
 
 function addPropertiesToMap(items) {
