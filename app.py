@@ -27,13 +27,7 @@ def _():
 ##############################
 @get("/<file_name>.js")
 def _(file_name):
-    return static_file(file_name+".js", ".")
-
-
-##############################
-@get("/test")
-def _():
-    return [{"name":"one"}]
+    return static_file("./js/" + file_name+".js", ".")
 
 
 ##############################
@@ -41,11 +35,6 @@ def _():
 def _(item_image):
     return static_file(item_image, "images")
 
-
-
-@get("/styles.css")
-def _():
-    return static_file("css/styles.css", ".")
 
 @post('/secret_url_for_git_hook')
 def get_update():
