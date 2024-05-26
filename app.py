@@ -38,7 +38,7 @@ def _(item_image):
 
 @post('/secret_url_for_git_hook')
 def get_update():
-    repo =get.Repo('./home_away')
+    repo = git.Repo('./home_away')
     origin = repo.remotes.origin
     repo.create_head('main', origin.refs.main).set_tracking_branch(origin.refs.main).checkout()
     origin.pull()
