@@ -1,6 +1,4 @@
 import pathlib
-# import sys
-# sys.path.insert(0, str(pathlib.Path(__file__).parent.resolve())+"/bottle")
 from bottle import request, response
 import re
 import sqlite3
