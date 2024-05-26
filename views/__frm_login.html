@@ -1,10 +1,10 @@
-%import variables
+% from utility import regexes
 
 <form id="frm_login" autocomplete="off" class="flex flex-col gap-2 w-full mx-4 md:w-1/2">
     <input name="user_email" class="w-full border" type="text" placeholder="email" value="" 
-        mix-check="{{variables.USER_EMAIL_REGEX}}">
+        mix-check="{{regexes.USER_EMAIL_REGEX}}">
     <input name="user_password" class="w-full border" type="password" placeholder="password" value=""
-        mix-check="{{variables.USER_PASSWORD_REGEX}}">
+        mix-check="{{regexes.USER_PASSWORD_REGEX}}">
     <button class=""
         mix-data="#frm_login"
         mix-post="/login"

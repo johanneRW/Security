@@ -1,9 +1,5 @@
 #TODO:fjern ubrugte varabler
 
-ITEMS_PER_PAGE = 2
-
-USER_PER_PAGE = 6
-
 # Strengen skal have præcis 32 tegn.
 # Strengen kan kun indeholde tegnene fra 'a' til 'f' og '0' til '9'.
 # USER_ID_LEN = 32
@@ -48,15 +44,8 @@ STAR_MIN = 1
 STAR_MAX = 5
 ITEM_STARS_REGEX = f"^[{STAR_MIN}-{STAR_MAX}]$"
 
-
 ITEM_IMAGE_REGEX = "^.*\.(jpg|jpeg|png|gif|webp)$"
-ALLOWED_IMAGE_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
 
 ITEM_LATLON_REGEX = "^-?\d{1,3}\.\d+$"
 
 ITEM_PRICE_REGEX = "^\d+(\.\d{1,2})?$"
-
-
-
-
-

@@ -1,9 +1,9 @@
 import os
 from bottle import get, template
-import utility.utils as utils
+from utility import utils
 from icecream import ic
 import json
-import variables
+from utility import variables
 from utility import data
 
 

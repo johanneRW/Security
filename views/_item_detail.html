@@ -1,4 +1,4 @@
-% import variables
+% from utility import regexes
 
 % include("__frm_image_create")
 % include("__frm_image_update")
@@ -11,13 +11,13 @@
         <input name="item_name" value="{{item['item_name']}}" >
 
         <label for="item_lat">Latitude:</label>
-        <input name="item_lat" value="{{item['item_lat']}}" mix-check="{{variables.ITEM_LATLON_REGEX}}">
+        <input name="item_lat" value="{{item['item_lat']}}" mix-check="{{regexes.ITEM_LATLON_REGEX}}">
 
         <label for="item_lon">Longitude:</label>
-        <input name="item_lon" value="{{item['item_lon']}}" mix-check="{{variables.ITEM_LATLON_REGEX}}">
+        <input name="item_lon" value="{{item['item_lon']}}" mix-check="{{regexes.ITEM_LATLON_REGEX}}">
 
         <label for="item_price_per_night">Price Per Night:</label>
-        <input name="item_price_per_night" type="number" value="{{item['item_price_per_night']}}" mix-check="{{variables.ITEM_PRICE_REGEX}}">
+        <input name="item_price_per_night" type="number" value="{{item['item_price_per_night']}}" mix-check="{{regexes.ITEM_PRICE_REGEX}}">
 
         % if item.get("images"):
             % for image in item['images']:

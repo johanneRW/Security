@@ -1,16 +1,16 @@
 import time
 from bottle import delete, get, post, put, request,response, static_file, template
-import utility.utils as utils
+from utility import utils
 from icecream import ic
 import uuid
 import bcrypt 
-import variables
+from utility import regexes
 import credentials
 import os
 import time
 import uuid
 from werkzeug.utils import secure_filename
-import utility.utils as utils
+from utility import utils
 import credentials
 from utility import data
 

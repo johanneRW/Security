@@ -1,5 +1,5 @@
 from bottle import post, response, template
-import utility.utils as utils
+from utility import utils
 from icecream import ic
 import bcrypt
 import credentials

@@ -1,4 +1,4 @@
-% import variables
+% from utility import regexes
 
 % include("__frm_image_update")
 
@@ -7,16 +7,16 @@
     <form id="frm_new_item">
 
         <label for="item_name">Item Name:</label>
-        <input name="item_name" value="{{item['item_name']}}" mix-check="{{variables.ITEM_NAME_REGEX}}">
+        <input name="item_name" value="{{item['item_name']}}" mix-check="{{regexes.ITEM_NAME_REGEX}}">
 
         <label for="item_lat">Latitude:</label>
-        <input name="item_lat" value="{{item['item_lat']}}" mix-check="{{variables.ITEM_LATLON_REGEX}}">
+        <input name="item_lat" value="{{item['item_lat']}}" mix-check="{{regexes.ITEM_LATLON_REGEX}}">
 
         <label for="item_lon">Longitude:</label>
-        <input name="item_lon" value="{{item['item_lon']}}" mix-check="{{variables.ITEM_LATLON_REGEX}}">
+        <input name="item_lon" value="{{item['item_lon']}}" mix-check="{{regexes.ITEM_LATLON_REGEX}}">
 
         <label for="item_price_per_night">Price Per Night:</label>
-        <input name="item_price_per_night" type="number" value="{{item['item_price_per_night']}}" mix-check="{{variables.ITEM_PRICE_REGEX}}">
+        <input name="item_price_per_night" type="number" value="{{item['item_price_per_night']}}" mix-check="{{regexes.ITEM_PRICE_REGEX}}">
     
     <button mix-post="/items" mix-data="#frm_new_item" mix-default="Add"
         mix-await="Creating item...">

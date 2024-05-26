@@ -1,12 +1,12 @@
 import uuid
 from bottle import default_app, get, post, request, response, run, static_file, template, put 
-import utility.utils as utils
+from utility import utils
 from icecream import ic
 import bcrypt
 import json
 import credentials
 import time
-import variables
+from utility import regexes
 from utility import email
 from utility import data
 
