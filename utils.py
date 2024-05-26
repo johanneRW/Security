@@ -21,8 +21,11 @@ def db():
 
 ##############################
 def get_image_folder():
-    # Assuming you have a folder named 'images' in the same directory as your script
-    image_folder = "/images"
+    try:
+        import production
+        image_folder = "/home/jrw/home_away/images"
+    except ImportError:
+        image_folder = "/images"
     return str(image_folder)
 
 ##############################
