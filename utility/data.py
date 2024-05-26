@@ -311,3 +311,9 @@ def toggle_block_user(db, new_blocked_status, updated_at, user_pk):
         (user_pk,updated_at,new_blocked_status),
     )
     db.commit() 
+
+def create_booking(db, user_pk ,item_pk, booking_created_at , booking_number_of_nights ,booking_price):
+    db.execute("INSERT INTO bookings (user_pk ,item_pk, booking_created_at , booking_number_of_nights ,booking_price) VALUES (?,?,?,?,?)",
+              (user_pk ,item_pk, booking_created_at , booking_number_of_nights ,booking_price),
+    )
+    db.commit()

@@ -77,8 +77,6 @@ CREATE TABLE user_updated_log(
 ) WITHOUT ROWID;
 
 
-
-
 DROP TABLE IF EXISTS items;
 CREATE TABLE items(
   item_pk TEXT UNIQUE,
@@ -141,9 +139,9 @@ CREATE TABLE ratings(
  
 DROP TABLE IF EXISTS bookings;
 CREATE TABLE bookings(
-  user_pk TEXT NOT NULL,
-  item_pk TEXT NOT NULL,
-  booking_created_at INTEGER NOT NULL,
+  user_pk TEXT ,
+  item_pk TEXT ,
+  booking_created_at INTEGER ,
   booking_number_of_nights INTEGER,
   booking_price REAL,
   PRIMARY KEY(item_pk, user_pk, booking_created_at),

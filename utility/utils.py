@@ -181,6 +181,20 @@ def validate_oldname():
         raise Exception(error, 400)
     return oldname
 
+def validate_number_of_nights():
+    error = f"Nights must be between {regexes.NIGHT_MIN} and {regexes.NIGHT_MAX}"
+    number_of_nights = request.forms.get("number_of_nights", "").strip()
+
+    try:
+        number_of_nights = int(number_of_nights)
+    except ValueError:
+        raise ValueError(error, 400)
+    
+    if number_of_nights < regexes.NIGHT_MIN or number_of_nights > regexes.NIGHT_MAX:
+        raise ValueError(error, 400)
+    
+    return number_of_nights
+
 
 def get_host_name():
     try:

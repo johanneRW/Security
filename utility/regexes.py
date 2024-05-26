@@ -49,3 +49,6 @@ ITEM_IMAGE_REGEX = "^.*\.(jpg|jpeg|png|gif|webp)$"
 ITEM_LATLON_REGEX = "^-?\d{1,3}\.\d+$"
 
 ITEM_PRICE_REGEX = "^\d+(\.\d{1,2})?$"
+
+NIGHT_MIN = 1
+NIGHT_MAX = 30

@@ -1,0 +1,9 @@
+<form id="item_booking_{{item['item_pk']}}">
+    <input type="number" name="number_of_nights" min="regexes.NIGHT_MIN" max="regexes.NIGHT_MAX" value="1" step="1" required>
+    <button id="item_booking_{{item['item_pk']}}"
+            mix-data="#item_booking_{{item['item_pk']}}"
+            mix-post="/bookings/{{item['item_pk']}}"
+    >
+     Book
+    </button>
+</form>

@@ -45,6 +45,7 @@ import routes.users
 import routes.reset_password
 import routes.items
 import routes.images
+import routes.bookings
 
 
 ##############################
