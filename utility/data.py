@@ -1,5 +1,3 @@
-import os
-from utility import utils
 
 def create_image(db, image_pk, item_pk, image_filename):
     db.execute("""
@@ -137,11 +135,10 @@ def get_items_limit_offset(db,limit,offset=0):
             LIMIT {limit} OFFSET {offset}
         """)
     items = q.fetchall()
-    image_folder = utils.get_image_folder()
     for item in items:
         try:
             item['images'] = [
-                os.path.join(image_folder, img)
+                "/images/" + img 
                 for img in item['images'].split(',')
             ]
         except AttributeError:
