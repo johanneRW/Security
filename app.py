@@ -40,7 +40,7 @@ def _(item_image):
 def get_update():
     repo = git.Repo('./home_away')
     origin = repo.remotes.origin
-    repo.create_head('main', origin.refs.main).set_tracking_branch(origin.refs.main).checkout()
+    repo.create_head('master', origin.refs.main).set_tracking_branch(origin.refs.main).checkout()
     origin.pull()
     return ""
     
