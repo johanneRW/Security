@@ -182,3 +182,11 @@ def validate_oldname():
     if not re.match(variables.ITEM_IMAGE_REGEX, oldname):
         raise Exception(error, 400)
     return oldname
+
+
+def get_host_name():
+    try:
+        import production
+        return "https://jrw.eu.pythonanywhere.com"
+    except ImportError:
+        return "http://127.0.0.1:81"

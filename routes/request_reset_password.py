@@ -39,7 +39,11 @@ def _():
 
         subject = "Reset password"
         template_name = "email_reset_password"
-        template_vars = {"user_first_name": user_first_name, "password_reset_key": password_reset_key}
+        template_vars = {
+            "user_first_name": user_first_name, 
+            "password_reset_key": password_reset_key,
+            "host_name": utils.get_host_name(),
+        }
         #send_email( user_email, subject, template_name, **template_vars)
         send_email(credentials.DEFAULT_EMAIL, subject, template_name, **template_vars)
 

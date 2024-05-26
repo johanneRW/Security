@@ -67,7 +67,11 @@ def _():
 
         subject = 'Welcome to Home-Away'
         template_name = "email_welcome"
-        template_vars = {"user_first_name": user_first_name, "user_verification_key": user_verification_key}
+        template_vars = {
+            "user_first_name": user_first_name, 
+            "user_verification_key": user_verification_key,
+            "host_name": utils.get_host_name(),
+        }
         #send_email( user_email, subject, template_name, **template_vars)
         send_email(credentials.DEFAULT_EMAIL, subject, template_name, **template_vars)
         
