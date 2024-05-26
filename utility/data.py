@@ -1,5 +1,5 @@
 import os
-import utils
+import utility.utils as utils
 
 def create_image(db, image_pk, item_pk, image_filename):
     db.execute("""

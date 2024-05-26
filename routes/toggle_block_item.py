@@ -1,13 +1,13 @@
 import uuid
 from bottle import default_app, get, post, request, response, run, static_file, template, put 
-import utils
+import utility.utils as utils
 from icecream import ic
 import bcrypt
 import json
 import credentials
 import time
 import variables
-from send_email import send_email
+from utility import email
 from utility import data
 
 
@@ -45,8 +45,8 @@ def toggle_item_block(item_uuid):
 
 
         template_vars = {"user_first_name": user_first_name}
-        #send_email( user_email, subject, template_name, **template_vars)
-        send_email(credentials.DEFAULT_EMAIL, email_subject, email_template, **template_vars)
+        #email.send_email( user_email, subject, template_name, **template_vars)
+        email.send_email(credentials.DEFAULT_EMAIL, email_subject, email_template, **template_vars)
 
         
 

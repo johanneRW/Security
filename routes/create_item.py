@@ -1,18 +1,18 @@
 import uuid
 from bottle import default_app, get, post, request, response, run, static_file, template, put 
-import utils
+import utility.utils as utils
 from icecream import ic
 import bcrypt
 import json
 import credentials
 import time
 import variables
-from send_email import send_email
+from utility import email
 import os
 import time
 import uuid
 from werkzeug.utils import secure_filename
-import utils
+import utility.utils as utils
 import credentials
 from utility import data
 
