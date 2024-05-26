@@ -33,6 +33,7 @@ def get_update():
     repo = git.Repo('./home_away')
     origin = repo.remotes.origin
     repo.create_head('master', origin.refs.master).set_tracking_branch(origin.refs.master).checkout()
+    repo.head.reset(index=True, working_tree=True)
     origin.pull()
     return ""
     
