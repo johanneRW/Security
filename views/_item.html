@@ -1,9 +1,9 @@
 <div class="item">
-    <div class="carousel-container overflow-hidden relative rounded-lg">
-        <div class="carousel flex overflow-x-auto scroll-smooth snap-x snap-mandatory">
+    <div class="carousel-container">
+        <div class="carousel">
             % for image in item['images']:
-            <div class="carousel-item flex-shrink-0 snap-center w-full">
-                <img src="{{image}}" class="w-full h-48 object-cover rounded-lg">
+            <div class="carousel-item">
+                <img src="{{image}}" alt="Image description">
             </div>
             % end
         </div>
@@ -23,10 +23,61 @@
             % price = "{:,.0f}".format(price).replace(",", ".")
             {{ price }} DKK
         </span>
-        <span>nat</span>
+        <span>per night</span>
         % if get("is_logged", False):
             %include("__toggle_block_item")
             %include("__btn_book")
         % end
     </div>
 </div>
+
+<style>
+    .carousel-container {
+        overflow: hidden;
+        position: relative;
+        border-radius: 0.5rem; 
+    }
+
+    .carousel {
+        display: flex;
+        overflow-x: auto;
+        scroll-behavior: smooth;
+        scroll-snap-type: x mandatory;
+    }
+
+    .carousel-item {
+        flex: 0 0 100%; 
+        scroll-snap-align: center;
+    }
+
+    .carousel-item img {
+        width: 100%;
+        height: 192px; 
+        object-fit: cover;
+        border-radius: 0.5rem;
+    }
+
+    .item {
+        padding: 0.5rem;
+    }
+
+    .flex {
+        display: flex;
+    }
+
+    .justify-between {
+        justify-content: space-between;
+    }
+
+    .flex.items-center {
+        align-items: center;
+    }
+
+    .gap-1 {
+        gap: 0.25rem; 
+    }
+
+    .font-medium {
+        font-weight: 500;
+    }
+</style>

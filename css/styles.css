@@ -1,0 +1,199 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    text-decoration: none;
+}
+
+body {
+    width: 100%;
+    height: 100vh;
+    overflow-x: hidden;
+    color: #374151;
+    font-weight: 300;
+}
+
+#toast {
+    position: fixed;
+    top: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    pointer-events: none;
+    z-index: 10;
+    padding: 16px;
+    border-radius: 9999px;
+}
+
+#toast .ok {
+    padding: 16px;
+    border-radius: 9999px;
+    color: white;
+    background-color: #38a169;
+ 
+   
+   
+}
+
+#toast .error {
+    padding: 16px;
+    border-radius: 9999px;
+    color: white;
+    background-color: #9b2c2c;
+}
+
+nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 1rem;
+    width: 100%;
+    background-color: rgb(241, 243, 246);
+    align-items: center;
+    padding: 0.5rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    justify-content: space-between;/
+}
+
+nav a {
+    display: flex;
+    align-items: center;
+    height: 2rem;
+    padding: 1rem;
+    font-size: 1rem;
+    color: white;
+    background-color: #5962cb;
+    border-radius: 0.375rem;
+}
+
+.home {
+    height: 4rem;
+    color: rgb(230, 238, 232);
+    background-color: #12683b;
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+.logout {
+
+    color: rgb(235, 227, 219);
+    background-color: #de7844;
+
+}
+
+.flex {
+    display: flex;
+    gap: 1rem;
+    margin-left: auto;
+}
+
+button {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    margin: 0.2rem;
+}
+
+main {
+    display: flex;
+    height: 100vh; 
+    align-items: center; 
+    justify-content: center; 
+}
+
+
+
+.index {
+    margin: 7rem 2rem 0 2rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    height: 100vh;
+}
+
+.map-container {
+    position: relative;
+    width: 100%;
+    height: calc(100% - 14rem);
+    background-color: #f3f4f6;
+}
+
+#map {
+    width: 100%;
+    height: 100%;
+}
+
+.items-container {
+    width: 100%;
+    padding-bottom: 4rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+#items {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 1rem;
+    padding-bottom: 2.5rem;
+}
+
+
+#more {
+    display: block;
+    width: 100%;
+    color: white;
+    background-color: #2563eb;
+    margin: 0 auto;
+    font-weight: bold;
+    padding: 0.5rem 1rem;
+
+}
+
+.toggle {
+    width: 100%;
+    color: #374151;
+    background-color: #5962cb;
+}
+
+form input{
+    width: 100%; /* Fylder hele bredden af containeren */
+    padding: 10px; /* Tilføjer lidt polstring inde i inputfeltet */
+    border: 1px solid #ccc; /* Standard grå kant */
+    border-radius: 8px; /* Giver afrundede hjørner */
+    box-sizing: border-box;
+}
+
+.login-form{
+    width: 60%;
+    display: flex;
+    flex-direction: column; /* Sørger for, at elementerne er stablet vertikalt */
+    align-items: center; 
+}
+
+.booking-form {
+    display: flex; 
+    align-items: center; 
+    width: 100%; 
+}
+
+.booking-input {
+    flex: 2; 
+    margin-right: 10px; 
+}
+
+.booking-button {
+    flex: 1; 
+    background-color: green;
+}
+
+
+
+@media (min-width: 1024px) {
+    #items {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}

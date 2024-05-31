@@ -262,6 +262,7 @@ def toggle_item_block(item_uuid):
                     mix-post="/toggle_item_block/{item_uuid}"
                     mix-await="Please wait..."
                     mix-default={button_name}
+                    class= "toggle"
             >
                 {button_name}
             </button>

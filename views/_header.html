@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,67 +7,36 @@
     <link href="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css" rel="stylesheet">
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
 
-    <link rel="stylesheet" href="/app.css">
+    <link rel="stylesheet" href="/styles.css">
     <script src="/mixhtml.js" defer></script>
     <script src="/app.js" defer></script>
-    <title>
-        {{ get("title", "Company") }}
-    </title>
+   
+    <title>{{ get("title", "Company") }}</title>
 </head>
+<body>
 
-<body class="w-full h-screen overflow-x-hidden text-neutral-900 font-light">
+    <div id="toast"></div>
 
-    <div id="toast" class="fixed top-4 flex items-center justify-center w-full pointer-events-none z-10"></div>
+    <nav>
+        <a class="home" href="/" class="{{ get('active_home', '') }}">Home-Away</a>
 
-
-    <nav class="fixed top-0 left-0 grid grid-cols-[1fr_20fr_5fr] gap-4 w-full h-20 bg-white items-center px-2 lg:px-4">
-
-        <a href="/" class="{{ get('active_home', '') }} 
-            flex items-center h-14 px-4 font-bold text-2xl text-white bg-neutral-800 rounded-md">
-            Home-Away
-        </a>
-
-        <div class="flex gap-4 ml-auto">
-
-
-            <!--    <a href="/arango" class="">
-                Arango
-            </a> -->
-            <!-- TODO: property, skal tjekke for partner, i stedet for tal  -->
-           
-
+        <div class="flex">
             % if get("is_logged", False):
-
             <p>Name: {{user['user_first_name']}} logged in as: {{user['role_id']}}.</p>
 
             % if user and (user['role_id'] == 1 or user['role_id'] == 2):
-                <a href="/items/user" class="{{ get('active_login', '') }}">
-                    Your property
-                </a>
+                <a href="/items/user" class="{{ get('active_login', '') }}">Your property</a>
             % end
-         % if user and user['role_id'] == 1:
-                <a href="/users" class="{{ get('active_login', '') }}">
-                    all users
-                </a>
+
+            % if user and user['role_id'] == 1:
+                <a href="/users" class="{{ get('active_login', '') }}">all users</a>
             % end
-            
-            <a href="/profile" class="{{ get('active_login', '') }}">
-                Your Profile
-            </a>
-            <a href="/logout" class="{{ get('active_login', '') }}">
-                Logout
-            </a>
-        % else:
 
-        <a href="/login" class="{{ get('active_login', '') }}">
-            Login
-        </a>
-
-        <a href="/signup" class="{{ get('active_login', '') }}">
-            Sign Up
-        </a>
-           
-        % end
-        
+            <a href="/profile" class="{{ get('active_login', '') }}">Your Profile</a>
+            <a class="logout" href="/logout" class="{{ get('active_login', '') }}">Logout</a>
+            % else:
+            <a href="/login" class="{{ get('active_login', '') }}">Login</a>
+            <a href="/signup" class="{{ get('active_login', '') }}">Sign Up</a>
+            % end
         </div>
     </nav>

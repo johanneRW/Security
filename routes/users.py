@@ -21,10 +21,7 @@ def _():
             is_logged = True
         except:
             pass
-#TODO: der skal ikke være et dobbelt tjek her af logged
-        #user = request.get_cookie("user", secret= x.cokie_secret)
         if  utils.validate_user_logged():
-            #x.disable_cache()
             db = utils.db()
             users = data.get_all_users(db)
             return template("users", users=users,is_logged=is_logged, user=user)
@@ -85,6 +82,7 @@ def toggle_user_block(user_pk):
                     mix-post="/toggle_user_block/{user_pk}"
                     mix-await="Please wait..."
                     mix-default={button_name}
+                    class= "toggle"
             >
                 {button_name}
             </button>

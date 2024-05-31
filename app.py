@@ -11,9 +11,9 @@ from utility import data
 import git
 
 ##############################
-@get("/app.css")
+@get("/styles.css")
 def _():
-    return static_file("app.css", ".")
+    return static_file("css/styles.css", ".")
 
 
 ##############################

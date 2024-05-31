@@ -8,7 +8,7 @@
     <form id="frm_item_{{item['item_pk']}}" enctype="multipart/form-data">
 
         <label for="item_name">Item Name:</label>
-        <input name="item_name" value="{{item['item_name']}}" >
+        <input name="item_name" value="{{item['item_name']}}">
 
         <label for="item_lat">Latitude:</label>
         <input name="item_lat" value="{{item['item_lat']}}" mix-check="{{regexes.ITEM_LATLON_REGEX}}">
@@ -17,24 +17,104 @@
         <input name="item_lon" value="{{item['item_lon']}}" mix-check="{{regexes.ITEM_LATLON_REGEX}}">
 
         <label for="item_price_per_night">Price Per Night:</label>
-        <input name="item_price_per_night" type="number" value="{{item['item_price_per_night']}}" mix-check="{{regexes.ITEM_PRICE_REGEX}}">
+        <input name="item_price_per_night" type="number" value="{{item['item_price_per_night']}}" step="0.1" mix-check="{{regexes.ITEM_PRICE_REGEX}}">
 
         % if item.get("images"):
+        <div class="image-row">
             % for image in item['images']:
-            <div id="{{image}}">
-                <img src="/images/{{image}}" alt="Image" style="max-width: 100px; max-height: 100px;">
+            <div id="{{image}}" class="image-container">
+                <img src="/images/{{image}}" alt="Image">
                 <button class="showUpdateImageModal" id="{{image}}" data-item="{{item['item_pk']}}">Update image</button>
             </div>
             % end
+        </div>
         % end
-        <button class="showCreateImageModal" id="new" data-item="{{item['item_pk']}}">Add image</button>
-            
-        <button mix-put="/items/{{item['item_pk']}}" mix-data="#frm_item_{{item['item_pk']}}" mix-default="Save" mix-await="Updating item...">
-            Save
-        </button>
 
-        <button mix-delete="/items/{{item['item_pk']}}" mix-default="Delete" mix-await="Deleting...">
-            Delete
-        </button>
+            <button class="showCreateImageModal" id="new" data-item="{{item['item_pk']}}">Add new image</button>
+            <button class="save" mix-put="/items/{{item['item_pk']}}" mix-data="#frm_item_{{item['item_pk']}}" mix-default="Save" mix-await="Updating item...">
+                Save changes
+            </button>
+            <button class="delete" mix-delete="/items/{{item['item_pk']}}" mix-default="Delete" mix-await="Deleting...">
+                Delete property
+            </button>
+      
     </form>
 </div>
+
+<style>
+   .item {
+    margin-bottom: 1rem;
+    
+}
+
+.item form{
+padding: 2rem;
+    border:solid 2px rgb(188, 184, 184);
+    border-radius: 0.3rem;
+}
+
+.item label {
+    display: block;
+    margin-top: 0.5rem;
+}
+
+.item input[type="text"],
+.item input[type="number"] {
+    display: block;
+    width: 100%;
+    margin-top: 0.2rem;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+}
+
+.image-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.image-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 0.5rem;
+   
+}
+
+.item img {
+    max-width: 100px;
+    max-height: 100px;
+    
+}
+
+
+.showUpdateImageModal,
+.showCreateImageModal{
+  
+    background-color: #007bff; 
+    color: white;
+    
+}
+
+.showUpdateImageModal:hover,
+.showCreateImageModal:hover
+{
+    background-color: #0056b3; 
+}
+
+
+.save{background-color: #17561c; 
+    color: white;}
+
+save:hover{
+    background-color: #193928; 
+}
+
+.delete {
+    background-color: #dc3545; 
+}
+
+.delete:hover {
+    background-color: #c82333; 
+}
+</style>
