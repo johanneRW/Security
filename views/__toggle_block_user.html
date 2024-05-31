@@ -1,0 +1,11 @@
+<form id="user_block_{{user['user_pk']}}">
+    <input type="hidden" name="user_blocked" value="{{user['user_is_blocked']}}">
+    <button id="user_block_{{user['user_pk']}}" mix-data="#user_block_{{user['user_pk']}}"
+        mix-post="/toggle_user_block/{{user['user_pk']}}" mix-await="Please wait...">
+        % if user['user_is_blocked']:
+        Unblock
+        % else:
+        Block
+        % end
+    </button>
+</form>

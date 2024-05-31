@@ -1,17 +1,15 @@
 
 %include("_header")
 
-
-
-    <div id="users">
+    <div id="users" class="grid grid-cols-1 lg:grid-cols-2 gap-4 pb-10">
         % for user in users:
             % include("_user.html")
         % end
     </div>
 
 
-    <script>
+    <!-- <script>
         const mix_replace_url = "/"
-    </script>
+    </script> -->
     
     %include("_footer")

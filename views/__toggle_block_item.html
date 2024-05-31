@@ -1,0 +1,13 @@
+<form id="item_{{item['item_pk']}}">
+    <input type="hidden" name="item_blocked" value="{{item['item_is_blocked']}}">
+    <button id="item_{{item['item_pk']}}"
+            mix-data="#item_{{item['item_pk']}}"
+            mix-post="/toggle_item_block/{{item['item_pk']}}"
+    >
+        % if item['item_is_blocked']:
+            Unblock
+        % else:
+            Block
+        % end
+    </button>
+</form>
