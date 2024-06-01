@@ -8,7 +8,7 @@
     <form id="frm_item_{{item['item_pk']}}" enctype="multipart/form-data">
 
         <label for="item_name">Item Name:</label>
-        <input name="item_name" value="{{item['item_name']}}">
+        <input name="item_name" value="{{item['item_name']}}" mix-check="{{regexes.ITEM_NAME_REGEX}}>
 
         <label for="item_lat">Latitude:</label>
         <input name="item_lat" value="{{item['item_lat']}}" mix-check="{{regexes.ITEM_LATLON_REGEX}}">
