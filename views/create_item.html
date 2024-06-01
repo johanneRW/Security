@@ -18,22 +18,10 @@
         <label for="item_price_per_night">Price Per Night:</label>
         <input name="item_price_per_night" type="number" value="" mix-check="{{regexes.ITEM_PRICE_REGEX}}">
     
-    <button mix-post="/items" mix-data="#frm_new_item" mix-default="Add"
+    <button class="save" mix-post="/items" mix-data="#frm_new_item" mix-default="Add"
         mix-await="Creating item...">
         Add property
     </button>
 </form>
 </div>
 
-<style>
-
-#frm_new_item{
-    border: solid 2px green;
-    border-radius: 0.3rem;
-    padding: 1rem;
-
-    }
-    button{
-        margin-top:1rem ;
-    }
-</style>

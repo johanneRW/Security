@@ -1,0 +1,107 @@
+
+#frm_new_item{
+    border:var(--border) var(--color-green);
+    border-radius: var(--border-radius);
+    padding: 1rem;
+    margin-right: 2rem;
+    margin-left: 2rem;
+
+    }
+
+
+#frm_signup {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 50%;
+    margin: 0 auto;
+    margin-top: 5rem
+}
+
+#frm_signup div {
+    display: flex;
+    flex-direction: column;
+}
+
+#frm_signup label {
+    display: flex;
+}
+
+#frm_signup label span:last-child {
+    margin-left: auto;
+    color: var( --color-light-gray);
+}
+
+#frm_signup input,
+#frm_signup select {
+    width: 100%;
+    border: var(--border-input) var(--color-border);
+    padding: 0.5rem;
+}
+
+#frm_signup button {
+    padding: 0.5rem 1rem;
+}
+
+
+#frm_login {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    margin-left: 1rem;
+    margin-right: 1rem;
+    margin-top: 5rem
+}
+
+#frm_login input {
+    width: 100%;
+    border: var(--border-input) var(--color-border);
+    padding: 0.5rem;
+}
+
+
+
+#frm_login button {
+    padding: 0.5rem 1rem;
+}
+
+
+form{
+
+    border-radius: var(--border-radius);
+    }
+    
+     label {
+        display: block;
+        margin-top: 0.5rem;
+    }
+    
+     input[type="text"],
+    input[type="number"] {
+        display: block;
+        width: 100%;
+        margin-top: 0.2rem;
+        padding: 0.5rem;
+        border: var(--border-input) var(--color-border);
+    }
+
+    .login-form {
+        width: 60%;
+        display: flex;
+        flex-direction: column;
+        /* Sørger for, at elementerne er stablet vertikalt */
+        align-items: center;
+    }
+    
+    .booking-form {
+        display: flex;
+        align-items: center;
+        width: 100%;
+    }
+    
+    .booking-input {
+        flex: 2;
+        margin-right: 10px;
+    }
+    

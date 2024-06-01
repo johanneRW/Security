@@ -1,13 +1,8 @@
-import uuid
-from bottle import default_app, get, post, request, response, run, static_file, template, put 
+from bottle import post, request, response, template
 from utility import utils
 from icecream import ic
-import bcrypt
-import json
 import credentials
 import time
-from utility import regexes
-from utility import email
 from utility import data
 
 @post("/bookings/<item_pk>")

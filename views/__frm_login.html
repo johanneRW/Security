@@ -1,9 +1,14 @@
 % from utility import regexes
 
 <form id="frm_login" autocomplete="off">
+    <label for="user_email">
+        <span>email</span>                
+    </label>
     <input name="user_email" type="text" placeholder="email" value="" mix-check="{{regexes.USER_EMAIL_REGEX}}">
+    <label for="user_password">
+        <span>password</span>
     <input name="user_password" type="password" placeholder="password" value="" mix-check="{{regexes.USER_PASSWORD_REGEX}}">
-    <button
+    <button class="save"
         mix-data="#frm_login"
         mix-post="/login"
         mix-default="Login"
@@ -13,30 +18,4 @@
     </button>
 </form>
 
-<style>
-    #frm_login {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        width: 100%; 
-        margin-left: 1rem; 
-        margin-right: 1rem;
-    }
-
-    #frm_login input {
-        width: 100%; 
-        border: 1px solid #ccc; 
-        padding: 0.5rem; 
-    }
-
-    @media (min-width: 768px) { 
-        #frm_login {
-            width: 50%; 
-        }
-    }
-
-    #frm_login button {
-        padding: 0.5rem 1rem; 
-    }
-</style>
 

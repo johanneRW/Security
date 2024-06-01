@@ -1,13 +1,13 @@
 
 import uuid
-from bottle import default_app, get, post, request, response, run, static_file, template, put 
+from bottle import  get, post, template, put 
 from utility import utils
 from icecream import ic
 import bcrypt
-import json
+
 import credentials
 import time
-from utility import regexes
+
 from utility import email
 from utility import data
 
@@ -56,23 +56,29 @@ def _():
         #email.send_email( user_email, subject, template_name, **template_vars)
         email.send_email(credentials.DEFAULT_EMAIL, subject, template_name, **template_vars)
 
-        
-        return """
-        <template mix-target="#message">
-            <div id="message">
-                email sendt
-            </div>        
+        html=template("__frm_send_new_password.html")
+        return f"""
+            <template mix-target="#toast">
+            <div mix-ttl="3000" class="ok">
+                   Email sendt
+            </div>
+            </template>
+        <template mix-target="#frm_send_password" mix-replace">
+        {html}
         </template>
+            
+       
         """
     except Exception as ex:
         print(ex)
         if "user_email invalid" in str(ex):
             return """
-            <template mix-target="#message">
-            <div id="message">
-                Email invalid
+
+             <template mix-target="#toast">
+            <div mix-ttl="3000" class="error">
+                   Email invalid
             </div>
-            </template>    
+            </template>
             """
     finally:
         if "db" in locals(): db.close()
@@ -91,14 +97,29 @@ def _(key):
 
         
         if reset_info is None:
-            return "Invalid reset key."
+            return
+        """
+
+             <template mix-target="#toast">
+            <div mix-ttl="3000" class="error">
+                   Invalid reset key.
+            </div>
+            </template>
+            """
 
         reset_time = reset_info['password_reset_at']
         user_pk = reset_info['user_pk']
 
        
         if time_now - reset_time > 900:
-            return "Reset link has expired."
+            return """
+
+             <template mix-target="#toast">
+            <div mix-ttl="3000" class="error">
+                   Reset link has expired.
+            </div>
+            </template>
+            """
 
         
         user_password = utils.validate_password().encode()
@@ -106,7 +127,21 @@ def _(key):
 
         data.update_user_password(db,hashed_password, user_pk)
 
-        return "Password changed successfully."
+        html=template("__frm_reset_password.html")
+
+        return  f"""
+
+             <template mix-target="#toast">
+            <div mix-ttl="3000" class="ok">
+                   Password changed successfully.
+            </div>
+            </template>
+
+        <template mix-target="#frm_password_reset" mix-replace">
+        {html}
+        </template>
+
+            """
 
    except Exception as ex:
         raise

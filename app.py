@@ -15,6 +15,12 @@ import git
 def _():
     return static_file("css/styles.css", ".")
 
+##############################
+
+@get("/<file_name>.css")
+def _(file_name):
+    return static_file("./css/" + file_name+".css", ".")
+
 
 ##############################
 @get("/<file_name>.js")

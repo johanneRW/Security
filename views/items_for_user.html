@@ -1,8 +1,8 @@
 %include("_header")
 
-<main>
+<main class="itemsMain">
     <div class="itemsContainer">
-        <div id="items">
+        <div id="items-user">
             % for item in items:
                 %include("_item_detail")
             % end
@@ -15,40 +15,3 @@
 
 
 %include("_footer")
-
-<style>
-    main {
-        display: flex;
-        flex-wrap: wrap;
-        height: calc(100vh - [FooterHeight]); 
-    }
-
-    .itemsContainer {
-        width: 66.67%; 
-        padding: 1rem; 
-    }
-
-    .new_item {
-        width: 33.33%; 
-        padding: 1rem; 
-    }
-
-    #items {
-        display: grid;
-        grid-template-columns: 1fr; 
-        gap: 1rem; 
-        overflow-y: auto; 
-    }
-
-    @media (min-width: 600px) { 
-        #items {
-            grid-template-columns: repeat(2, 1fr); 
-        }
-    }
-
-    @media (min-width: 1024px) { 
-        #items {
-            grid-template-columns: repeat(3, 1fr); 
-        }
-    }
-</style>

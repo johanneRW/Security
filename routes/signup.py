@@ -1,12 +1,12 @@
 import uuid
-from bottle import default_app, get, post, request, response, run, static_file, template, put 
+from bottle import get, post, request, template, put 
 from utility import utils
 from icecream import ic
 import bcrypt
-import json
+
 import credentials
 import time
-from utility import regexes
+
 from utility import email
 from utility import data
 
@@ -44,29 +44,7 @@ def _():
                     user_created_at,  
                     user_verification_key)
 
-        # message = MIMEMultipart()
-        # message["To"] = credentials.DEFAULT_EMAIL
-        # message["From"] = credentials.DEFAULT_EMAIL
-        # message["Subject"] = 'Welcome to Home-Away'
 
-
-        # email_body = template("email_welcome",user_verification_key=user_verification_key, user_first_name=user_first_name)
-        # messageText = MIMEText(email_body, 'html')
-        # message.attach(messageText)
-
-
-        # email = credentials.DEFAULT_EMAIL
-        # password = credentials.EMAIL_PASSWORD
-
-
-        # server = smtplib.SMTP('smtp.gmail.com:587')
-        # server.ehlo('Gmail')
-        # server.starttls()
-        # server.login(email,password)
-        # from_email = credentials.DEFAULT_EMAIL
-        # to_email  = credentials.DEFAULT_EMAIL
-        # server.sendmail(from_email,to_email,message.as_string())
-        # server.quit()
 
         subject = 'Welcome to Home-Away'
         template_name = "email_welcome"
@@ -77,33 +55,48 @@ def _():
         }
         #email.send_email( user_email, subject, template_name, **template_vars)
         email.send_email(credentials.DEFAULT_EMAIL, subject, template_name, **template_vars)
+
+        html=template("__frm_signup.html")
         
-        return """
-        <template mix-target="#message">
-            <div id="message">
-                User created
-            </div>        
+        return f"""
+            <template mix-target="#toast">
+            <div mix-ttl="3000" class="ok">
+                   User created
+            </div>
+            </template>
+        <template mix-target="#frm_signup" mix-replace">
+        {html}
         </template>
-        """
+            
+       
+        """    
+
     except Exception as ex:
         print(ex)
         if "users.user_email" in str(ex):
              return """
-            <template mix-target="#message">
-            <div id="message">
-                Email not available
+            
+
+            <template mix-target="#toast">
+            <div mix-ttl="3000" class="error">
+                   Email not available
             </div>
-            </template>    
-            """           
+            </template>
+       
+        """    
 
         if "user_email invalid" in str(ex):
-            return """
-            <template mix-target="#message">
-            <div id="message">
-                Email invalid
+            return
+        
+        """
+            <template mix-target="#toast">
+            <div mix-ttl="3000" class="error">
+                   Email invalid
             </div>
-            </template>    
-            """
+            </template>
+       
+        """    
+       
     finally:
         if "db" in locals(): db.close()
 
@@ -122,4 +115,11 @@ def _(key):
     user_is_verified_at=int(time.time())
     data.update_verification_status(db,user_is_verified_at,key)
 
-    return "Account verifiyed"
+    return """<template mix-target="#toast">
+            <div mix-ttl="3000" class="ok">
+                   Account verifiyed
+            </div>
+            </template>"""
+
+
+

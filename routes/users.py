@@ -1,10 +1,8 @@
 import time
-from bottle import delete, get, post, put, request,response, static_file, template
+from bottle import  get, post, put, request,response,  template
 from utility import utils
 from icecream import ic
-import uuid
 import bcrypt 
-from utility import regexes
 from utility import email
 import credentials
 from utility import data
@@ -120,7 +118,7 @@ def _(user_pk):
                 is_cookie_https = False        
             response.set_cookie("user", user, secret=credentials.COOKIE_SECRET, httponly=True, secure=is_cookie_https, path="/")
 
-            html = template("_user.html", user=user,is_logged=True )
+            html = template("_user.html", user=user,is_logged=True)
             return f"""
             <template mix-target="[id='{user_pk}']" mix-replace>
             {html}
@@ -139,7 +137,7 @@ def _(user_pk):
         pass
 
 
-#Dette kunne være en put når det gentlig ikke omhandler en sletning som sådan, men en soft-delet der er en opdatering af databasen. 
+#Dette er en put da det gentlig ikke omhandler en sletning som sådan, men en soft-delet der er en opdatering af databasen. 
 #@delete("/users/<user_pk>")
 # Update: nu er det en PUT, fordi mixhtml ikke laver client-side validering på "mix-delete"
 @put("/users/<user_pk>/delete")

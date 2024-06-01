@@ -1,17 +1,16 @@
 import uuid
-from bottle import default_app, get, post, delete, request, response, run, static_file, template, put 
+from bottle import  get, post, delete, request, template, put 
 from utility import utils
 from icecream import ic
-import bcrypt
+
 import json
 import credentials
 import time
 from utility import variables
 from utility import email
-import os
+
 import time
 import uuid
-from werkzeug.utils import secure_filename
 from utility import utils
 import credentials
 from utility import data
@@ -130,13 +129,17 @@ def _():
 
         
         html = template("_item_detail.html", item=item)
+        html_new=template("create_item.html")
        
         return f"""
-        <template mix-target="frm_item_{item_pk}" mix-bottom mix-function="updateModalEvents">
+        <template mix-target="#frm_item_{item_pk}" mix-bottom mix-function="updateModalEvents">
         {html}
         </template>
-        <template mix-target="#items" mix-bottom mix-function="updateModalEvents">
+        <template mix-target="#items-user" mix-bottom mix-function="updateModalEvents">
         {html}
+        </template>
+         <template mix-target="#frm_new_item" mix-replace">
+        {html_new}
         </template>
         
         """

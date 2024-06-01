@@ -1,0 +1,53 @@
+
+.booking-button {
+    flex: 2;
+    background-color: var(--color-book);
+}
+
+
+button {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    margin: 0.4rem;
+    margin-top:1rem 
+ 
+}
+
+
+
+.save {
+    background-color: var(--color-green);
+    color: white;
+}
+
+save:hover {
+    background-color: var(--color-ok);
+}
+
+.delete {
+    background-color: var(--color-red);
+}
+
+.delete:hover {
+    background-color: var(--color-error);
+}
+
+
+#more {
+    display: block;
+    width: 100%;
+    color: white;
+    background-color: var(--color-more);
+    margin: 0 auto;
+    font-weight: bold;
+    padding: 0.5rem 1rem;
+
+}
+
+.toggle {
+    width: 100%;
+    color: var(--color-black);
+    background-color: var(--color-toggle);
+}

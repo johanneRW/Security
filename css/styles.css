@@ -1,16 +1,26 @@
+@import '_variables.css';
+@import 'modal.css';
+@import 'buttons.css';
+@import 'forms.css';
+
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     text-decoration: none;
+    font-family: var(--fontDefault);
+
 }
 
 body {
     width: 100%;
     height: 100vh;
     overflow-x: hidden;
-    color: #374151;
+    color: var(--color-black);
     font-weight: 300;
+
+
 }
 
 #toast {
@@ -23,24 +33,25 @@ body {
     pointer-events: none;
     z-index: 10;
     padding: 16px;
-    border-radius: 9999px;
+    border-radius: var(--border-radius-toast);
 }
 
 #toast .ok {
     padding: 16px;
-    border-radius: 9999px;
+    border-radius: var(--border-radius-toast);
+    ;
     color: white;
-    background-color: #38a169;
- 
-   
-   
+    background-color: var(--color-ok);
+
+
+
 }
 
 #toast .error {
     padding: 16px;
-    border-radius: 9999px;
+    border-radius: var(--border-radius-toast);
     color: white;
-    background-color: #9b2c2c;
+    background-color: var(--color-error);
 }
 
 nav {
@@ -51,7 +62,7 @@ nav {
     grid-template-columns: auto 1fr auto;
     gap: 1rem;
     width: 100%;
-    background-color: rgb(241, 243, 246);
+    background-color: var(--color-nav);
     align-items: center;
     padding: 0.5rem;
     padding-left: 1rem;
@@ -62,64 +73,50 @@ nav {
 nav a {
     display: flex;
     align-items: center;
-    height: 2rem;
+    height: 1rem;
     padding: 1rem;
     font-size: 1rem;
-    color: white;
-    background-color: #5962cb;
-    border-radius: 0.375rem;
+    color: var(--color-black);
+    background-color: var(--color-link);
+    border-radius: var(--border-radius);
 }
 
 .home {
-    height: 4rem;
+    height: 3rem;
     color: rgb(230, 238, 232);
-    background-color: #12683b;
+    background-color: var(--color-green);
     font-weight: bold;
     font-size: 1.5rem;
 }
 
+
 .logout {
-
-    color: rgb(235, 227, 219);
-    background-color: #de7844;
-
-}
-
-.flex {
-    display: flex;
-    gap: 1rem;
-    margin-left: auto;
-}
-
-button {
-    padding: 0.5rem 1rem;
-    border: none;
-    border-radius: 0.25rem;
-    cursor: pointer;
-    margin: 0.2rem;
+    color: var(--color-white);
+    background-color: var( --color-red);
 }
 
 main {
     display: flex;
-    height: 100vh; 
-    align-items: center; 
-    justify-content: center; 
+    align-items: center;
+    justify-content: center;
+    margin-top: 7rem ;
 }
 
 
 
 .index {
-    margin: 7rem 2rem 0 2rem;
+    margin: 4rem 2rem 0 2rem;
     display: grid;
     grid-template-columns: 1fr 1fr;
     height: 100vh;
 }
 
+
 .map-container {
     position: relative;
     width: 100%;
-    height: calc(100% - 14rem);
-    background-color: #f3f4f6;
+    height: calc(100% - 5rem);
+    background-color: var(--color-white);
 }
 
 #map {
@@ -127,11 +124,54 @@ main {
     height: 100%;
 }
 
+
+
+.flex {
+    display: flex;
+    gap: 1rem;
+    margin-left: auto;
+}
+
+.font-medium {
+    font-weight: 500;
+}
+
+.item-card {
+    display: flex;
+    /* Gør containeren til en flex container */
+    align-items: center;
+    /* Centrerer elementerne vertikalt */
+    justify-content: space-between;
+    /* Skubber børnene til hver sin ende af containeren */
+}
+
+.item-name {
+    flex-grow: 1;
+    /* Giver item-name mulighed for at tage så meget plads som muligt, skubber star til højre */
+}
+
+.star-icon {
+    width: 18px;
+    /* Tilpasser bredden af ikonet */
+    height: 18px;
+    /* Tilpasser højden af ikonet */
+}
+
+.star {
+    display: flex;
+    /* Sørger for at svg og tekst inden for span er på linje */
+    align-items: center;
+    /* Centrerer svg og tekst vertikalt */
+}
+
+
 .items-container {
     width: 100%;
     padding-bottom: 4rem;
     padding-left: 1rem;
     padding-right: 1rem;
+    padding-top: 3rem;
+
 }
 
 #items {
@@ -142,58 +182,157 @@ main {
 }
 
 
-#more {
-    display: block;
+
+form input {
     width: 100%;
-    color: white;
-    background-color: #2563eb;
-    margin: 0 auto;
-    font-weight: bold;
-    padding: 0.5rem 1rem;
-
-}
-
-.toggle {
-    width: 100%;
-    color: #374151;
-    background-color: #5962cb;
-}
-
-form input{
-    width: 100%; /* Fylder hele bredden af containeren */
-    padding: 10px; /* Tilføjer lidt polstring inde i inputfeltet */
-    border: 1px solid #ccc; /* Standard grå kant */
-    border-radius: 8px; /* Giver afrundede hjørner */
+    /* Fylder hele bredden af containeren */
+    padding: 10px;
+    /* Tilføjer lidt polstring inde i inputfeltet */
+    border: var(--border-input) var(--color-border);
+    /* Standard grå kant */
+    border-radius: var(--border-radius);
+    /* Giver afrundede hjørner */
     box-sizing: border-box;
+    margin-bottom: 1rem;
 }
 
-.login-form{
-    width: 60%;
+
+
+.image-row {
     display: flex;
-    flex-direction: column; /* Sørger for, at elementerne er stablet vertikalt */
-    align-items: center; 
-}
-
-.booking-form {
-    display: flex; 
-    align-items: center; 
-    width: 100%; 
-}
-
-.booking-input {
-    flex: 2; 
-    margin-right: 10px; 
-}
-
-.booking-button {
-    flex: 1; 
-    background-color: green;
+    flex-wrap: wrap;
+    gap: 0.5rem;
 }
 
 
+.image-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 0.5rem;
 
-@media (min-width: 1024px) {
+}
+
+
+.image-row  .image-container img {
+    max-height: 100px;}
+
+
+
+
+.usersContainer {
+    flex-wrap: wrap;
+    padding: 2rem;
+}
+
+
+#users {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    width: 100%;
+}
+
+.user {
+    border: var(--border) var(--color-light-gray);
+    padding: 1rem;
+    border-radius: var(--border-radius);
+
+
+}
+
+#profile {
+    margin-top: 4rem;
+    padding: 1rem;
+}
+
+
+.itemsMain {
+    display: flex;
+    flex-wrap: wrap;
+    height: calc(100vh - [FooterHeight]);
+}
+
+.itemsContainer {
+    width: 70%;
+    padding: 1rem;
+}
+
+.new_item {
+    width: 30%;
+    padding: 1rem;
+}
+
+
+
+#items-user {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    overflow-y: auto;
+    margin-top: 4rem;
+}
+
+#items-user .item {
+    width: 100%;
+    border: var(--border) var(--color-light-gray);
+    padding: 1rem;
+    border-radius: var(--border-radius);
+}
+
+.carousel-container {
+    overflow: hidden;
+    position: relative;
+    border-radius: var(--border-radius);
+}
+
+.carousel {
+    display: flex;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    scroll-snap-type: x mandatory;
+}
+
+.carousel-item {
+    flex: 0 0 100%;
+    scroll-snap-align: center;
+}
+
+.carousel-item img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: var(--border-radius);
+}
+
+
+
+
+
+@media (min-width: 600px) {
+
+    /* For mellemstore skærme */
+    #users {
+        grid-template-columns: repeat(3, 1fr);
+        /* To kolonner */
+    }
+
+    #items-user {
+        grid-template-columns: repeat(2, 1fr);
+        /* To kolonner */
+    }
+
     #items {
         grid-template-columns: repeat(2, 1fr);
+        /* To kolonner */
+    }
+
+
+
+}
+
+@media (min-width: 768px) {
+    #frm_login {
+        width: 50%;
     }
 }

@@ -1,0 +1,61 @@
+
+.modal-close {
+    position: absolute;
+    right: 5px; /* Minimal margin fra højre kant */
+    top: 2px;
+    border: none;
+    background: none;
+    font-size: 16px; /* Gør teksten mindre */
+    cursor: pointer;
+    padding: 5px; /* Tilstrækkelig plads for klik område, men ikke for stor */
+    line-height: 0.5;
+    color: var(--color-light-gray); /* Subtil farve for lukke-knappen */
+
+    
+
+}
+
+.imageCreateModal {
+    position: relative;
+    padding: 20px;
+    border: var(--border-input) var(--color-border);
+    border-radius: var(--border-radius);
+    width: auto; /* Tilpasser bredden til indholdet */
+    max-width: 50%; /* Sikrer at modalen ikke fylder mere end 90% af viewport */
+    height: 17rem;
+    margin: 2rem;
+}
+
+.imageUpdateModal {
+    position: relative;
+    padding: 20px;
+    border: var(--border-input) var(--color-border);
+    border-radius: var(--border-radius);
+    width: auto; /* Tilpasser bredden til indholdet */
+    max-width: 50%; /* Sikrer at modalen ikke fylder mere end 90% af viewport */
+    height: 17rem;
+    margin: 2rem;
+}
+
+.modal-content {
+    margin-top: 20px;
+}
+
+.modal-form {
+    display: flex;
+    flex-direction: column;
+}
+
+
+.showUpdateImageModal,
+.showCreateImageModal {
+
+    background-color: var(--color-more);
+    color: var(--color-white);
+
+}
+
+.showUpdateImageModal:hover,
+.showCreateImageModal:hover {
+    background-color: var(--color-more-dark);
+}

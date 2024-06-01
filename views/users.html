@@ -1,15 +1,13 @@
 
 %include("_header")
-
+<main>
+<div class="usersContainer">
     <div id="users" >
         % for user in users:
             % include("_user.html")
         % end
     </div>
+</div>
+</main>
 
-
-    <!-- <script>
-        const mix_replace_url = "/"
-    </script> -->
-    
     %include("_footer")

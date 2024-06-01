@@ -6,60 +6,13 @@
             <label for="image">Image:</label>
             <input type="file" name="image" accept="image/*" mix-check="{{regexes.ITEM_IMAGE_REGEX}}">
             <div class="modal-buttons">
-                <button mix-post="/items/image/{{item['item_pk']}}" mix-default="Add" mix-await="Saving..." mix-data="#image_create_{{item['item_pk']}}">
+                <button class="save" mix-post="/items/image/{{item['item_pk']}}" mix-default="Add" mix-await="Saving..." mix-data="#image_create_{{item['item_pk']}}">
                     Add
                 </button>
-                <button id="cancel" class="cancel-button">Cancel</button>
+                <button id="cancel" class="delete">Cancel</button>
             </div>
         </form>
     </section>
 </dialog>
 % end
 
-<style>
-    .imageCreateModal {
-        position: relative;
-        padding: 20px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        width: auto; /* Tilpasser bredden til indholdet */
-        max-width: 70%; /* Sikrer at modalen ikke fylder mere end 90% af viewport */
-    }
-
-    .modal-close {
-        position: absolute;
-        right: 5px; /* Minimal margin fra højre kant */
-        top: 5px; /* Minimal margin fra toppen */
-        border: none;
-        background: purple;
-        font-size: 16px; /* Gør teksten mindre */
-        cursor: pointer;
-        padding: 5px; /* Tilstrækkelig plads for klik område, men ikke for stor */
-        line-height: 1; /* Sikrer at tegnet ikke optager for meget vertikal plads */
-        color: #666; /* Subtil farve for lukke-knappen */
-    }
-
-    .modal-content {
-        margin-top: 20px;
-    }
-
-    .modal-form {
-        display: flex;
-        flex-direction: column;
-    }
-
-  
-
-    .cancel-button {
-        background-color: #dc3545; /* Rød farve */
-        color: white;
-        border: none;
-        padding: 8px 16px;
-        border-radius: 4px;
-        cursor: pointer;
-    }
-
-    .cancel-button:hover {
-        background-color: #c82333; /* Mørkere rød ved hover */
-    }
-</style>

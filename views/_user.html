@@ -22,14 +22,15 @@
 
     </form>
 
-    <button mix-put="/users/{{user['user_pk']}}" mix-data="#user_{{user['user_pk']}}" mix-default="Save"
+    <button class="save" mix-put="/users/{{user['user_pk']}}" mix-data="#user_{{user['user_pk']}}" mix-default="Save"
         mix-await="Updating user...">
         Save
     </button>
 
-    <button id="showDeleteUserModal">
+    <button class="delete" id="showDeleteUserModal">
         Delete
     </button>
+
 
     % if get("is_logged", False):
     %include("__toggle_block_user")
@@ -49,7 +50,7 @@
                   name="user_password" 
                   type="password"
                   mix-check="{{regexes.USER_PASSWORD_REGEX}}">
-                <button mix-put="/users/{{user['user_pk']}}/delete" mix-default="Delete" mix-await="Deleting..." mix-data="#user_delete_{{user['user_pk']}}">
+                <button class="delete" mix-put="/users/{{user['user_pk']}}/delete" mix-default="Delete" mix-await="Deleting..." mix-data="#user_delete_{{user['user_pk']}}">
                     Delete
                 </button>
                 <button id="cancel">Cancel</button>

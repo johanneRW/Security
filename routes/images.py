@@ -1,17 +1,12 @@
 import time
-from bottle import delete, get, post, put, request,response, static_file, template
+from bottle import post, put, template
 from utility import utils
 from icecream import ic
 import uuid
-import bcrypt 
-from utility import regexes
-import credentials
 import os
 import time
 import uuid
-from werkzeug.utils import secure_filename
 from utility import utils
-import credentials
 from utility import data
 
 
@@ -33,7 +28,7 @@ def _(item_pk):
         item = data.get_item(db, item_pk)
         html = template("_item_detail.html", item=item)
         return f"""
-        <template mix-target="frm_item_{item_pk}" mix-replace mix-function="closeModal">
+        <template mix-target="#frm_item_{item_pk}" mix-replace mix-function="closeModal">
         {html}
         </template>
         """
@@ -69,7 +64,7 @@ def _(item_pk):
         
         html = template("_item_detail.html", item=item)
         return f"""
-        <template mix-target="frm_item_{item_pk}" mix-replace mix-function="closeModal">
+        <template mix-target="#frm_item_{item_pk}" mix-replace mix-function="closeModal">
         {html}
         </template>
         """

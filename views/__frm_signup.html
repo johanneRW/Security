@@ -29,7 +29,8 @@
 
     <div>
         <label for="user_email">
-            <span>email</span>                
+            <span>email</span>   
+            <span></span>             
         </label>
         <input name="user_email" type="email" mix-check="{{regexes.USER_EMAIL_REGEX}}">
     </div>
@@ -50,42 +51,8 @@
         </select>
     </div>
 
-    <button mix-post="/signup" mix-data="#frm_signup" mix-default="Signup" mix-await="Please wait ...">
+    <button class="save" mix-post="/signup" mix-data="#frm_signup" mix-default="Signup" mix-await="Please wait ...">
         Signup
     </button>
 </form>
 
-<style>
-    #frm_signup {
-        display: flex;
-        flex-direction: column;
-        gap: 8px; 
-        width: 50%; 
-        margin: 0 auto; 
-    }
-
-    #frm_signup div {
-        display: flex;
-        flex-direction: column;
-    }
-
-    #frm_signup label {
-        display: flex;
-    }
-
-    #frm_signup label span:last-child {
-        margin-left: auto;
-        color: #9ca3af; 
-    }
-
-    #frm_signup input,
-    #frm_signup select {
-        width: 100%; 
-        border: 1px solid #ccc; 
-        padding: 0.5rem; 
-    }
-
-    #frm_signup button {
-        padding: 0.5rem 1rem; 
-    }
-</style>
