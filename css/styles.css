@@ -182,22 +182,6 @@ main {
 }
 
 
-
-form input {
-    width: 100%;
-    /* Fylder hele bredden af containeren */
-    padding: 10px;
-    /* Tilføjer lidt polstring inde i inputfeltet */
-    border: var(--border-input) var(--color-border);
-    /* Standard grå kant */
-    border-radius: var(--border-radius);
-    /* Giver afrundede hjørner */
-    box-sizing: border-box;
-    margin-bottom: 1rem;
-}
-
-
-
 .image-row {
     display: flex;
     flex-wrap: wrap;

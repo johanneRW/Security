@@ -87,8 +87,7 @@ CREATE TABLE items(
   item_created_at INTEGER,
   item_owned_by TEXT,
   PRIMARY KEY(item_pk),
-  CONSTRAINT users_items
-    FOREIGN KEY (item_owned_by) REFERENCES users (user_pk)
+  CONSTRAINT users_items FOREIGN KEY (item_owned_by) REFERENCES users (user_pk)
 ) WITHOUT ROWID;
 
 
@@ -108,8 +107,7 @@ CREATE TABLE items_images(
   image_filename TEXT,
   PRIMARY KEY(image_pk),
   CONSTRAINT items_items_images
-    FOREIGN KEY (item_pk) REFERENCES items (item_pk) ON DELETE No action
-      ON UPDATE No action
+    FOREIGN KEY (item_pk) REFERENCES items (item_pk)
 ) WITHOUT ROWID;
 
  
@@ -129,11 +127,9 @@ CREATE TABLE ratings(
   rating_created_at INTEGER,
   PRIMARY KEY(item_pk, user_pk),
   CONSTRAINT users_ratings
-    FOREIGN KEY (user_pk) REFERENCES users (user_pk) ON DELETE No action
-      ON UPDATE No action,
+    FOREIGN KEY (user_pk) REFERENCES users (user_pk), 
   CONSTRAINT items_ratings
-    FOREIGN KEY (item_pk) REFERENCES items (item_pk) ON DELETE No action
-      ON UPDATE No action
+    FOREIGN KEY (item_pk) REFERENCES items (item_pk)
 ) WITHOUT ROWID;
 
  

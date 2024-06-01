@@ -1,10 +1,8 @@
-
 import uuid
 from bottle import  get, post, template, put 
 from utility import utils
 from icecream import ic
 import bcrypt
-
 import credentials
 import time
 
@@ -24,7 +22,6 @@ def _():
 @post("/request_reset_password")
 def _():
     try:
-
 
         user_email = utils.validate_email()
             
@@ -73,7 +70,6 @@ def _():
         print(ex)
         if "user_email invalid" in str(ex):
             return """
-
              <template mix-target="#toast">
             <div mix-ttl="3000" class="error">
                    Email invalid
@@ -95,11 +91,8 @@ def _(key):
 
         reset_info = data.get_reset_info(db,key)
 
-        
         if reset_info is None:
-            return
-        """
-
+            return"""
              <template mix-target="#toast">
             <div mix-ttl="3000" class="error">
                    Invalid reset key.
@@ -113,7 +106,6 @@ def _(key):
        
         if time_now - reset_time > 900:
             return """
-
              <template mix-target="#toast">
             <div mix-ttl="3000" class="error">
                    Reset link has expired.
@@ -130,21 +122,18 @@ def _(key):
         html=template("__frm_reset_password.html")
 
         return  f"""
-
-             <template mix-target="#toast">
+            <template mix-target="#toast">
             <div mix-ttl="3000" class="ok">
                    Password changed successfully.
             </div>
             </template>
-
-        <template mix-target="#frm_password_reset" mix-replace">
-        {html}
-        </template>
+            <template mix-target="#frm_password_reset" mix-replace">
+            {html}
+            </template>
 
             """
 
    except Exception as ex:
-        raise
         return f"Error: {str(ex)}"
 
    finally:

@@ -1,16 +1,15 @@
 % from utility import regexes
 
 <form id="item_booking_{{item['item_pk']}}" class="booking-form">
-   <label for="booking"> 
-    <span>Book this property</span>
-    <span>{{regexes.NIGHT_MIN}} to {{regexes.NIGHT_MAX}} nights</span></label>
-    <input type="number" name="number_of_nights" min="regexes.NIGHT_MIN" max="regexes.NIGHT_MAX" value="1" step="1" required class="booking-input">
-    <button id="item_booking_btn_{{item['item_pk']}}"
-            mix-data="#item_booking_{{item['item_pk']}}"
-            mix-post="/bookings/{{item['item_pk']}}"
-            class="booking-button">
+    <div class="label-text">
+        <label for="booking">Number of nights:</label>
+        <span>{{regexes.NIGHT_MIN}} to {{regexes.NIGHT_MAX}} nights</span>
+    </div>
+    <input type="number" name="number_of_nights" min="{{regexes.NIGHT_MIN}}" max="{{regexes.NIGHT_MAX}}" value="1"
+        step="1" required class="booking-input">
+    <button id="item_booking_btn_{{item['item_pk']}}" mix-data="#item_booking_{{item['item_pk']}}"
+        mix-post="/bookings/{{item['item_pk']}}" class="booking-button">
         Book
     </button>
+
 </form>
-
-

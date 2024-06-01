@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,9 +11,10 @@
     <link rel="stylesheet" href="/styles.css">
     <script src="/mixhtml.js" defer></script>
     <script src="/app.js" defer></script>
-   
+
     <title>{{ get("title", "Company") }}</title>
 </head>
+
 <body>
 
     <div id="toast"></div>
@@ -25,11 +27,11 @@
             <p>Name: {{user['user_first_name']}} logged in as: {{user['role_id']}}. id:{{user['user_pk']}} </p>
 
             % if user and (user['role_id'] == 1 or user['role_id'] == 2):
-                <a href="/items/user" class="{{ get('active_login', '') }}">Your property</a>
+            <a href="/items/user" class="{{ get('active_login', '') }}">Your property</a>
             % end
 
             % if user and user['role_id'] == 1:
-                <a href="/users" class="{{ get('active_login', '') }}">all users</a>
+            <a href="/users" class="{{ get('active_login', '') }}">all users</a>
             % end
 
             <a href="/profile" class="{{ get('active_login', '') }}">Your Profile</a>

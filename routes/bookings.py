@@ -36,7 +36,6 @@ def _(item_pk):
             """
 
     except Exception as ex:
-        raise
         ic(ex)
         response.status = 303 
         response.set_header('Location', '/login')

@@ -69,7 +69,6 @@ def toggle_user_block(user_pk):
         #email.send_email( user_email, subject, template_name, **template_vars)
         email.send_email(credentials.DEFAULT_EMAIL, email_subject, email_template, **template_vars)
 
-        
 
         return f"""
             <template mix-target="#user_block_{user_pk}" mix-replace>
@@ -170,11 +169,7 @@ def _(user_pk):
         email.send_email(credentials.DEFAULT_EMAIL, subject, template_name, **template_vars)
         
 
-
-
         response.delete_cookie("user", path='/')
-
-        
         return f"""
         <template mix-redirect="/"></template>
         """
@@ -182,7 +177,6 @@ def _(user_pk):
 
     except Exception as ex:
         ic(ex)
-       
     finally:
         if "db" in locals(): db.close()
 

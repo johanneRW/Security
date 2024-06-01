@@ -35,7 +35,6 @@ def _(item_pk):
        
     except Exception as ex:
         ic(ex)
-        raise
         return f"""
         <template mix-target="#message">
             {ex.args[1]}
@@ -71,7 +70,6 @@ def _(item_pk):
        
     except Exception as ex:
         ic(ex)
-        raise
         return f"""
         <template mix-target="#message">
             {ex.args[1]}

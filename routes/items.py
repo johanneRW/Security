@@ -2,13 +2,11 @@ import uuid
 from bottle import  get, post, delete, request, template, put 
 from utility import utils
 from icecream import ic
-
 import json
 import credentials
 import time
 from utility import variables
 from utility import email
-
 import time
 import uuid
 from utility import utils
@@ -57,7 +55,6 @@ def _(page_number):
         """
     except Exception as ex:
         ic(ex)
-        raise
         return "ups..."
     finally:
         if "db" in locals(): db.close()
@@ -87,7 +84,6 @@ def _():
         else: 
            pass
     except Exception as ex:
-        raise
         ic(ex)
         return "system under maintainance"         
     finally:
@@ -141,7 +137,6 @@ def _():
          <template mix-target="#frm_new_item" mix-replace">
         {html_new}
         </template>
-        
         """
        
     except Exception as ex:
@@ -179,7 +174,6 @@ def _(item_pk):
        
     except Exception as ex:
         ic(ex)
-        raise
         return f"""
         <template mix-target="#message">
             {ex.args[1]}
@@ -199,8 +193,6 @@ def _(item_pk):
             db = utils.db()
             data.delete_item(db,item_pk)
        
-               
-
         return f"""
         <template mix-target="#item_{item_pk}" mix-replace>
         </template>
@@ -255,7 +247,6 @@ def toggle_item_block(item_uuid):
         email.send_email(credentials.DEFAULT_EMAIL, email_subject, email_template, **template_vars)
 
         
-
         return f"""
             <template mix-target="#item_{item_uuid}" mix-replace>
                 <form id="item_{item_uuid}">

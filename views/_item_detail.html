@@ -17,27 +17,29 @@
         <input name="item_lon" value="{{item['item_lon']}}" mix-check="{{regexes.ITEM_LATLON_REGEX}}">
 
         <label for="item_price_per_night">Price Per Night:</label>
-        <input name="item_price_per_night" type="number" value="{{item['item_price_per_night']}}" step="0.1" mix-check="{{regexes.ITEM_PRICE_REGEX}}">
+        <input name="item_price_per_night" type="number" value="{{item['item_price_per_night']}}" step="0.1"
+            mix-check="{{regexes.ITEM_PRICE_REGEX}}">
 
         % if item.get("images"):
         <div class="image-row">
             % for image in item['images']:
             <div id="{{image}}" class="image-container">
                 <img src="/images/{{image}}" alt="Image">
-                <button class="showUpdateImageModal" id="{{image}}" data-item="{{item['item_pk']}}">Update image</button>
+                <button class="showUpdateImageModal" id="{{image}}" data-item="{{item['item_pk']}}">Update
+                    image</button>
             </div>
             % end
         </div>
         % end
 
-            <button class="showCreateImageModal" id="new" data-item="{{item['item_pk']}}">Add new image</button>
-            <button class="save" mix-put="/items/{{item['item_pk']}}" mix-data="#frm_item_{{item['item_pk']}}" mix-default="Save" mix-await="Updating item...">
-                Save changes
-            </button>
-            <button class="delete" mix-delete="/items/{{item['item_pk']}}" mix-default="Delete" mix-await="Deleting...">
-                Delete property
-            </button>
-      
+        <button class="showCreateImageModal" id="new" data-item="{{item['item_pk']}}">Add new image</button>
+        <button class="save" mix-put="/items/{{item['item_pk']}}" mix-data="#frm_item_{{item['item_pk']}}"
+            mix-default="Save" mix-await="Updating item...">
+            Save changes
+        </button>
+        <button class="delete" mix-delete="/items/{{item['item_pk']}}" mix-default="Delete" mix-await="Deleting...">
+            Delete property
+        </button>
+
     </form>
 </div>
-

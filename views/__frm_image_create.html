@@ -6,7 +6,8 @@
             <label for="image">Image:</label>
             <input type="file" name="image" accept="image/*" mix-check="{{regexes.ITEM_IMAGE_REGEX}}">
             <div class="modal-buttons">
-                <button class="save" mix-post="/items/image/{{item['item_pk']}}" mix-default="Add" mix-await="Saving..." mix-data="#image_create_{{item['item_pk']}}">
+                <button class="save" mix-post="/items/image/{{item['item_pk']}}" mix-default="Add" mix-await="Saving..."
+                    mix-data="#image_create_{{item['item_pk']}}">
                     Add
                 </button>
                 <button id="cancel" class="delete">Cancel</button>
@@ -15,4 +16,3 @@
     </section>
 </dialog>
 % end
-

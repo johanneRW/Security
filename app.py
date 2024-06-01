@@ -54,6 +54,8 @@ import routes.items
 import routes.images
 import routes.bookings
 
+import routes.arango
+
 
 ##############################
 @get("/")

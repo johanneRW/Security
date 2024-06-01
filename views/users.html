@@ -1,13 +1,12 @@
-
 %include("_header")
 <main>
-<div class="usersContainer">
-    <div id="users" >
-        % for user in users:
+    <div class="usersContainer">
+        <div id="users">
+            % for user in users:
             % include("_user.html")
-        % end
+            % end
+        </div>
     </div>
-</div>
 </main>
 
-    %include("_footer")
+%include("_footer")

@@ -6,7 +6,7 @@
 
         <label for="user_first_name">Name:</label>
         <input name="user_first_name" value="{{user['user_first_name']}}" mix-check="{{regexes.USER_FIRST_NAME_REGEX}}">
-       
+
         <label for="user_last_name">Last Name:</label>
         % last_name = user['user_last_name'] if 'user_last_name' in user else ''
         <input name="user_last_name" value="{{last_name}}" mix-check="{{regexes.USER_LAST_NAME_REGEX}}">
@@ -44,13 +44,10 @@
         <section>
             <form id="user_delete_{{user['user_pk']}}">
                 <label for="password">Please enter your password to proceed</label>
-                <input 
-                  required
-                  maxlength={{regexes.USER_PASSWORD_MAX}}
-                  name="user_password" 
-                  type="password"
-                  mix-check="{{regexes.USER_PASSWORD_REGEX}}">
-                <button class="delete" mix-put="/users/{{user['user_pk']}}/delete" mix-default="Delete" mix-await="Deleting..." mix-data="#user_delete_{{user['user_pk']}}">
+                <input required maxlength={{regexes.USER_PASSWORD_MAX}} name="user_password" type="password"
+                    mix-check="{{regexes.USER_PASSWORD_REGEX}}">
+                <button class="delete" mix-put="/users/{{user['user_pk']}}/delete" mix-default="Delete"
+                    mix-await="Deleting..." mix-data="#user_delete_{{user['user_pk']}}">
                     Delete
                 </button>
                 <button id="cancel">Cancel</button>

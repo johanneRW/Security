@@ -10,7 +10,8 @@
                 <strong>Current image:</strong>
                 <p class="filename"></p>
             </div>
-            <button class="save"  mix-put="/items/image/{{item['item_pk']}}" mix-default="Update" mix-await="Updating..." mix-data="#image_update_{{item['item_pk']}}">
+            <button class="save" mix-put="/items/image/{{item['item_pk']}}" mix-default="Update" mix-await="Updating..."
+                mix-data="#image_update_{{item['item_pk']}}">
                 Update
             </button>
             <button class="delete" id="cancel">Cancel</button>
