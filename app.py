@@ -10,20 +10,16 @@ from utility import variables
 from utility import data
 import git
 
-##############################
-@get("/styles.css")
-def _():
-    return static_file("css/styles.css", ".")
 
 ##############################
 
-@get("/<file_name>.css")
+@get("/css/<file_name>.css")
 def _(file_name):
     return static_file("./css/" + file_name+".css", ".")
 
 
 ##############################
-@get("/<file_name>.js")
+@get("/js/<file_name>.js")
 def _(file_name):
     return static_file("./js/" + file_name+".js", ".")
 
