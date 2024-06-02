@@ -24,14 +24,14 @@
 
         <div class="flex">
             % if get("is_logged", False):
-            <p>Name: {{user['user_first_name']}} logged in as: {{user['role_id']}}. id:{{user['user_pk']}} </p>
+            <p>You are logged in as: {{user['user_first_name']}}</p>
 
             % if user and (user['role_id'] == 1 or user['role_id'] == 2):
             <a href="/items/user" class="{{ get('active_login', '') }}">Your property</a>
             % end
 
             % if user and user['role_id'] == 1:
-            <a href="/users" class="{{ get('active_login', '') }}">all users</a>
+            <a href="/users" class="{{ get('active_login', '') }}">All users</a>
             % end
 
             <a href="/profile" class="{{ get('active_login', '') }}">Your Profile</a>

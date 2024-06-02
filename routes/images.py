@@ -1,5 +1,5 @@
 import time
-from bottle import post, put, template
+from bottle import post, put, template, response
 from utility import utils
 from icecream import ic
 import uuid
@@ -14,7 +14,6 @@ from utility import data
 def _(item_pk): 
     try:
         image_folder = utils.get_image_folder()
-        updatet_at=int(time.time())
         
         # Validate and save image
         image, image_filename = utils.validate_image()
@@ -35,20 +34,22 @@ def _(item_pk):
        
     except Exception as ex:
         ic(ex)
+        response.status = 400 
         return f"""
-        <template mix-target="#message">
-            {ex.args[1]}
-        </template>
-        """            
+            <template mix-target="#toast">
+            <div mix-ttl="3000" class="error">
+                Error when saving image
+            </div>
+            </template>
+            """
     finally:
-        pass
+        if "db" in locals(): db.close()
 
 
 @put("/items/image/<item_pk>")
 def _(item_pk): 
     try:
         image_folder = utils.get_image_folder()
-        updatet_at=int(time.time())
         
         oldname = utils.validate_oldname()
 
@@ -70,10 +71,13 @@ def _(item_pk):
        
     except Exception as ex:
         ic(ex)
+        response.status = 400 
         return f"""
-        <template mix-target="#message">
-            {ex.args[1]}
-        </template>
-        """            
+            <template mix-target="#toast">
+            <div mix-ttl="3000" class="error">
+                Error when updating image
+            </div>
+            </template>
+            """
     finally:
-        pass
+        if "db" in locals(): db.close()

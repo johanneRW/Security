@@ -31,8 +31,7 @@
         Delete
     </button>
 
-
-    % if get("is_logged", False):
+    % if get("is_logged", False) and get("is_admin", False) and user.get("role_id") != 1:
     %include("__toggle_block_user")
     % end
 

@@ -1,5 +1,5 @@
 import uuid
-from bottle import  get, post, delete, request, template, put 
+from bottle import  get, post, delete, request, template, put, response 
 from utility import utils
 from icecream import ic
 import json
@@ -30,17 +30,21 @@ def _(page_number):
         ic(items)
 
         is_logged = False
+        is_admin = False
         try:
             utils.validate_user_logged()
+            user = request.get_cookie("user", secret=credentials.COOKIE_SECRET)
             is_logged = True
+            is_admin = user.get("role_id") == 1
         except:
             pass
-#hvis det er sidste side skal der ikke være  være en "more" button
+        
+        #hvis det er sidste side skal der ikke være  være en "more" button
         is_last_page = int(page_number) >= total_pages
 
         html = ""
         for item in items:
-            html += template("_item", item=item, is_logged=is_logged)
+            html += template("_item", item=item, is_logged=is_logged, is_admin=is_admin)
         btn_more = template("__btn_more", page_number=next_page)
         if is_last_page: 
             btn_more = ""
@@ -55,7 +59,14 @@ def _(page_number):
         """
     except Exception as ex:
         ic(ex)
-        return "ups..."
+        response.status = 400 
+        return f"""
+            <template mix-target="#toast">
+            <div mix-ttl="3000" class="error">
+                Error getting next properties
+            </div>
+            </template>
+            """
     finally:
         if "db" in locals(): db.close()
 
@@ -71,28 +82,27 @@ def _():
             user = request.get_cookie("user", secret=credentials.COOKIE_SECRET)
             is_logged = True
         except:
-            pass
-
-        if  utils.validate_user_logged():
+            response.status = 403
+            return "you are not logged in"
+        else:
             user_pk=user['user_pk']
             ic(user_pk)
-            #x.disable_cache()
             db = utils.db()
             items =data.get_items_by_user(db, user_pk)
             ic(items)
             return template("items_for_user", items=items,is_logged=is_logged, user=user)
-        else: 
-           pass
     except Exception as ex:
         ic(ex)
-        return "system under maintainance"         
+        response.status = 500
+        return "system under maintainance"
     finally:
-        pass
+        if "db" in locals(): db.close()
 
 
 @post("/items")
 def _():
     try:
+        utils.validate_user_logged()
         user = request.get_cookie("user", secret= credentials.COOKIE_SECRET)
 
         item_pk=uuid.uuid4().hex
@@ -141,11 +151,14 @@ def _():
        
     except Exception as ex:
         ic(ex)
+        response.status = 400 
         return f"""
-        <template mix-target="#message">
-            {ex.args[1]}
-        </template>
-        """            
+            <template mix-target="#toast">
+            <div mix-ttl="3000" class="error">
+                Error creating property
+            </div>
+            </template>
+            """
     finally:
         if "db" in locals(): db.close()
 
@@ -153,14 +166,13 @@ def _():
 @put("/items/<item_pk>")
 def _(item_pk): 
     try:
-        
+        utils.validate_user_logged()
+
         item_name = utils.validate_item_name()
         item_lat = utils.validate_item_lat()
         item_lon = utils.validate_item_lon()
         item_price_per_night = utils.validate_item_price_per_night()
      
-
-
         db = utils.db()
         data.update_item(db,item_name,item_lat,item_lon,item_price_per_night,item_pk )
         item = data.get_item(db, item_pk)
@@ -174,45 +186,48 @@ def _(item_pk):
        
     except Exception as ex:
         ic(ex)
+        response.status = 400 
         return f"""
-        <template mix-target="#message">
-            {ex.args[1]}
-        </template>
-        """            
+            <template mix-target="#toast">
+            <div mix-ttl="3000" class="error">
+                Error updating property
+            </div>
+            </template>
+            """
     finally:
-        pass
+        if "db" in locals(): db.close()
+
 
 
 @delete("/items/<item_pk>")
 def _(item_pk):
     try:
-       
-        user = request.get_cookie("user", secret= credentials.COOKIE_SECRET)
-        if user:
-           
-            db = utils.db()
-            data.delete_item(db,item_pk)
-       
+        utils.validate_user_logged()
+        db = utils.db()
+        data.delete_item(db,item_pk)
         return f"""
-        <template mix-target="#item_{item_pk}" mix-replace>
-        </template>
-        """
-       
+            <template mix-target="#item_{item_pk}" mix-replace>
+            </template>
+            """
     except Exception as ex:
         ic(ex)
+        response.status = 400 
         return f"""
-        <template mix-target="#message">
-            {ex.args[1]}
-        </template>
-        """            
+            <template mix-target="#toast">
+            <div mix-ttl="3000" class="error">
+                Error deleting property
+            </div>
+            </template>
+            """   
     finally:
-        pass
+        if "db" in locals(): db.close()
 
 
 @post("/toggle_item_block/<item_uuid>")
 def toggle_item_block(item_uuid):
     try:
-       
+        utils.validate_user_logged()
+
         current_blocked_status=int(request.forms.get("item_blocked"))
         if current_blocked_status == 0:
             new_blocked_status=1
@@ -241,12 +256,10 @@ def toggle_item_block(item_uuid):
         ic(user_first_name)
         ic(user_email)
 
-
         template_vars = {"user_first_name": user_first_name}
         #email.send_email( user_email, subject, template_name, **template_vars)
         email.send_email(credentials.DEFAULT_EMAIL, email_subject, email_template, **template_vars)
 
-        
         return f"""
             <template mix-target="#item_{item_uuid}" mix-replace>
                 <form id="item_{item_uuid}">
@@ -263,7 +276,12 @@ def toggle_item_block(item_uuid):
         </form>
             """
     except Exception as ex:
-        return f"<p>Error: {str(ex)}</p>"
+        return f"""
+            <template mix-target="#toast">
+            <div mix-ttl="3000" class="error">
+                Error blocking or unblocking item
+            </div>
+            </template>
+            """   
     finally:
-        if db:
-            db.close()
+        if "db" in locals(): db.close()

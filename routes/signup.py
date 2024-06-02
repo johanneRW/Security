@@ -1,5 +1,5 @@
 import uuid
-from bottle import get, post, request, template, put 
+from bottle import get, post, request, template, put, response
 from utility import utils
 from icecream import ic
 import bcrypt
@@ -31,8 +31,6 @@ def _():
         user_created_at=int(time.time())
         user_verification_key=uuid.uuid4().hex
 
-
-        
         db = utils.db()
         data.create_user(db,user_pk,
                     user_username,
@@ -61,41 +59,33 @@ def _():
         return f"""
             <template mix-target="#toast">
             <div mix-ttl="3000" class="ok">
-                   User created
+                   User created and email sent
             </div>
             </template>
         <template mix-target="#frm_signup" mix-replace">
         {html}
         </template>
-            
-       
         """    
 
     except Exception as ex:
-        print(ex)
+        ic(ex)
         if "users.user_email" in str(ex):
-             return """
-            
-
+            return """
             <template mix-target="#toast">
             <div mix-ttl="3000" class="error">
-                   Email not available
+                Email not available
             </div>
             </template>
-       
-        """    
+            """    
 
         if "user_email invalid" in str(ex):
-            return
-        
-        """
+            return """
             <template mix-target="#toast">
             <div mix-ttl="3000" class="error">
-                   Email invalid
+                Email invalid
             </div>
             </template>
-       
-        """    
+            """    
        
     finally:
         if "db" in locals(): db.close()
@@ -110,16 +100,25 @@ def _(key):
 
 @put("/verify/<key>")
 def _(key):
-    #TODO: tilføj try/except og tilføj fejl besked
-    db = utils.db()
-    user_is_verified_at=int(time.time())
-    data.update_verification_status(db,user_is_verified_at,key)
+    try:
+        db = utils.db()
+        user_is_verified_at=int(time.time())
+        data.update_verification_status(db,user_is_verified_at,key)
 
-    return """<template mix-target="#toast">
-            <div mix-ttl="3000" class="ok">
-                   Account verifiyed
+        return """<template mix-target="#toast">
+                <div mix-ttl="3000" class="ok">
+                    Account verified
+                </div>
+                </template>"""
+    except Exception:
+        response.status = 404
+        return """
+            <template mix-target="#toast">
+            <div mix-ttl="3000" class="error">
+                Verification key not found
             </div>
-            </template>"""
-
-
+            </template>
+            """    
+    finally:
+        if "db" in locals(): db.close()
 

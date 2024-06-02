@@ -62,11 +62,13 @@ def _():
         ic(items)
 
         is_logged = False
+        is_admin = False
         user=""
         try:    
             utils.validate_user_logged()
             user = request.get_cookie("user", secret=credentials.COOKIE_SECRET)
             is_logged = True
+            is_admin = user.get("role_id") == 1
         except:
             pass
 
@@ -75,9 +77,8 @@ def _():
             return {"items": items}
 
         return template("index.html", items=items, mapbox_token=credentials.MAPBOX_TOKEN, 
-                        is_logged=is_logged,user=user)
+                        is_logged=is_logged,user=user,is_admin=is_admin)
     except Exception as ex:
-        raise
         ic(ex)
         return ex
     finally:

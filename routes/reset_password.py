@@ -1,5 +1,5 @@
 import uuid
-from bottle import  get, post, template, put 
+from bottle import  get, post, template, put, response
 from utility import utils
 from icecream import ic
 import bcrypt
@@ -22,20 +22,25 @@ def _():
 @post("/request_reset_password")
 def _():
     try:
-
         user_email = utils.validate_email()
             
         db = utils.db()
         user_info = data.get_user_by_email(db,user_email)
+        if not user_info:
+            response.status = 404
+            return """
+            <template mix-target="#toast">
+            <div mix-ttl="3000" class="error">
+                   User does not exist, or is not verified
+            </div>
+            </template>
+            """
+        
         ic(user_info)
         user_pk=user_info['user_pk']
         user_first_name=user_info['user_first_name']
         ic(user_first_name)
         ic(user_pk)
-
-        #TODO:denne skal måske ikke sende en fejl?
-        if not user_info:
-            raise ValueError("User not found or not verified", 404)
         
         password_reset_key =uuid.uuid4().hex
         password_reset_at=int(time.time())
@@ -63,16 +68,24 @@ def _():
         <template mix-target="#frm_send_password" mix-replace">
         {html}
         </template>
-            
-       
         """
     except Exception as ex:
-        print(ex)
+        ic(ex)
         if "user_email invalid" in str(ex):
+            response.status = 400
             return """
-             <template mix-target="#toast">
+            <template mix-target="#toast">
             <div mix-ttl="3000" class="error">
                    Email invalid
+            </div>
+            </template>
+            """
+        else:
+            response.status = 500
+            return f"""
+            <template mix-target="#toast">
+            <div mix-ttl="3000" class="error">
+                   System under maintenance
             </div>
             </template>
             """
@@ -82,10 +95,7 @@ def _():
 
 @put("/reset_password/<key>")
 def _(key):
-   #TODO: tilføj try/except og tilføj fejl besked
-
    try:
-       
         db = utils.db()
         time_now = int(time.time())
 
@@ -103,7 +113,6 @@ def _(key):
         reset_time = reset_info['password_reset_at']
         user_pk = reset_info['user_pk']
 
-       
         if time_now - reset_time > 900:
             return """
              <template mix-target="#toast">
@@ -113,7 +122,6 @@ def _(key):
             </template>
             """
 
-        
         user_password = utils.validate_password().encode()
         hashed_password = bcrypt.hashpw(user_password, bcrypt.gensalt())
 
@@ -134,8 +142,14 @@ def _(key):
             """
 
    except Exception as ex:
-        return f"Error: {str(ex)}"
+        response.status = 500
+        return """
+        <template mix-target="#toast">
+        <div mix-ttl="3000" class="error">
+            System under maintenance
+        </div>
+        </template>
+        """
 
    finally:
-        if db:
-            db.close()
+        if "db" in locals(): db.close()

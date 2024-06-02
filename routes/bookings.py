@@ -34,11 +34,18 @@ def _(item_pk):
             </div>
             </template>
             """
-
+        else:
+            response.status = 403
+            return "you must be logged in"
     except Exception as ex:
         ic(ex)
-        response.status = 303 
-        response.set_header('Location', '/login')
-        return
+        response.status = 400 
+        return f"""
+            <template mix-target="#toast">
+            <div mix-ttl="3000" class="error">
+                Error when creating booking
+            </div>
+            </template>
+            """
     finally:
         if "db" in locals(): db.close()

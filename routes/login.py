@@ -34,7 +34,6 @@ def _():
             import production
             is_cookie_https = True
         except:
-            #TODO:skal alle disse oplysninger om user gemmes?
             is_cookie_https = False        
         response.set_cookie("user", user, secret=credentials.COOKIE_SECRET, httponly=True, secure=is_cookie_https)
         
@@ -66,8 +65,6 @@ def _():
                 </div>
             </template>
             """
-        
-
     finally:
         if "db" in locals(): db.close()
 
@@ -81,5 +78,3 @@ def _():
     response.status = 303
     response.set_header('Location', '/login')
     return
-
-
