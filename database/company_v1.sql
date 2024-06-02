@@ -12,8 +12,6 @@ CREATE TABLE roles(
 INSERT INTO roles VALUES (1,'admin'), (2,'partner'), (3,'user');
 
 DROP TABLE IF EXISTS users;
---TODO_ændre pk til id:
---TODO:verification_key skal være uniqe
 CREATE TABLE users(
     user_pk                 TEXT,
     user_username           TEXT,
@@ -97,7 +95,7 @@ INSERT INTO users VALUES(
 
 
 
---TODO_ændre pk til id:
+
 -- CREATE TABLE items(
 --     item_pk                         TEXT,
 --     item_name                       TEXT,

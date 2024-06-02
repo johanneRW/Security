@@ -1,11 +1,7 @@
-#TODO: importer allfabetisk
-from bottle import default_app, get, post, request, response, run, static_file, template, put 
+from bottle import default_app, get, post, request, run, static_file, template
 from utility import utils
 from icecream import ic
-import bcrypt
-import json
 import credentials
-import time
 from utility import variables
 from utility import data
 import git

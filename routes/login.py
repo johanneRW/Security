@@ -24,7 +24,6 @@ def _():
             raise ValueError("User not found or not verified", 404)
         
         # Kontroller adgangskoden ved hjælp af bcrypt
-        #TODO: hvorfor skifter det mellem at fungere med user["user_password"] når der ikke står encode efter det og når der gør? Er det kun med de "første" gemte kodeord?
         if not bcrypt.checkpw(user_password.encode(), user["user_password"]):
             raise ValueError("Invalid credentials", 400)
     

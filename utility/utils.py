@@ -30,6 +30,17 @@ def get_image_folder():
     return str(image_folder)
 
 ##############################
+
+def get_host_name():
+    try:
+        import production
+        return variables.PRODUCTION_HOST_NAME
+    except ImportError:
+        return variables.LOCAL_HOST_NAME
+
+
+
+##############################
 def no_cache():
     response.add_header("Cache-Control", "no-cache, no-store, must-revalidate")
     response.add_header("Pragma", "no-cache")
@@ -37,7 +48,6 @@ def no_cache():
 
 
 ##############################
-#TODO: der skal kun være en af disse
 def validate_user_logged():
     user = request.get_cookie("user", secret=credentials.COOKIE_SECRET)
     if user is None: raise Exception("user must login", 400)
@@ -45,19 +55,6 @@ def validate_user_logged():
 
 
 ##############################
-#TODO: der skal kun være en af disse
-def validate_logged():
-    # Prevent logged pages from caching
-    response.add_header("Cache-Control", "no-cache, no-store, must-revalidate")
-    response.add_header("Pragma", "no-cache")
-    response.add_header("Expires", "0")  
-    user_id = request.get_cookie("id", secret = credentials.COOKIE_SECRET)
-    if not user_id: raise Exception("***** user not logged *****", 400)
-    return user_id
-
-
-##############################
-
 
 
 def validate_user_id():
@@ -131,12 +128,16 @@ def validate_item_name():
         raise Exception(error, 400)
     return item_name
 
+##############################
+
 def validate_item_lat():
     error = "Latitude must be a decimal number"
     item_lat = request.forms.get("item_lat", "").strip()
     if not re.match(regexes.ITEM_LATLON_REGEX, item_lat):
         raise Exception(error, 400)
     return item_lat
+
+##############################
 
 def validate_item_lon():
     error = "Longitude must be a decimal number"
@@ -145,12 +146,16 @@ def validate_item_lon():
         raise Exception(error, 400)
     return item_lon
 
+##############################
+
 def validate_item_stars():
     error = f"Stars must be between {regexes.STAR_MIN} and {regexes.STAR_MIN}"
     item_stars = request.forms.get("item_stars", "").strip()
     if not re.match(regexes.ITEM_STARS_REGEX, item_stars):
         raise Exception(error, 400)
     return item_stars
+
+##############################
 
 def validate_item_price_per_night():
     error = "Price per night must be a valid number"
@@ -159,6 +164,7 @@ def validate_item_price_per_night():
         raise Exception(error, 400)
     return item_price_per_night
 
+##############################
 
 def validate_image():
     error = "image must be a valid image filename (jpg, jpeg, png, gif, webp)"
@@ -172,6 +178,8 @@ def validate_image():
     
     return file, filename
 
+##############################
+
 def validate_oldname():
     error = "oldname must be a valid image filename (jpg, jpeg, png, gif, webp)"
     oldname = request.forms.get('oldname')
@@ -180,6 +188,8 @@ def validate_oldname():
     if not re.match(regexes.ITEM_IMAGE_REGEX, oldname):
         raise Exception(error, 400)
     return oldname
+
+##############################
 
 def validate_number_of_nights():
     error = f"Nights must be between {regexes.NIGHT_MIN} and {regexes.NIGHT_MAX}"
@@ -195,10 +205,3 @@ def validate_number_of_nights():
     
     return number_of_nights
 
-
-def get_host_name():
-    try:
-        import production
-        return variables.PRODUCTION_HOST_NAME
-    except ImportError:
-        return variables.LOCAL_HOST_NAME
