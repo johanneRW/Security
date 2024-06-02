@@ -231,53 +231,62 @@ CREATE VIEW items_with_status AS
 -- initial data
 
 --admin-user
-INSERT INTO users VALUES(
-    "d11854217ecc42b2bb17367fe33dc8f4",
-    "johndoe",
-    "John",
-    "Doe",
-    "admin@company.com",
-    "$2b$12$V/cXqWN/M2vTnYUcXMB9oODcNBX/QorJekmaDkq1Z7aeD3I5ZAjfu",
-    (SELECT role_id FROM roles WHERE role_name = 'admin'),
-    1712674758
-);
-INSERT INTO user_verification_completed VALUES ("d11854217ecc42b2bb17367fe33dc8f4", 1712674758);
+-- INSERT INTO users VALUES(
+--     "d11854217ecc42b2bb17367fe33dc8f4",
+--     "johndoe",
+--     "John",
+--     "Doe",
+--     "admin@company.com",
+--     "$2b$12$V/cXqWN/M2vTnYUcXMB9oODcNBX/QorJekmaDkq1Z7aeD3I5ZAjfu",
+--     (SELECT role_id FROM roles WHERE role_name = 'admin'),
+--     1712674758
+-- );
+-- INSERT INTO user_verification_completed VALUES ("d11854217ecc42b2bb17367fe33dc8f4", 1712674758);
 
---partner-user
-INSERT INTO users VALUES(
-    "d11854217ecc42b2bb17367fe33dc8f5",
-    "janedoe",
-    "Jane",
-    "Doe",
-    "partner@partner.com",
-    "$2b$12$V/cXqWN/M2vTnYUcXMB9oODcNBX/QorJekmaDkq1Z7aeD3I5ZAjfu",
-    (SELECT role_id FROM roles WHERE role_name = 'partner'),
-    1712674758
-);
-INSERT INTO user_verification_completed VALUES ("d11854217ecc42b2bb17367fe33dc8f5", 1712674758);
+-- --partner-user
+-- INSERT INTO users VALUES(
+--     "d11854217ecc42b2bb17367fe33dc8f5",
+--     "janedoe",
+--     "Jane",
+--     "Doe",
+--     "partner@partner.com",
+--     "$2b$12$V/cXqWN/M2vTnYUcXMB9oODcNBX/QorJekmaDkq1Z7aeD3I5ZAjfu",
+--     (SELECT role_id FROM roles WHERE role_name = 'partner'),
+--     1712674758
+-- );
+-- INSERT INTO user_verification_completed VALUES ("d11854217ecc42b2bb17367fe33dc8f5", 1712674758);
 
---user_user
-INSERT INTO users VALUES(
-    "d11854217ecc42b2bb17367fe33dc8f6",
-    "useruser",
-    "Just",
-    "Auser",
-    "user@user.com",
-    "$2b$12$V/cXqWN/M2vTnYUcXMB9oODcNBX/QorJekmaDkq1Z7aeD3I5ZAjfu",
-    (SELECT role_id FROM roles WHERE role_name = 'user'),
-    1712674758
-);
-INSERT INTO user_verification_completed VALUES ("d11854217ecc42b2bb17367fe33dc8f6", 1712674758);
+-- --user_user
+-- INSERT INTO users VALUES(
+--     "d11854217ecc42b2bb17367fe33dc8f6",
+--     "useruser",
+--     "Just",
+--     "Auser",
+--     "user@user.com",
+--     "$2b$12$V/cXqWN/M2vTnYUcXMB9oODcNBX/QorJekmaDkq1Z7aeD3I5ZAjfu",
+--     (SELECT role_id FROM roles WHERE role_name = 'user'),
+--     1712674758
+-- );
+-- INSERT INTO user_verification_completed VALUES ("d11854217ecc42b2bb17367fe33dc8f6", 1712674758);
 
-INSERT INTO items VALUES
-("5dbce622fa2b4f22a6f6957d07ff4951", "Christiansborg Palace", 55.6761, 12.5770, 2541, 1, "d11854217ecc42b2bb17367fe33dc8f5"),
-("5dbce622fa2b4f22a6f6957d07ff4952", "Tivoli Gardens", 55.6736, 12.5681,  985, 2, "d11854217ecc42b2bb17367fe33dc8f5"),
-("5dbce622fa2b4f22a6f6957d07ff4953", "Nyhavn", 55.6794, 12.5918,  429, 3, "d11854217ecc42b2bb17367fe33dc8f5"),
-("5dbce622fa2b4f22a6f6957d07ff4954", "The Little Mermaid statue", 55.6929, 12.5998,  862, 4, "d11854217ecc42b2bb17367fe33dc8f5"),
-("5dbce622fa2b4f22a6f6957d07ff4955", "Amalienborg Palace", 55.6846, 12.5949,  1200, 5, "d11854217ecc42b2bb17367fe33dc8f4"),
-("5dbce622fa2b4f22a6f6957d07ff4956", "Copenhagen Opera House",  55.6796, 12.6021,  1965, 6, "d11854217ecc42b2bb17367fe33dc8f5"),
-("5dbce622fa2b4f22a6f6957d07ff4957", "Rosenborg Castle", 55.6867, 12.5734,  1700, 7, "d11854217ecc42b2bb17367fe33dc8f5"),
-("5dbce622fa2b4f22a6f6957d07ff4958", "The National Museum of Denmark", 55.6772, 12.5784,  2100, 8, "d11854217ecc42b2bb17367fe33dc8f5"),
-("5dbce622fa2b4f22a6f6957d07ff4959", "Church of Our Saviour", 55.6732, 12.5986,  985, 9, "d11854217ecc42b2bb17367fe33dc8f5"),
-("5dbce622fa2b4f22a6f6957d07ff4910", "Round Tower",  55.6813, 12.5759,  1200, 10, "d11854217ecc42b2bb17367fe33dc8f4");
+
+UPDATE users SET role_id =1 WHERE user_pk ='340fb8891b954d5ab81c13eec52477fe';
+
+INSERT INTO ratings VALUES 
+('1a20f720cec74b72a873ae111a25b347', '13fc34026b674e389fef6eed727db661',3,1717348368),
+('3a124a64e43e456490fc699935a83708','13fc34026b674e389fef6eed727db661',4,1717348368),
+('42d21968891148aa8572a06960dca0ad','13fc34026b674e389fef6eed727db661',2,1717348368),
+('4c6de42726544fec9cab8820c0ce2430','13fc34026b674e389fef6eed727db661',5,1717348368),
+('6ec9cd1d0da648b49ce02e369ed6937f','340fb8891b954d5ab81c13eec52477fe',3,1717348368),
+('710a1d0761254bf8aaa79e12f3543bcf','340fb8891b954d5ab81c13eec52477fe',1,1717348368),
+('8fc121d6bdec467ea3141c5d26d1a526','340fb8891b954d5ab81c13eec52477fe',3,1717348368),
+('9a91e5ec95bc47a9a32ad43daab376b4','725df78b0dbf433a8a6a27985b5017ea',4,1717348368),
+('1a20f720cec74b72a873ae111a25b347','725df78b0dbf433a8a6a27985b5017ea',3,1717348368),
+('3a124a64e43e456490fc699935a83708','725df78b0dbf433a8a6a27985b5017ea',3,1717348368),
+('42d21968891148aa8572a06960dca0ad','725df78b0dbf433a8a6a27985b5017ea',2,1717348368),
+('4c6de42726544fec9cab8820c0ce2430','91e936b7130d495a90459963a637bd81',5,1717348368),
+('6ec9cd1d0da648b49ce02e369ed6937f','91e936b7130d495a90459963a637bd81',3,1717348368),
+('710a1d0761254bf8aaa79e12f3543bcf','91e936b7130d495a90459963a637bd81',4,1717348368),
+('8fc121d6bdec467ea3141c5d26d1a526','a46f22c43ce542c4995132ea2eb1eb9e',5,1717348368),
+('9a91e5ec95bc47a9a32ad43daab376b4', 'a46f22c43ce542c4995132ea2eb1eb9e',3,1717348368);
 

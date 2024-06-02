@@ -2,11 +2,11 @@
 
 <form id="frm_login" autocomplete="off">
     <label for="user_email">
-        <span>email</span>
+        <span>Email</span>
     </label>
     <input name="user_email" type="text" placeholder="email" value="" mix-check="{{regexes.USER_EMAIL_REGEX}}">
     <label for="user_password">
-        <span>password</span>
+        <span>Password</span>
         <input name="user_password" type="password" placeholder="password" value=""
             mix-check="{{regexes.USER_PASSWORD_REGEX}}">
         <button class="save" mix-data="#frm_login" mix-post="/login" mix-default="Login" mix-await="Please wait ...">

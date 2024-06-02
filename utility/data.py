@@ -100,7 +100,7 @@ def get_reset_info(db,key):
 def get_item(db, item_pk):
     q = db.execute("""
             SELECT items_with_status.*, 
-                    group_concat(items_images.image_filename) AS images
+                    group_concat(DISTINCT items_images.image_filename) AS images
             FROM items_with_status
             LEFT JOIN items_images ON items_with_status.item_pk = items_images.item_pk
             WHERE items_with_status.item_pk = ?
@@ -126,7 +126,7 @@ def get_items_limit_offset(db,limit,offset=0):
     q = db.execute(f"""
             SELECT items_with_status.*, 
                    COALESCE(AVG(ratings.stars), 0) as item_stars,
-                   group_concat(items_images.image_filename) AS images
+                   group_concat(DISTINCT items_images.image_filename) AS images
             FROM items_with_status
             LEFT JOIN ratings ON items_with_status.item_pk = ratings.item_pk
             LEFT JOIN items_images ON items_with_status.item_pk = items_images.item_pk
@@ -185,7 +185,7 @@ def get_user_password(db, user_pk):
 def get_items_by_user(db, user_pk):
     q = db.execute("""
                 SELECT items_with_status.*, 
-                       group_concat(items_images.image_filename) AS images
+                       group_concat(DISTINCT items_images.image_filename) AS images
                 FROM items_with_status
                 LEFT JOIN items_images ON items_with_status.item_pk = items_images.item_pk
                 WHERE items_with_status.item_owned_by = ?

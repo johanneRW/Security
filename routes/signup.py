@@ -109,7 +109,8 @@ def _(key):
                 <div mix-ttl="3000" class="ok">
                     Account verified
                 </div>
-                </template>"""
+                </template>
+                """
     except Exception:
         response.status = 404
         return """

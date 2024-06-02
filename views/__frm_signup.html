@@ -13,7 +13,7 @@
 
     <div>
         <label for="user_first_name">
-            <span>first name</span>
+            <span>First name</span>
             <span>{{regexes.USER_FIRST_NAME_MIN}} to {{regexes.USER_FIRST_NAME_MAX}} characters</span>
         </label>
         <input name="user_first_name" type="text" mix-check="{{regexes.USER_FIRST_NAME_REGEX}}">
@@ -21,15 +21,15 @@
 
     <div>
         <label for="user_last_name">
-            <span>last name</span>
+            <span>Last name</span>
             <span>{{regexes.USER_LAST_NAME_MIN}} to {{regexes.USER_LAST_NAME_MAX}} characters</span>
         </label>
-        <input name="user_last_name" type="text" mix-check="{{regexes.USER_LAST_NAME_REGEX}}">
+        <input Name="user_last_name" type="text" mix-check="{{regexes.USER_LAST_NAME_REGEX}}">
     </div>
 
     <div>
         <label for="user_email">
-            <span>email</span>
+            <span>Email</span>
             <span></span>
         </label>
         <input name="user_email" type="email" mix-check="{{regexes.USER_EMAIL_REGEX}}">
@@ -37,7 +37,7 @@
 
     <div>
         <label for="user_password">
-            <span>password</span>
+            <span>Password</span>
             <span>{{regexes.USER_PASSWORD_MIN}} to {{regexes.USER_PASSWORD_MAX}} characters</span>
         </label>
         <input maxlength="{{regexes.USER_PASSWORD_MAX}}" name="user_password" type="password"
@@ -47,12 +47,12 @@
     <div>
         <label for="role_type">Account type</label>
         <select name="role_type" id="role_type">
-            <option value="3">user</option>
-            <option value="2">partner</option>
+            <option value="3">User</option>
+            <option value="2">Partner</option>
         </select>
     </div>
 
     <button class="save" mix-post="/signup" mix-data="#frm_signup" mix-default="Signup" mix-await="Please wait ...">
-        Signup
+        Sign up
     </button>
 </form>
