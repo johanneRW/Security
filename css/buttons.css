@@ -16,18 +16,18 @@ button {
 }
 
 
-
 .save {
     background-color: var(--color-green);
-    color: white;
+    color: var(--color-white);
 }
 
-save:hover {
+.save:hover {
     background-color: var(--color-ok);
 }
 
 .delete {
     background-color: var(--color-red);
+    color: var(--color-white);
 }
 
 .delete:hover {
@@ -38,7 +38,7 @@ save:hover {
 #more {
     display: block;
     width: 100%;
-    color: white;
+    color: var(--color-white);
     background-color: var(--color-more);
     margin: 0 auto;
     font-weight: bold;

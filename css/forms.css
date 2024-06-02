@@ -4,7 +4,6 @@
     padding: 1rem;
     margin-right: 2rem;
     margin-left: 2rem;
-
 }
 
 
@@ -60,25 +59,18 @@
 }
 
 
-
 #frm_login button {
     padding: 0.5rem 1rem;
 }
 
 form input {
     width: 100%;
-    /* Fylder hele bredden af containeren */
     padding: 10px;
-    /* Tilføjer lidt polstring inde i inputfeltet */
     border: var(--border-input) var(--color-border);
-    /* Standard grå kant */
     border-radius: var(--border-radius);
-    /* Giver afrundede hjørner */
     box-sizing: border-box;
     margin-bottom: 1rem;
 }
-
-
 
 
 form {
@@ -88,7 +80,7 @@ form {
 
 label {
     display: block;
-   
+
 }
 
 input[type="text"],
@@ -103,7 +95,6 @@ input[type="number"] {
     width: 60%;
     display: flex;
     flex-direction: column;
-    /* Sørger for, at elementerne er stablet vertikalt */
     align-items: center;
 }
 
@@ -119,7 +110,7 @@ input[type="number"] {
 
 .booking-form .label-text {
     margin-bottom: 10px;
-   
+
     display: flex;
     justify-content: space-between;
     margin-top: 2rem;
@@ -127,7 +118,7 @@ input[type="number"] {
 
 .label-text span {
     color: var(--color-border);
-   
+
 }
 
 .booking-input {

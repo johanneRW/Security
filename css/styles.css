@@ -39,11 +39,8 @@ body {
 #toast .ok {
     padding: 16px;
     border-radius: var(--border-radius-toast);
-    ;
     color: white;
     background-color: var(--color-ok);
-
-
 
 }
 
@@ -92,14 +89,14 @@ nav a {
 
 .logout {
     color: var(--color-white);
-    background-color: var( --color-red);
+    background-color: var(--color-red);
 }
 
 main {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-top: 7rem ;
+    margin-top: 7rem;
 }
 
 
@@ -142,26 +139,23 @@ main {
     align-items: center;
     justify-content: space-between;
     margin-top: 0.5rem;
-  
+
 }
 
 .item-name {
     flex-grow: 1;
-   
+
 }
 
 .star-icon {
     width: 18px;
-    /* Tilpasser bredden af ikonet */
     height: 18px;
-    /* Tilpasser højden af ikonet */
+
 }
 
 .star {
     display: flex;
-    /* Sørger for at svg og tekst inden for span er på linje */
     align-items: center;
-    /* Centrerer svg og tekst vertikalt */
 }
 
 
@@ -198,10 +192,9 @@ main {
 }
 
 
-.image-row  .image-container img {
-    max-height: 100px;}
-
-
+.image-row .image-container img {
+    max-height: 100px;
+}
 
 
 .usersContainer {
@@ -224,11 +217,11 @@ main {
 
 }
 
-.usersContainer #users .user p{
+.usersContainer #users .user p {
     line-height: 1.5;
 }
 
-.usersContainer #users .user p:nth-child(odd){
+.usersContainer #users .user p:nth-child(odd) {
     color: var(--color-more);
 }
 
@@ -240,7 +233,7 @@ main {
 #user {
     width: 40%;
     margin-top: 4rem;
-    }
+}
 
 .itemsMain {
     display: flex;
@@ -261,13 +254,11 @@ main {
 }
 
 
-
 #items-user {
     display: grid;
     grid-template-columns: 1fr;
     gap: 1rem;
     overflow-y: auto;
-    
 }
 
 #items-user .item {
@@ -303,28 +294,19 @@ main {
 }
 
 
-
-
-
 @media (min-width: 600px) {
 
-    /* For mellemstore skærme */
     #users {
         grid-template-columns: repeat(3, 1fr);
-        /* To kolonner */
     }
 
     #items-user {
         grid-template-columns: repeat(2, 1fr);
-        /* To kolonner */
     }
 
     #items {
         grid-template-columns: repeat(2, 1fr);
-        /* To kolonner */
     }
-
-
 
 }
 

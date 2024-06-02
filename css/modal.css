@@ -1,17 +1,16 @@
-
 .modal-close {
     position: absolute;
-    right: 5px; /* Minimal margin fra højre kant */
+    right: 5px;
     top: 2px;
     border: none;
     background: none;
-    font-size: 16px; /* Gør teksten mindre */
+    font-size: 16px;
     cursor: pointer;
-    padding: 5px; /* Tilstrækkelig plads for klik område, men ikke for stor */
+    padding: 5px;
     line-height: 0.5;
-    color: var(--color-light-gray); /* Subtil farve for lukke-knappen */
+    color: var(--color-light-gray);
 
-    
+
 
 }
 
@@ -20,8 +19,8 @@
     padding: 20px;
     border: var(--border-input) var(--color-border);
     border-radius: var(--border-radius);
-    width: auto; /* Tilpasser bredden til indholdet */
-    max-width: 50%; /* Sikrer at modalen ikke fylder mere end 90% af viewport */
+    width: auto;
+    max-width: 50%;
     height: 17rem;
     margin: 2rem;
 }
@@ -31,8 +30,19 @@
     padding: 20px;
     border: var(--border-input) var(--color-border);
     border-radius: var(--border-radius);
-    width: auto; /* Tilpasser bredden til indholdet */
-    max-width: 50%; /* Sikrer at modalen ikke fylder mere end 90% af viewport */
+    width: auto;
+    max-width: 50%;
+    height: 17rem;
+    margin: 2rem;
+}
+
+#deleteUserModal {
+    position: relative;
+    padding: 20px;
+    border: var(--border-input) var(--color-border);
+    border-radius: var(--border-radius);
+    width: auto;
+    max-width: 50%;
     height: 17rem;
     margin: 2rem;
 }
@@ -68,4 +78,5 @@
     position: absolute;
     right: 0;
     top: 0;
-    padding: 0;}
+    padding: 0;
+}
