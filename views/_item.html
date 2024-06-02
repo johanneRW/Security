@@ -26,11 +26,13 @@
             {{ price }} DKK
         </span>
         <span>per night</span>
-        % if get("is_logged", False) and get("is_admin", False):
-        %include("__toggle_block_item")
-        % end
         % if get("is_logged", False):
         %include("__btn_book")
         % end
+
+        % if get("is_logged", False) and get("is_admin", False):
+        %include("__toggle_block_item")
+        % end
+       
     </div>
 </div>

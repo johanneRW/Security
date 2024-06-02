@@ -5,12 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link href="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css" rel="stylesheet">
-    <script src="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
-
     <link rel="stylesheet" href="/css/styles.css">
     <script src="/js/mixhtml.js" defer></script>
     <script src="/js/app.js" defer></script>
+   
 
     <title>{{ get("title", "Company") }}</title>
 </head>
@@ -22,7 +20,7 @@
     <nav>
         <a class="home" href="/" class="{{ get('active_home', '') }}">Home-Away</a>
 
-        <div class="flex">
+        <div class="flex-nav">
             % if get("is_logged", False):
             <p>You are logged in as: {{user['user_first_name']}}</p>
 

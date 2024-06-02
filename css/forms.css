@@ -1,12 +1,11 @@
-
-#frm_new_item{
-    border:var(--border) var(--color-green);
+#frm_new_item {
+    border: var(--border) var(--color-green);
     border-radius: var(--border-radius);
     padding: 1rem;
     margin-right: 2rem;
     margin-left: 2rem;
 
-    }
+}
 
 
 #frm_signup {
@@ -29,7 +28,7 @@
 
 #frm_signup label span:last-child {
     margin-left: auto;
-    color: var( --color-light-gray);
+    color: var(--color-light-gray);
 }
 
 #frm_signup input,
@@ -82,48 +81,57 @@ form input {
 
 
 
-form{
+form {
 
     border-radius: var(--border-radius);
-    }
-    
-     label {
-        display: block;
-        margin-top: 0.5rem;
-    }
-    
-     input[type="text"],
-    input[type="number"] {
-        display: block;
-        width: 100%;
-        margin-top: 0.2rem;
-        padding: 0.5rem;
-        border: var(--border-input) var(--color-border);
-    }
+}
 
-    .login-form {
-        width: 60%;
-        display: flex;
-        flex-direction: column;
-        /* Sørger for, at elementerne er stablet vertikalt */
-        align-items: center;
-    }
-    
-    .booking-form {
-        display: flex;
-        align-items: center;
-        width: 100%;
-    }
-    
-    .booking-input {
-        flex: 2;
-        margin-right: 10px;
-    }
-    
-    .booking-form .label-text {
-        margin-bottom: 10px; /* Adjust spacing as needed */
-    }
-    
-    .booking-form .label-text span {
-        display: block; /* Makes each span appear on a new line */
-    }
+label {
+    display: block;
+   
+}
+
+input[type="text"],
+input[type="number"] {
+    display: block;
+    width: 100%;
+    padding: 0.5rem;
+    border: var(--border-input) var(--color-border);
+}
+
+.login-form {
+    width: 60%;
+    display: flex;
+    flex-direction: column;
+    /* Sørger for, at elementerne er stablet vertikalt */
+    align-items: center;
+}
+
+.booking-form {
+    align-items: center;
+    width: 100%;
+}
+
+.booking-input {
+    flex: 2;
+    margin-right: 10px;
+}
+
+.booking-form .label-text {
+    margin-bottom: 10px;
+   
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2rem;
+}
+
+.label-text span {
+    color: var(--color-border);
+   
+}
+
+.booking-input {
+    display: flex;
+    align-items: baseline;
+    width: 100%;
+}

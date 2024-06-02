@@ -2,55 +2,15 @@
 
 <div id="{{user['user_pk']}}" class="user">
 
-    <form id="user_{{user['user_pk']}}">
+    <p>Username:</p>
+    <p>{{user['user_username']}}</p>
+    <p>Name:</p>
+    <p>{{user['user_first_name']}} {{user['user_last_name']}}</p>
+    <p>Email:</p>
+    <p>{{user['user_email']}}</p>
 
-        <label for="user_first_name">Name:</label>
-        <input name="user_first_name" value="{{user['user_first_name']}}" mix-check="{{regexes.USER_FIRST_NAME_REGEX}}">
-
-        <label for="user_last_name">Last Name:</label>
-        % last_name = user['user_last_name'] if 'user_last_name' in user else ''
-        <input name="user_last_name" value="{{last_name}}" mix-check="{{regexes.USER_LAST_NAME_REGEX}}">
-
-        <label for="user_username">Username:</label>
-        % username = user['user_username'] if 'user_username' in user else ''
-        <input name="user_username" value="{{username}}" mix-check="{{regexes.USER_USERNAME_REGEX}}">
-
-        <label for="user_email">Email:</label>
-        % email = user['user_email'] if 'user_email' in user else ''
-        <input name="user_email" value="{{email}}" mix-check="{{regexes.USER_EMAIL_REGEX}}">
-
-
-    </form>
-
-    <button class="save" mix-put="/users/{{user['user_pk']}}" mix-data="#user_{{user['user_pk']}}" mix-default="Save"
-        mix-await="Updating user...">
-        Save
-    </button>
-
-    <button class="delete" id="showDeleteUserModal">
-        Delete
-    </button>
 
     % if get("is_logged", False) and get("is_admin", False) and user.get("role_id") != 1:
     %include("__toggle_block_user")
     % end
-
-    <dialog id="deleteUserModal">
-        <button id="close">&times;</button>
-        <header>
-            <h2>Are you sure?</h2>
-        </header>
-        <section>
-            <form id="user_delete_{{user['user_pk']}}">
-                <label for="password">Please enter your password to proceed</label>
-                <input required maxlength={{regexes.USER_PASSWORD_MAX}} name="user_password" type="password"
-                    mix-check="{{regexes.USER_PASSWORD_REGEX}}">
-                <button class="delete" mix-put="/users/{{user['user_pk']}}/delete" mix-default="Delete"
-                    mix-await="Deleting..." mix-data="#user_delete_{{user['user_pk']}}">
-                    Delete
-                </button>
-                <button id="cancel">Cancel</button>
-            </form>
-        </section>
-    </dialog>
 </div>
