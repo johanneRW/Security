@@ -171,7 +171,7 @@ def _(user_pk):
             # Fetch user's password so we can validate it
             db = utils.db()
             db_user = data.get_user_password(db, user_pk)   
-            if not bcrypt.checkpw(user_password.encode(), db_user["user_password"].encode()):
+            if not bcrypt.checkpw(user_password.encode(), db_user["user_password"]):
                 raise ValueError("Invalid credentials", 400)
             
             # Get user info from DB before deleting it

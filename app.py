@@ -34,7 +34,8 @@ def get_update():
     repo.head.reset(index=True, working_tree=True)
     origin.pull()
     return ""
-    
+
+
 
 ##############################
 import routes.signup
