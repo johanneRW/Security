@@ -251,10 +251,11 @@ def update_item(db,item_name,
 
 def update_user(db,username,first_name,last_name,email,user_pk):
     q = db.execute("""UPDATE users
-                        SET user_username =?,  user_first_name=?, 
-                           user_last_name=?, 
+                        SET user_username =?,  
+                        user_first_name=?, 
+                        user_last_name=?, 
                         user_email = ?
-                           WHERE user_pk=?
+                        WHERE user_pk=?
                             """
             ,(username,first_name,last_name,email,user_pk))
     db.commit()
