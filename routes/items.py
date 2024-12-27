@@ -1,5 +1,6 @@
 import uuid
 from bottle import  get, post, delete, request, template, put, response 
+from database.models.user import RoleEnum
 from utility import utils
 from icecream import ic
 import json
@@ -35,7 +36,8 @@ def _(page_number):
             utils.validate_user_logged()
             user = request.get_cookie("user", secret=credentials.COOKIE_SECRET)
             is_logged = True
-            is_admin = user.get("role_id") == 1
+            #is_admin = user.get("role_id") == 1
+            is_admin = user.get("user_role") == RoleEnum.ADMIN.value
         except:
             pass
         

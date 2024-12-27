@@ -1,7 +1,7 @@
 from sqlalchemy import event
 from datetime import datetime
-from models.item import Item
-from models.item_logs import ItemBlockedLog, ItemUpdatedLog
+from ..models.item import Item
+from ..models.item_logs import ItemBlockedLog, ItemUpdatedLog
 
 # Event listener for AFTER INSERT on items
 @event.listens_for(Item, "after_insert")

@@ -27,7 +27,8 @@ def _():
         user_email=utils.validate_email()
         user_password=utils.validate_password().encode()
         hashed_password = bcrypt.hashpw(user_password, bcrypt.gensalt())
-        role_id=request.forms.get("role_type", "")
+        #role_id=request.forms.get("role_type", "")
+        role_name=utils.validate_role()
         user_created_at=int(time.time())
         user_verification_key=uuid.uuid4().hex
 
@@ -38,7 +39,8 @@ def _():
                     user_last_name,
                     user_email,
                     hashed_password,
-                    role_id,
+                    #role_id,
+                    role_name,
                     user_created_at,  
                     user_verification_key)
 
@@ -68,6 +70,7 @@ def _():
         """    
 
     except Exception as ex:
+        raise
         ic(ex)
         if "users.user_email" in str(ex):
             return """

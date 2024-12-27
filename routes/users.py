@@ -1,5 +1,6 @@
 import time
 from bottle import  get, post, put, request,response,  template
+from database.models.user import RoleEnum
 from utility import utils
 from icecream import ic
 import bcrypt 
@@ -21,7 +22,8 @@ def _():
             response.status = 403
             return "you are not logged in"
         else:
-            if user.get("role_id") == 1:            
+            #if user.get("role_id") == 1:  
+            if user.get("user_role") == RoleEnum.ADMIN.value:          
                 db = utils.db()
                 users = data.get_all_users(db)
                 return template("users", users=users,is_logged=is_logged, user=user, is_admin=True)
@@ -41,7 +43,8 @@ def toggle_user_block(user_pk):
         utils.validate_user_logged()
         user = request.get_cookie("user", secret=credentials.COOKIE_SECRET)
 
-        if user.get("role_id") != 1:
+        #if user.get("role_id") != 1:
+        if user.get("user_role") != RoleEnum.ADMIN.value:
             response.status = 403
             return "you are not admin"
 

@@ -3,22 +3,30 @@ from bottle import request, response
 import re
 import sqlite3
 import credentials
+from database.models.user import RoleEnum
 from utility import regexes
 from utility import variables
 from werkzeug.utils import secure_filename
+from database.models.base import Session
 
 
 ##############################
-def dict_factory(cursor, row):
+""" def dict_factory(cursor, row):
     col_names = [col[0] for col in cursor.description]
-    return {key: value for key, value in zip(col_names, row)}
+    return {key: value for key, value in zip(col_names, row)} """
 
 ##############################
 
-def db():
+""" def db():
     db = sqlite3.connect(str(pathlib.Path(__file__).parent.parent.resolve())+"/database/company.db")  
     db.row_factory = dict_factory
-    return db
+    return db """
+    
+
+def db():
+    # Returnér en SQLAlchemy-session
+    return Session()
+
 
 ##############################
 def get_image_folder():
@@ -204,4 +212,17 @@ def validate_number_of_nights():
         raise ValueError(error, 400)
     
     return number_of_nights
+
+
+def validate_role():
+    error = f"Role must be one of: {', '.join([role.value for role in RoleEnum])}"
+    role_name = request.forms.get("role_type", "").strip()
+
+    # Tjek om role_name er gyldig
+    if role_name not in RoleEnum._value2member_map_:
+        raise Exception(error, 400)
+
+    # Returner RoleEnum-objektet
+    role=RoleEnum(role_name)
+    return role.value
 

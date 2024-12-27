@@ -1,8 +1,12 @@
 from sqlalchemy import exists, func, desc
 from sqlalchemy.orm import aliased
 
-from database.models import Item, ItemBlockedLog, User, UserBlockedLog, UserDeletedLog, UserVerificationCompleted
-from database.models.item import ItemImage
+from .models.item import Item ,ItemImage
+from .models.item_logs import ItemBlockedLog, ItemUpdatedLog 
+from .models.user import User
+from .models.user_logs import PasswordResetLog, UserBlockedLog, UserUpdatedLog, UserVerificationRequest,UserVerificationCompleted,UserDeletedLog
+from .models.ratings import Rating
+from .models.bookings import Booking
 
 class UserQueryManager:
     @staticmethod
@@ -37,6 +41,8 @@ class UserQueryManager:
                 User.user_first_name,
                 User.user_last_name,
                 User.user_email,
+                User.user_role,
+                User.user_password,
                 User.user_created_at,
                 func.coalesce(subquery_verified, 0).label("user_is_verified"),
                 func.coalesce(subquery_deleted, 0).label("user_is_deleted"),
@@ -66,6 +72,8 @@ class UserQueryManager:
                 "user_first_name": user.user_first_name,
                 "user_last_name": user.user_last_name,
                 "user_email": user.user_email,
+                "user_role": user.user_role,
+                "user_password": user.user_password,
                 "user_created_at": user.user_created_at,
                 "user_is_verified": user.user_is_verified,
                 "user_is_deleted": user.user_is_deleted,

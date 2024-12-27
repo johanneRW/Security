@@ -1,13 +1,16 @@
-from database.models.item import Item ,ItemImage
-from database.models.item_logs import ItemBlockedLog, ItemUpdatedLog 
-from database.models.user import User
-from database.models.user_logs import PasswordResetLog, UserBlockedLog, UserUpdatedLog, UserVerificationRequest,UserVerificationCompleted,UserDeletedLog
-from database.models.ratings import Rating
-from database.models.bookings import Booking
+from .models.item import Item ,ItemImage
+from .models.item_logs import ItemBlockedLog, ItemUpdatedLog 
+from .models.user import User
+from .models.user_logs import PasswordResetLog, UserBlockedLog, UserUpdatedLog, UserVerificationRequest,UserVerificationCompleted,UserDeletedLog
+from .models.ratings import Rating
+from .models.bookings import Booking
+
+from .events.user_events import insert_user_blocked_listener, update_user_listener
+from .events.item_events import insert_item_blocked_listener, update_item_listener
 
 from sqlalchemy.orm import Session
 
-from database.queryManagers import ItemQueryManager, UserQueryManager
+from .queryManagers import ItemQueryManager, UserQueryManager
 
 
 
@@ -75,7 +78,7 @@ def create_user(
         user_last_name=user_last_name,
         user_email=user_email,
         user_password=hashed_password,
-        role=role,  # Brug RoleEnum direkte
+        user_role=role,  # Brug RoleEnum direkte
         user_created_at=user_created_at
     )
 

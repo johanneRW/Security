@@ -19,7 +19,7 @@ class User(Base):
     user_last_name = Column(String(100), nullable=True)  # Tilføjet længde
     user_email = Column(String(255), unique=True, nullable=False)  # Tilføjet længde
     user_password = Column(String(255), nullable=False)  # Tilføjet længde
-    role = Column(Enum(RoleEnum, name="role_enum"), nullable=False)  # Enum bruges direkte
+    user_role = Column(Enum(RoleEnum, name="role_enum"), nullable=False)  # Enum bruges direkte
     user_created_at = Column(Integer, default=lambda: int(datetime.utcnow().timestamp()), nullable=False)
 
     verification_request = relationship("UserVerificationRequest", back_populates="user", uselist=False)

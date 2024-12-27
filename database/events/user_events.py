@@ -1,12 +1,8 @@
 from sqlalchemy import event
 from datetime import datetime
-from models.user import User
-from models.user_logs import UserBlockedLog, UserUpdatedLog
 
-from sqlalchemy import event
-from datetime import datetime
-from models.user import User
-from models.user_logs import UserBlockedLog, UserUpdatedLog
+from ..models.user import User
+from ..models.user_logs import UserBlockedLog, UserUpdatedLog
 
 # Event listener for AFTER INSERT on users
 @event.listens_for(User, "after_insert")

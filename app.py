@@ -1,4 +1,5 @@
 from bottle import default_app, get, post, request, run, static_file, template
+from database.models.user import RoleEnum
 from utility import utils
 from icecream import ic
 import credentials
@@ -52,33 +53,48 @@ import routes.bookings
 @get("/")
 def _():
     try:
+        # Opret en SQLAlchemy-session
         db = utils.db()
+
+        # Hent items med limit og offset
         items = data.get_items_limit_offset(db, variables.ITEMS_PER_PAGE)
         ic(items)
 
+        # Standardværdier for brugerstatus
         is_logged = False
         is_admin = False
-        user=""
-        try:    
+        user = ""
+
+        try:
+            # Valider om brugeren er logget ind
             utils.validate_user_logged()
             user = request.get_cookie("user", secret=credentials.COOKIE_SECRET)
             is_logged = True
-            is_admin = user.get("role_id") == 1
-        except:
+            is_admin = user.get("user_role") == RoleEnum.ADMIN.value
+        except Exception:
             pass
 
-        format = request.query.get('format')
-        if format == "json":
+        # Håndtér forespørgselsformat
+        response_format = request.query.get("format")
+        if response_format == "json":
             return {"items": items}
 
-        return template("index.html", items=items, mapbox_token=credentials.MAPBOX_TOKEN, 
-                        is_logged=is_logged,user=user,is_admin=is_admin)
+        # Returnér HTML-template
+        return template(
+            "index.html",
+            items=items,
+            mapbox_token=credentials.MAPBOX_TOKEN,
+            is_logged=is_logged,
+            user=user,
+            is_admin=is_admin,
+        )
     except Exception as ex:
         ic(ex)
-        return ex
+        return {"error": str(ex)}
     finally:
-        if "db" in locals(): db.close()
-
+        # Luk SQLAlchemy-sessionen
+        if "db" in locals():
+            db.close()
 
 ##############################
 try:
