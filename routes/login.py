@@ -3,7 +3,7 @@ from utility import utils
 from icecream import ic
 import bcrypt
 import credentials
-from utility import data
+from database import data
 
 ##############################
 @get("/login")

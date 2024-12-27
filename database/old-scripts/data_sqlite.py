@@ -1,9 +1,3 @@
-from database.models.item import Item ,ItemImage
-from database.models.item_logs import ItemBlockedLog, ItemUpdatedLog 
-from database.models.user import User
-from database.models.user_logs import UserBlockedLog, UserUpdatedLog, UserVerificationRequest,UserVerificationCompleted,UserDeletedLog
-from database.models.ratings import Rating
-from database.models.bookings import Booking
 
 def create_image(db, image_pk, item_pk, image_filename):
     db.execute("""

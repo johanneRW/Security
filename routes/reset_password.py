@@ -7,7 +7,7 @@ import credentials
 import time
 
 from utility import email
-from utility import data
+from database import data
 
 @get("/reset_password/<key>")
 def _(key):

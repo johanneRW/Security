@@ -3,9 +3,8 @@ from utility import utils
 from icecream import ic
 import credentials
 from utility import variables
-from utility import data
+from database import data
 import git
-import mysql.connector
 from database.models.base import Base, engine
 import database.events
 

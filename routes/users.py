@@ -5,7 +5,7 @@ from icecream import ic
 import bcrypt 
 from utility import email
 import credentials
-from utility import data
+from database import data
 
 
 @get("/users")

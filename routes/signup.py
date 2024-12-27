@@ -8,7 +8,7 @@ import credentials
 import time
 
 from utility import email
-from utility import data
+from database import data
 
 
 @get("/signup")

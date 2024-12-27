@@ -7,7 +7,7 @@ import os
 import time
 import uuid
 from utility import utils
-from utility import data
+from database import data
 
 
 @post("/items/image/<item_pk>")
