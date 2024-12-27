@@ -1,11 +1,31 @@
-from bottle import default_app, get, post, request, run, static_file, template
+from bottle import default_app, get, post, request, run, static_file, template, hook, response
 from utility import utils
 from icecream import ic
 import credentials
 from utility import variables
 from utility import data
 import git
+import secrets
 
+
+
+##### Content Security Policy (CSP) #####
+@hook('before_request')
+def setup_nonce():
+    request.nonce = secrets.token_hex(16)
+
+@hook('after_request')
+def add_security_headers():
+    response.headers['Content-Security-Policy'] = f"\
+        default-src 'self'; \
+        script-src 'self' https://api.mapbox.com 'nonce-{request.nonce}'; \
+        worker-src blob:; \
+        style-src 'self' https://api.mapbox.com 'unsafe-inline'; \
+        img-src 'self' data: https://*.mapbox.com; \
+        connect-src 'self' https://api.mapbox.com https://events.mapbox.com; \
+        frame-ancestors 'none'; \
+        form-action 'self'; \
+        base-uri 'self';"
 
 ##############################
 
@@ -74,7 +94,7 @@ def _():
             return {"items": items}
 
         return template("index.html", items=items, mapbox_token=credentials.MAPBOX_TOKEN, 
-                        is_logged=is_logged,user=user,is_admin=is_admin)
+                        is_logged=is_logged,user=user,is_admin=is_admin, request=request)
     except Exception as ex:
         ic(ex)
         return ex
