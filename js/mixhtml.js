@@ -102,8 +102,45 @@ async function mix_fetch_data(el){
     }    
 
     res = await conn.text()
-    document.querySelector("body").insertAdjacentHTML('beforeend', res)
+    
+    // Add sanitization before inserting
+    const sanitizedHtml = sanitizeHtml(res)
+    document.querySelector("body").insertAdjacentHTML('beforeend', sanitizedHtml)
+    
     process_template(el.getAttribute("mix-"+method))
+}
+
+// Add sanitization function
+function sanitizeHtml(dirty) {
+    // Create a new DOMParser
+    const parser = new DOMParser()
+    const doc = parser.parseFromString(dirty, 'text/html')
+    
+    // Remove potentially dangerous elements and attributes
+    const dangerous = ['script', 'style', 'iframe', 'object', 'embed']  // Removed 'form' since you need it
+    dangerous.forEach(tag => {
+        doc.querySelectorAll(tag).forEach(node => node.remove())
+    })
+    
+    // Remove dangerous attributes from remaining elements
+    const dangerousAttrs = ['onerror', 'onload', 'onmouseover', 'onclick', 'onmouseout', 'onkeydown', 'onkeyup']
+    doc.querySelectorAll('*').forEach(el => {
+        dangerousAttrs.forEach(attr => el.removeAttribute(attr))
+        
+        // Remove javascript: and data: URLs
+        if(el.href && (el.href.toLowerCase().startsWith('javascript:') || el.href.toLowerCase().startsWith('data:'))) {
+            el.remove()
+        }
+        if(el.src && (el.src.toLowerCase().startsWith('javascript:') || el.src.toLowerCase().startsWith('data:'))) {
+            el.remove()
+        }
+    })
+    
+    // Get both body content and any template tags that might be siblings
+    const templates = Array.from(doc.querySelectorAll('template')).map(t => t.outerHTML).join('')
+    const bodyContent = doc.body.innerHTML
+    
+    return templates + bodyContent
 }
 
 // ##############################
@@ -226,9 +263,7 @@ setInterval(function(){
 
 // ##############################
 function mix_convert(){
-    // cl("converting")
     document.querySelectorAll("[mix-get], [mix-delete], [mix-put], [mix-post]").forEach( el => {
-        // cl(el)
         let method = "mix-get"
         if(el.hasAttribute("mix-delete")){ method = "mix-delete" }
         
@@ -242,15 +277,24 @@ function mix_convert(){
             }                            
         }
         if(!el.hasAttribute("mix-focus") && !el.hasAttribute("mix-blur")){
-            el.setAttribute("onclick", "mixhtml(); return false")
+            // Replace onclick attribute with addEventListener
+            el.addEventListener('click', (e) => {
+                e.preventDefault()
+                mixhtml(el)
+            })
         }
     })  
 
-    let mix_event = "onclick"
     document.querySelectorAll("[mix-focus], [mix-blur]").forEach( el => {
-        if(el.hasAttribute("mix-focus")){ mix_event = "onfocus" }
-        if(el.hasAttribute("mix-blur")){ mix_event = "onblur" }
-        el.setAttribute(mix_event, "mixhtml(); return false")
+        let eventType = 'click'
+        if(el.hasAttribute("mix-focus")){ eventType = "focus" }
+        if(el.hasAttribute("mix-blur")){ eventType = "blur" }
+        
+        // Replace on* attributes with addEventListener
+        el.addEventListener(eventType, (e) => {
+            e.preventDefault()
+            mixhtml(el)
+        })
     })     
 }
 
