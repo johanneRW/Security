@@ -5,7 +5,7 @@ import credentials
 from utility import variables
 from utility import data
 import git
-
+import mysql.connector
 
 ##############################
 
@@ -84,6 +84,13 @@ try:
     import production
     application = default_app()
 except:
+    cnx = mysql.connector.connect(user='root', password='password',
+                              host='db',
+                              database='example')
+    cur = cnx.cursor()
+    res = cur.execute("select * from foo")
+    print(res)
+    cnx.close()
     run(host="0.0.0.0", port=81, debug=True, reloader=True, interval=0)
 
 
