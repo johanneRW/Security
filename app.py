@@ -6,6 +6,8 @@ from utility import variables
 from utility import data
 import git
 import mysql.connector
+from database.models.base import Base, engine
+import database.events
 
 ##############################
 
@@ -84,13 +86,14 @@ try:
     import production
     application = default_app()
 except:
-    cnx = mysql.connector.connect(user='root', password='password',
-                              host='db',
-                              database='example')
-    cur = cnx.cursor()
-    res = cur.execute("select * from foo")
-    print(res)
-    cnx.close()
+    # Udskriv alle tabeller i metadata
+    print("Tabeller der oprettes:")
+    for table_name in Base.metadata.tables.keys():
+        print(f"- {table_name}")
+    
+    Base.metadata.create_all(engine)
+    print("Database and models initialized successfully.")
+
     run(host="0.0.0.0", port=81, debug=True, reloader=True, interval=0)
 
 
