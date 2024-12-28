@@ -6,7 +6,6 @@ import settings
 from database import data
 import git
 from database.models.base import Base, engine
-import database.events
 
 ##############################
 
