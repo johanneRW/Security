@@ -5,7 +5,7 @@ from utility import utils
 from icecream import ic
 import bcrypt 
 from utility import email
-import credentials
+import settings
 from database import data
 
 
@@ -16,7 +16,7 @@ def _():
         user=""
         try:    
             utils.validate_user_logged()
-            user = request.get_cookie("user", secret=credentials.COOKIE_SECRET)
+            user = request.get_cookie("user", secret=settings.COOKIE_SECRET)
             is_logged = True
         except:
             response.status = 403
@@ -41,7 +41,7 @@ def _():
 def toggle_user_block(user_pk):
     try:
         utils.validate_user_logged()
-        user = request.get_cookie("user", secret=credentials.COOKIE_SECRET)
+        user = request.get_cookie("user", secret=settings.COOKIE_SECRET)
 
         #if user.get("role_id") != 1:
         if user.get("user_role") != RoleEnum.ADMIN.value:
@@ -79,7 +79,7 @@ def toggle_user_block(user_pk):
 
         template_vars = {"user_first_name": user_first_name}
         #email.send_email( user_email, subject, template_name, **template_vars)
-        email.send_email(credentials.DEFAULT_EMAIL, email_subject, email_template, **template_vars)
+        email.send_email(settings.DEFAULT_EMAIL, email_subject, email_template, **template_vars)
 
 
         return f"""
@@ -113,7 +113,7 @@ def toggle_user_block(user_pk):
 @put("/users/<user_pk>")
 def _(user_pk):
     try:
-        user = request.get_cookie("user", secret= credentials.COOKIE_SECRET)
+        user = request.get_cookie("user", secret= settings.COOKIE_SECRET)
         if user:
             first_name = utils.validate_user_first_name()
             last_name = utils.validate_user_last_name()
@@ -131,12 +131,7 @@ def _(user_pk):
             user = data.get_user(db, user_pk)
             user.pop("user_password") # Do not put the user's password in the cookie
             ic(user)
-            try:
-                import production
-                is_cookie_https = True
-            except:
-                is_cookie_https = False        
-            response.set_cookie("user", user, secret=credentials.COOKIE_SECRET, httponly=True, secure=is_cookie_https, path="/")
+            response.set_cookie("user", user, secret=settings.COOKIE_SECRET, httponly=True, secure=settings.COOKIE_SECURE, path="/")
 
             html = template("_user.html", user=user,is_logged=True)
             return f"""
@@ -168,7 +163,7 @@ def _(user_pk):
 @put("/users/<user_pk>/delete")
 def _(user_pk):
     try:
-        user = request.get_cookie("user", secret= credentials.COOKIE_SECRET)
+        user = request.get_cookie("user", secret= settings.COOKIE_SECRET)
         if user:
             user_password = utils.validate_password()
             # Fetch user's password so we can validate it
@@ -191,7 +186,7 @@ def _(user_pk):
             template_name = "email_delete_profile"
             template_vars = {"user_first_name": user_first_name}
             #email.send_email( user_email, subject, template_name, **template_vars)
-            email.send_email(credentials.DEFAULT_EMAIL, subject, template_name, **template_vars)
+            email.send_email(settings.DEFAULT_EMAIL, subject, template_name, **template_vars)
             
 
             response.delete_cookie("user", path='/')

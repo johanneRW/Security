@@ -2,10 +2,9 @@ import pathlib
 from bottle import request, response
 import re
 import sqlite3
-import credentials
+import settings
 from database.models.user import RoleEnum
 from utility import regexes
-from utility import variables
 from werkzeug.utils import secure_filename
 from database.models.base import Session
 
@@ -30,21 +29,13 @@ def db():
 
 ##############################
 def get_image_folder():
-    try:
-        import production
-        image_folder = variables.PRODUCTION_IMAGE_FOLDER
-    except ImportError:
-        image_folder = variables.LOCAL_IMAGE_FOLDER
-    return str(image_folder)
+    return settings.IMAGE_FOLDER
+
 
 ##############################
 
 def get_host_name():
-    try:
-        import production
-        return variables.PRODUCTION_HOST_NAME
-    except ImportError:
-        return variables.LOCAL_HOST_NAME
+    return settings.HOST_NAME
 
 
 
@@ -57,7 +48,7 @@ def no_cache():
 
 ##############################
 def validate_user_logged():
-    user = request.get_cookie("user", secret=credentials.COOKIE_SECRET)
+    user = request.get_cookie("user", secret=settings.COOKIE_SECRET)
     if user is None: raise Exception("user must login", 400)
     return user
 

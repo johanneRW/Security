@@ -1,7 +1,7 @@
 from bottle import post, request, response, template
 from utility import utils
 from icecream import ic
-import credentials
+import settings
 import time
 from database import data
 
@@ -9,7 +9,7 @@ from database import data
 def _(item_pk):
     try:
         
-        user = request.get_cookie("user", secret= credentials.COOKIE_SECRET)
+        user = request.get_cookie("user", secret= settings.COOKIE_SECRET)
         if user:
 
             user_pk=user['user_pk']

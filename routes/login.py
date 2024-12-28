@@ -2,7 +2,7 @@ from bottle import get, post, response, template
 from utility import utils
 from icecream import ic
 import bcrypt
-import credentials
+import settings
 from database import data
 
 ##############################
@@ -29,12 +29,7 @@ def _():
     
         user.pop("user_password") # Do not put the user's password in the cookie
         ic(user)
-        try:
-            import production
-            is_cookie_https = True
-        except:
-            is_cookie_https = False        
-        response.set_cookie("user", user, secret=credentials.COOKIE_SECRET, httponly=True, secure=is_cookie_https)
+        response.set_cookie("user", user, secret=settings.COOKIE_SECRET, httponly=True, secure=settings.COOKIE_SECURE)
         
         frm_login = template("__frm_login")
         return f"""

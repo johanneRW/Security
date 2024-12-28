@@ -2,8 +2,7 @@ from bottle import default_app, get, post, request, run, static_file, template
 from database.models.user import RoleEnum
 from utility import utils
 from icecream import ic
-import credentials
-from utility import variables
+import settings
 from database import data
 import git
 from database.models.base import Base, engine
@@ -57,7 +56,7 @@ def _():
         db = utils.db()
 
         # Hent items med limit og offset
-        items = data.get_items_limit_offset(db, variables.ITEMS_PER_PAGE)
+        items = data.get_items_limit_offset(db, settings.ITEMS_PER_PAGE)
         ic(items)
 
         # Standardværdier for brugerstatus
@@ -68,7 +67,7 @@ def _():
         try:
             # Valider om brugeren er logget ind
             utils.validate_user_logged()
-            user = request.get_cookie("user", secret=credentials.COOKIE_SECRET)
+            user = request.get_cookie("user", secret=settings.COOKIE_SECRET)
             is_logged = True
             is_admin = user.get("user_role") == RoleEnum.ADMIN.value
         except Exception:
@@ -83,7 +82,7 @@ def _():
         return template(
             "index.html",
             items=items,
-            mapbox_token=credentials.MAPBOX_TOKEN,
+            mapbox_token=settings.MAPBOX_TOKEN,
             is_logged=is_logged,
             user=user,
             is_admin=is_admin,
@@ -97,10 +96,9 @@ def _():
             db.close()
 
 ##############################
-try:
-    import production
+if settings.PRODUCTION:
     application = default_app()
-except:
+else:
     # Udskriv alle tabeller i metadata
     print("Tabeller der oprettes:")
     for table_name in Base.metadata.tables.keys():
