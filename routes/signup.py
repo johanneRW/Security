@@ -1,5 +1,5 @@
 import uuid
-from bottle import get, post, request, template, put, response
+from bottle import get, post, template, put, response
 from utility import utils
 from icecream import ic
 import bcrypt
@@ -70,28 +70,58 @@ def _():
         """    
 
     except Exception as ex:
-        raise
-        ic(ex)
-        if "users.user_email" in str(ex):
+        ic(ex)  # Log fejlen for debugging
+        error_message = str(ex)
+
+        # Håndtering af specifikke fejlmeddelelser
+        if "users.user_email" in error_message:
             return """
             <template mix-target="#toast">
-            <div mix-ttl="3000" class="error">
-                Email not available
-            </div>
+                <div mix-ttl="3000" class="error">
+                    Email not available
+                </div>
             </template>
             """    
 
-        if "user_email invalid" in str(ex):
+        if "user_email invalid" in error_message:
             return """
             <template mix-target="#toast">
-            <div mix-ttl="3000" class="error">
-                Email invalid
-            </div>
+                <div mix-ttl="3000" class="error">
+                    Email invalid
+                </div>
             </template>
             """    
-       
+
+        if "too simple" in error_message:
+            return """
+            <template mix-target="#toast">
+                <div mix-ttl="3000" class="error">
+                    Password is too simple
+                </div>
+            </template>
+            """    
+
+        if "username" in error_message:
+            return f"""
+            <template mix-target="#toast">
+                <div mix-ttl="3000" class="error">
+                    {error_message}
+                </div>
+            </template>
+            """    
+
+        # Generisk fejlmeddelelse for alle andre undtagelser
+        return """
+        <template mix-target="#toast">
+            <div mix-ttl="3000" class="error">
+                Something went wrong. Please try again.
+            </div>
+        </template>
+        """    
+
     finally:
-        if "db" in locals(): db.close()
+        if "db" in locals():
+            db.close()
 
 
 
