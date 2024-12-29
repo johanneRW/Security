@@ -26,7 +26,7 @@ def _(item_image):
     return static_file(item_image, "images")
 
 
-@post('/secret_url_for_git_hook')
+""" @post('/secret_url_for_git_hook')
 def get_update():
     repo = git.Repo('./home_away')
     origin = repo.remotes.origin
@@ -34,7 +34,7 @@ def get_update():
     repo.head.reset(index=True, working_tree=True)
     origin.pull()
     return ""
-
+ """
 
 
 ##############################
@@ -75,11 +75,6 @@ def _():
         # Håndtér forespørgselsformat
         response_format = request.query.get("format")
         if response_format == "json":            
-            for item in items:
-                # Remove "_sa_instance_state" from all items (it cannot be converted to JSON)
-                del item["_sa_instance_state"]
-                # Convert Decimal object to float
-                item["item_stars"] = float(item["item_stars"])
             return {"items": items}
 
         # Returnér HTML-template
