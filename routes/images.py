@@ -23,7 +23,9 @@ def _(item_pk):
         
         # Validate and save image
         image, image_filename = utils.validate_image()
-        image.save(os.path.join(image_folder, image_filename))
+        image_path = os.path.join(image_folder, image_filename)
+        image.save(image_path)
+
         
         image_pk=uuid.uuid4().hex
 
@@ -42,6 +44,7 @@ def _(item_pk):
        
     except Exception as ex:
         ic(ex)
+        raise
         response.status = 400 
         return f"""
             <template mix-target="#toast">

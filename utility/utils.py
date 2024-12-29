@@ -4,6 +4,7 @@ import re
 import settings
 from database.models.user import RoleEnum
 from utility import regexes
+from PIL import Image
 from werkzeug.utils import secure_filename
 from database.models.base import Session
 import secrets
@@ -195,7 +196,7 @@ def validate_item_price_per_night():
 
 ##############################
 
-def validate_image():
+""" def validate_image():
     error = "image must be a valid image filename (jpg, jpeg, png, gif, webp)"
     file = request.files.get('image')
     if file is None or not file.filename.strip():
@@ -205,6 +206,35 @@ def validate_image():
     if not re.match(regexes.ITEM_IMAGE_REGEX, filename):
         raise Exception(error, 400)
     
+    return file, filename """
+    
+def validate_image():
+    error = "Image must be a valid image file (jpg, jpeg, png, gif, webp)"
+    file = request.files.get('image')
+    
+    # Tjek om filen eksisterer og har et navn
+    if file is None or not file.filename.strip():
+        raise Exception(error, 400)
+    
+    # Sikrer, at filnavnet er sikkert
+    filename = secure_filename(file.filename)
+    
+    # Tjek om filnavnet matcher det ønskede mønster (valgfrit)
+    if not re.match(regexes.ITEM_IMAGE_REGEX, filename):
+        raise Exception(error, 400)
+    
+    # Valider om filens indhold er et billede ved at forsøge at åbne det med Pillow
+    try:
+        file.file.seek(0)  # Sørg for at starte fra begyndelsen af filstrømmen
+        img = Image.open(file.file)
+        img.verify()  # Tjekker om det er et gyldigt billede
+    except Exception:
+        raise Exception(error, 400)
+    
+    # Genindlæs billedet for at sikre, at strømmen kan bruges igen
+    file.file.seek(0)  # Nulstil strømmen til starten igen for videre brug
+
+    # Returner det originale filobjekt og det sikre filnavn
     return file, filename
 
 ##############################

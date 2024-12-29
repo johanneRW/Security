@@ -120,6 +120,17 @@ def _():
             # Generate CSRF token without user_pk for non-logged-in users
             csrf_token = utils.generate_csrf_token()
 
+        # Håndtér forespørgselsformat
+        response_format = request.query.get("format")
+        if response_format == "json":            
+            for item in items:
+                # Remove "_sa_instance_state" from all items (it cannot be converted to JSON)
+                del item["_sa_instance_state"]
+                # Convert Decimal object to float
+                item["item_stars"] = float(item["item_stars"])
+            return {"items": items}
+
+        # Returnér HTML-template
         return template(
             "index.html",
             items=items,
