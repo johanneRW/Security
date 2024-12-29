@@ -16,7 +16,7 @@ def _():
 def _():
     try:
         user_email = utils.validate_email()
-        user_password = utils.validate_password()
+        user_password = utils.validate_password(skip_name_validation=True)
         db = utils.db()
         user = data.get_user_by_email(db, user_email)
         ic(user)
@@ -40,7 +40,6 @@ def _():
         </template>
         """
     except Exception as ex:
-        raise
         try:
             response.status = ex.args[1] if len(ex.args) > 1 else 400
             return f"""

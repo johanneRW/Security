@@ -110,7 +110,7 @@ def load_common_passwords(file_path="./utility/10k-most-common.txt"):
         raise Exception("Common passwords file not found") from exc
 
 # Ny validate_password funktion
-def validate_password():
+def validate_password(skip_name_validation=False):
     # Læs brugerdata
     user_password = request.forms.get("user_password", "").strip()
     user_first_name = request.forms.get("user_first_name", "").strip()
@@ -125,8 +125,9 @@ def validate_password():
         raise Exception(error_length, 400)
 
     # Tjek om for- eller efternavn indgår i password (case-insensitive)
-    if user_first_name.lower() in user_password.lower() or user_last_name.lower() in user_password.lower():
-        raise Exception(error_simple, 400)
+    if not skip_name_validation:
+        if user_first_name.lower() in user_password.lower() or user_last_name.lower() in user_password.lower():
+            raise Exception(error_simple, 400)
 
     # Tjek om password er på listen over mest brugte kodeord
     common_passwords = load_common_passwords()
