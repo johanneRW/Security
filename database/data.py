@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from .models.item import Item, ItemImage
 from .models.item_logs import ItemBlockedLog, ItemUpdatedLog 
 from .models.user import User
@@ -198,18 +200,28 @@ def get_items_limit_offset(db: Session, limit: int, offset: int = 0):
     items = []
     for item, stars, images, is_blocked in results:
         # Convert SQLAlchemy model to dict
-        item_dict = {
-            "item_pk": item.item_pk,
-            "item_name": item.item_name,
-            "item_lat": float(item.item_lat),  # Convert to float for JSON
-            "item_lon": float(item.item_lon),  # Convert to float for JSON
-            "item_price_per_night": float(item.item_price_per_night),
-            "item_created_at": item.item_created_at,
-            "item_owned_by": item.item_owned_by,
-            "item_stars": float(stars),
-            "images": images.split(",") if images else [],
-            "item_is_blocked": is_blocked  # Add blocked status to the dictionary
-        }
+        # item_dict = {
+        #     "item_pk": item.item_pk,
+        #     "item_name": item.item_name,
+        #     "item_lat": float(item.item_lat),  # Convert to float for JSON
+        #     "item_lon": float(item.item_lon),  # Convert to float for JSON
+        #     "item_price_per_night": float(item.item_price_per_night),
+        #     "item_created_at": item.item_created_at,
+        #     "item_owned_by": item.item_owned_by,
+        #     "item_stars": float(stars),
+        #     "images": images.split(",") if images else [],
+        #     "item_is_blocked": is_blocked  # Add blocked status to the dictionary
+        # }
+        # Konverter billeder til en liste
+        images_list = [f"/images/{img}" for img in images.split(",")] if images else []
+        # Lav en dictionary for hvert item
+        item_dict = item.__dict__.copy()
+        # Remove "_sa_instance_state" from all items (it cannot be converted to JSON)
+        del item_dict["_sa_instance_state"]
+        item_dict.update({
+            "item_stars": float(stars.quantize(Decimal("1.0"))),
+            "images": images_list
+        })
         items.append(item_dict)
     return items
 

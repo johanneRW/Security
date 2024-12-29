@@ -38,6 +38,7 @@ def _(page_number):
   
         items = data.get_items_limit_offset(db,limit,offset)
         ic(items)
+        
 
         is_logged = False
         is_admin = False
