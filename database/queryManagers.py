@@ -72,7 +72,7 @@ class UserQueryManager:
                 "user_first_name": user.user_first_name,
                 "user_last_name": user.user_last_name,
                 "user_email": user.user_email,
-                "user_role": user.user_role,
+                "user_role": user.user_role.value if user.user_role else None,
                 "user_password": user.user_password,
                 "user_created_at": user.user_created_at,
                 "user_is_verified": user.user_is_verified,
