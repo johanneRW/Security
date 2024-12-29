@@ -78,6 +78,7 @@ def _():
         </template>
         """
     except Exception as ex:
+        raise
         ic(ex)
         if "user_email invalid" in str(ex):
             response.status = 400
@@ -140,7 +141,7 @@ def _(key):
             </template>
             """
 
-        user_password = utils.validate_password().encode()
+        user_password = utils.validate_password(skip_name_validation=True).encode()
         hashed_password = bcrypt.hashpw(user_password, bcrypt.gensalt())
 
         data.update_user_password(db,hashed_password, user_pk)

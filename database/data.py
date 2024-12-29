@@ -120,12 +120,15 @@ def create_password_reset(db: Session, password_reset_key: str, password_reset_a
 
 
 
+def object_as_dict(obj):
+    return {column.key: getattr(obj, column.key) for column in obj.__table__.columns}
 
 
 def get_reset_info(db: Session, key: str):
-    # Få den første række, hvor password_reset_key matcher
     reset_info = db.query(PasswordResetLog).filter(PasswordResetLog.password_reset_key == key).first()
-    return reset_info
+    if reset_info:
+        return object_as_dict(reset_info)
+    return None
 
 
 

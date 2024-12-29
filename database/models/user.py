@@ -14,11 +14,11 @@ class RoleEnum(PyEnum):
 class User(Base):
     __tablename__ = 'users'
     user_pk = Column(String(36), primary_key=True, unique=True, default=lambda: str(uuid.uuid4()))
-    user_username = Column(String(100), nullable=True)  # Tilføjet længde
-    user_first_name = Column(String(100), nullable=True)  # Tilføjet længde
-    user_last_name = Column(String(100), nullable=True)  # Tilføjet længde
-    user_email = Column(String(255), unique=True, nullable=False)  # Tilføjet længde
-    user_password = Column(String(255), nullable=False)  # Tilføjet længde
+    user_username = Column(String(30), nullable=True)  # Tilføjet længde
+    user_first_name = Column(String(30), nullable=True)  # Tilføjet længde
+    user_last_name = Column(String(30), nullable=True)  # Tilføjet længde
+    user_email = Column(String(100), unique=True, nullable=False)  # Tilføjet længde
+    user_password = Column(String(60), nullable=False)  # Tilføjet længde
     user_role = Column(Enum(RoleEnum, name="role_enum"), nullable=False)  # Enum bruges direkte
     user_created_at = Column(Integer, default=lambda: int(datetime.utcnow().timestamp()), nullable=False)
 
