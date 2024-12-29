@@ -1,12 +1,11 @@
 from sqlalchemy import exists, func, desc
 from sqlalchemy.orm import aliased
 
-from .models.item import Item ,ItemImage
-from .models.item_logs import ItemBlockedLog, ItemUpdatedLog 
+from .models.item import Item, ItemImage
+from .models.item_logs import ItemBlockedLog
 from .models.user import User
-from .models.user_logs import PasswordResetLog, UserBlockedLog, UserUpdatedLog, UserVerificationRequest,UserVerificationCompleted,UserDeletedLog
-from .models.ratings import Rating
-from .models.bookings import Booking
+from .models.user_logs import  UserBlockedLog, UserVerificationCompleted,UserDeletedLog
+
 
 class UserQueryManager:
     @staticmethod
@@ -86,9 +85,6 @@ class UserQueryManager:
 
 
 
-
-
-
 class ItemQueryManager:
     @staticmethod
     def get_items_with_status(session):
@@ -110,6 +106,7 @@ class ItemQueryManager:
                 Item.item_price_per_night,
                 Item.item_created_at,
                 Item.item_owned_by,
+                Item.item_visibility,  # Include visibility
                 func.coalesce(latest_blocked_log.as_scalar(), 0).label("item_is_blocked"),
                 func.group_concat(ItemImage.image_filename.distinct()).label("images"),  # Aggregate images
             )
@@ -131,8 +128,10 @@ class ItemQueryManager:
                 "item_price_per_night": item.item_price_per_night,
                 "item_created_at": item.item_created_at,
                 "item_owned_by": item.item_owned_by,
+                "item_visibility": item.item_visibility.value if item.item_visibility else "private",  # Convert Enum to string
                 "item_is_blocked": item.item_is_blocked,
                 "images": item.images.split(",") if item.images else [],  # Convert images to list
             }
             items_list.append(item_dict)
         return items_list
+
