@@ -1,15 +1,15 @@
 from bottle import post, request, response, template
 from utility import utils
 from icecream import ic
-import credentials
+import settings
 import time
-from utility import data
+from database import data
 
 @post("/bookings/<item_pk>")
 def _(item_pk):
     try:
         csrf_token = utils.validate_csrf_token()
-        user = request.get_cookie("user", secret= credentials.COOKIE_SECRET)
+        user = request.get_cookie("user", secret= settings.COOKIE_SECRET)
         if user:
 
             user_pk=user['user_pk']

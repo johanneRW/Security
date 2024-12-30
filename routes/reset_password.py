@@ -3,11 +3,11 @@ from bottle import  get, post, template, put, response
 from utility import utils
 from icecream import ic
 import bcrypt
-import credentials
+import settings
 import time
 
 from utility import email
-from utility import data
+from database import data
 
 @get("/reset_password/<key>")
 def _(key):
@@ -59,7 +59,7 @@ def _():
             "host_name": utils.get_host_name(),
         }
         #email.send_email( user_email, subject, template_name, **template_vars)
-        email.send_email(credentials.DEFAULT_EMAIL, subject, template_name, **template_vars)
+        email.send_email(settings.DEFAULT_EMAIL, subject, template_name, **template_vars)
 
         csrf_token = utils.get_csrf_token()
         html = template("__frm_send_new_password.html", csrf_token=csrf_token)

@@ -1,11 +1,12 @@
 from bottle import default_app, get, post, request, run, static_file, template, hook, response, abort
+from database.models.user import RoleEnum
 from utility import utils
 from icecream import ic
-import credentials
-from utility import variables
-from utility import data
+import settings
+from database import data
 import git
 import secrets
+from database.models.base import Base, engine
 
 
 
@@ -96,47 +97,64 @@ import routes.items
 import routes.images
 import routes.bookings
 
-import routes.arango
-
-
 ##############################
 @get("/")
 def _():
     try:
+        # Opret en SQLAlchemy-session
         db = utils.db()
-        items = data.get_items_limit_offset(db, variables.ITEMS_PER_PAGE)
+
+        # Hent items med limit og offset
+        items = data.get_items_limit_offset(db, settings.ITEMS_PER_PAGE)
         ic(items)
 
+        # Standardværdier for brugerstatus
         is_logged = False
         is_admin = False
         user=""
         csrf_token = utils.get_csrf_token()
         try:    
             utils.validate_user_logged()
-            user = request.get_cookie("user", secret=credentials.COOKIE_SECRET)
+            user = request.get_cookie("user", secret=settings.COOKIE_SECRET)
             is_logged = True
-            is_admin = user.get("role_id") == 1
-        except:
+            is_admin = user.get("user_role") == RoleEnum.ADMIN.value
+        except Exception:
             pass
 
-        format = request.query.get('format')
-        if format == "json":
+        # Håndtér forespørgselsformat
+        response_format = request.query.get("format")
+        if response_format == "json":
             return {"items": items}
 
-        return template("index.html", items=items, mapbox_token=credentials.MAPBOX_TOKEN, 
-                        is_logged=is_logged,user=user,is_admin=is_admin, request=request, csrf_token=csrf_token)
+        # Returnér HTML-template
+        return template(
+            "index.html",
+            items=items,
+            mapbox_token=settings.MAPBOX_TOKEN,
+            is_logged=is_logged,
+            user=user,
+            is_admin=is_admin,
+        )
     except Exception as ex:
         ic(ex)
-        return ex
+        return {"error": str(ex)}
     finally:
-        if "db" in locals(): db.close()
-
+        # Luk SQLAlchemy-sessionen
+        if "db" in locals():
+            db.close()
 
 ##############################
-try:
-    import production
+if settings.PRODUCTION:
     application = default_app()
-except:
+else:
+    # Udskriv alle tabeller i metadata
+    print("Tabeller der oprettes:")
+    for table_name in Base.metadata.tables.keys():
+        print(f"- {table_name}")
+    
+    Base.metadata.create_all(engine)
+    print("Database and models initialized successfully.")
+
     run(host="0.0.0.0", port=81, debug=True, reloader=True, interval=0)
 
 

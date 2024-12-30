@@ -1,43 +1,31 @@
-import pathlib
+import os
 from bottle import request, response
 import re
-import sqlite3
-import credentials
+import settings
+from database.models.user import RoleEnum
 from utility import regexes
-from utility import variables
 from werkzeug.utils import secure_filename
+from database.models.base import Session
 import secrets
 
 
 ##############################
-def dict_factory(cursor, row):
-    col_names = [col[0] for col in cursor.description]
-    return {key: value for key, value in zip(col_names, row)}
 
-##############################
 
 def db():
-    db = sqlite3.connect(str(pathlib.Path(__file__).parent.parent.resolve())+"/database/company.db")  
-    db.row_factory = dict_factory
-    return db
+    # Returnér en SQLAlchemy-session
+    return Session()
+
 
 ##############################
 def get_image_folder():
-    try:
-        import production
-        image_folder = variables.PRODUCTION_IMAGE_FOLDER
-    except ImportError:
-        image_folder = variables.LOCAL_IMAGE_FOLDER
-    return str(image_folder)
+    return settings.IMAGE_FOLDER
+
 
 ##############################
 
 def get_host_name():
-    try:
-        import production
-        return variables.PRODUCTION_HOST_NAME
-    except ImportError:
-        return variables.LOCAL_HOST_NAME
+    return settings.HOST_NAME
 
 
 
@@ -50,7 +38,7 @@ def no_cache():
 
 ##############################
 def validate_user_logged():
-    user = request.get_cookie("user", secret=credentials.COOKIE_SECRET)
+    user = request.get_cookie("user", secret=settings.COOKIE_SECRET)
     if user is None: raise Exception("user must login", 400)
     return user
 
@@ -105,10 +93,48 @@ def validate_user_last_name():
 ##############################
 
 
-def validate_password():
+""" def validate_password():
     error = f"password {regexes.USER_PASSWORD_MIN} to {regexes.USER_PASSWORD_MAX} characters"
     user_password = request.forms.get("user_password", "").strip()
     if not re.match(regexes.USER_PASSWORD_REGEX, user_password): raise Exception(error, 400)
+    return user_password 
+    
+ """
+ 
+ 
+# Funktion til at læse den liste over de mest brugte kodeord
+def load_common_passwords(file_path="./utility/10k-most-common.txt"):
+    try:
+        with open(file_path, "r") as file:
+            return set(line.strip().lower() for line in file)
+    except FileNotFoundError as exc:
+        raise Exception("Common passwords file not found") from exc
+
+# Ny validate_password funktion
+def validate_password(skip_name_validation=False):
+    # Læs brugerdata
+    user_password = request.forms.get("user_password", "").strip()
+    user_first_name = request.forms.get("user_first_name", "").strip()
+    user_last_name = request.forms.get("user_last_name", "").strip()
+
+    # Fejlbeskeder
+    error_length = f"password {regexes.USER_PASSWORD_MIN} to {regexes.USER_PASSWORD_MAX} characters"
+    error_simple = "password is too simple"
+    
+    # Tjek for længde og regex-regler
+    if not re.match(regexes.USER_PASSWORD_REGEX, user_password):
+        raise Exception(error_length, 400)
+
+    # Tjek om for- eller efternavn indgår i password (case-insensitive)
+    if not skip_name_validation:
+        if user_first_name.lower() in user_password.lower() or user_last_name.lower() in user_password.lower():
+            raise Exception(error_simple, 400)
+
+    # Tjek om password er på listen over mest brugte kodeord
+    common_passwords = load_common_passwords()
+    if user_password.lower() in common_passwords:
+        raise Exception(error_simple, 400)
+
     return user_password
 
 ##############################
@@ -205,6 +231,20 @@ def validate_number_of_nights():
         raise ValueError(error, 400)
     
     return number_of_nights
+
+##############################
+
+def validate_role():
+    error = f"Role must be one of: {', '.join([role.value for role in RoleEnum])}"
+    role_name = request.forms.get("role_type", "").strip()
+
+    # Tjek om role_name er gyldig
+    if role_name not in RoleEnum._value2member_map_:
+        raise Exception(error, 400)
+
+    # Returner RoleEnum-objektet
+    role=RoleEnum(role_name)
+    return role.value
 
 ##############################
 

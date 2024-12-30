@@ -1,11 +1,12 @@
 import time
 from bottle import  get, post, put, request,response,  template
+from database.models.user import RoleEnum
 from utility import utils
 from icecream import ic
 import bcrypt 
 from utility import email
-import credentials
-from utility import data
+import settings
+from database import data
 
 
 @get("/users")
@@ -16,13 +17,14 @@ def _():
         try:    
             csrf_token = utils.get_csrf_token()
             utils.validate_user_logged()
-            user = request.get_cookie("user", secret=credentials.COOKIE_SECRET)
+            user = request.get_cookie("user", secret=settings.COOKIE_SECRET)
             is_logged = True
         except:
             response.status = 403
             return "you are not logged in"
         else:
-            if user.get("role_id") == 1:            
+            #if user.get("role_id") == 1:  
+            if user.get("user_role") == RoleEnum.ADMIN.value:          
                 db = utils.db()
                 users = data.get_all_users(db)
                 return template("users", users=users, is_logged=is_logged, user=user, is_admin=True, csrf_token=csrf_token)
@@ -41,9 +43,10 @@ def toggle_user_block(user_pk):
     try:
         utils.validate_csrf_token()
         utils.validate_user_logged()
-        user = request.get_cookie("user", secret=credentials.COOKIE_SECRET)
+        user = request.get_cookie("user", secret=settings.COOKIE_SECRET)
 
-        if user.get("role_id") != 1:
+        #if user.get("role_id") != 1:
+        if user.get("user_role") != RoleEnum.ADMIN.value:
             response.status = 403
             return "you are not admin"
 
@@ -78,7 +81,7 @@ def toggle_user_block(user_pk):
 
         template_vars = {"user_first_name": user_first_name}
         #email.send_email( user_email, subject, template_name, **template_vars)
-        email.send_email(credentials.DEFAULT_EMAIL, email_subject, email_template, **template_vars)
+        email.send_email(settings.DEFAULT_EMAIL, email_subject, email_template, **template_vars)
 
 
         return f"""
@@ -114,7 +117,7 @@ def toggle_user_block(user_pk):
 def _(user_pk):
     try:
         utils.validate_csrf_token()
-        user = request.get_cookie("user", secret=credentials.COOKIE_SECRET)
+        user = request.get_cookie("user", secret=settings.COOKIE_SECRET)
         if user:
             first_name = utils.validate_user_first_name()
             last_name = utils.validate_user_last_name()
@@ -131,13 +134,8 @@ def _(user_pk):
             # Cookie update
             user = data.get_user(db, user_pk)
             user.pop("user_password") # Do not put the user's password in the cookie
-            
-            try:
-                import production
-                is_cookie_https = True
-            except:
-                is_cookie_https = False        
-            response.set_cookie("user", user, secret=credentials.COOKIE_SECRET, httponly=True, secure=is_cookie_https, path="/")
+            ic(user)
+            response.set_cookie("user", user, secret=settings.COOKIE_SECRET, httponly=True, secure=settings.COOKIE_SECURE, path="/")
 
             csrf_token = utils.get_csrf_token()
             html = template("_user.html", user=user, is_logged=True, csrf_token=csrf_token)
@@ -171,7 +169,7 @@ def _(user_pk):
 def _(user_pk):
     try:
         utils.validate_csrf_token()
-        user = request.get_cookie("user", secret=credentials.COOKIE_SECRET)
+        user = request.get_cookie("user", secret=settings.COOKIE_SECRET)
         if user:
             user_password = utils.validate_password()
             # Fetch user's password so we can validate it
@@ -193,8 +191,10 @@ def _(user_pk):
             subject = "Profile deleted"
             template_name = "email_delete_profile"
             template_vars = {"user_first_name": user_first_name}
-            email.send_email(credentials.DEFAULT_EMAIL, subject, template_name, **template_vars)
+            #email.send_email( user_email, subject, template_name, **template_vars)
+            email.send_email(settings.DEFAULT_EMAIL, subject, template_name, **template_vars)
             
+
             response.delete_cookie("user", path='/')
             return f"""
             <template mix-redirect="/"></template>

@@ -2,8 +2,8 @@ from bottle import get, post, response, template
 from utility import utils
 from icecream import ic
 import bcrypt
-import credentials
-from utility import data
+import settings
+from database import data
 
 ##############################
 @get("/login")
@@ -25,7 +25,7 @@ def _():
         csrf_token = utils.validate_csrf_token()
         
         user_email = utils.validate_email()
-        user_password = utils.validate_password()
+        user_password = utils.validate_password(skip_name_validation=True)
         db = utils.db()
         user = data.get_user_by_email(db, user_email)
         ic(user)
@@ -33,18 +33,13 @@ def _():
         if not user:
             raise ValueError("User not found or not verified", 404)
         
-        if not bcrypt.checkpw(user_password.encode(), user["user_password"]):
+        # Kontroller adgangskoden ved hjælp af bcrypt
+        if not bcrypt.checkpw(user_password.encode(), user["user_password"].encode()):
             raise ValueError("Invalid credentials", 400)
     
         user.pop("user_password") # Do not put the user's password in the cookie
         ic(user)
-        
-        try:
-            import production
-            is_cookie_https = True
-        except:
-            is_cookie_https = False        
-        response.set_cookie("user", user, secret=credentials.COOKIE_SECRET, httponly=True, secure=is_cookie_https)
+        response.set_cookie("user", user, secret=settings.COOKIE_SECRET, httponly=True, secure=settings.COOKIE_SECURE)
         
         frm_login = template("__frm_login", csrf_token=csrf_token)
         return f"""

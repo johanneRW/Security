@@ -1,4 +1,3 @@
-import time
 from bottle import post, put, template, response
 from utility import utils
 from icecream import ic
@@ -7,7 +6,7 @@ import os
 import time
 import uuid
 from utility import utils
-from utility import data
+from database import data
 
 
 @post("/items/image/<item_pk>")

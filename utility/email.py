@@ -1,7 +1,7 @@
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import smtplib
-import credentials
+import settings
 from bottle import template
 
 def send_email(to_email, subject, template_name, **template_vars):
@@ -9,7 +9,7 @@ def send_email(to_email, subject, template_name, **template_vars):
         # Create the email message
         message = MIMEMultipart()
         message["To"] = to_email
-        message["From"] = credentials.DEFAULT_EMAIL
+        message["From"] = settings.DEFAULT_EMAIL
         message["Subject"] = subject
 
         # Render the email body from template
@@ -18,8 +18,8 @@ def send_email(to_email, subject, template_name, **template_vars):
         message.attach(message_text)
 
         # Email credentials
-        email = credentials.DEFAULT_EMAIL
-        password = credentials.EMAIL_PASSWORD
+        email = settings.DEFAULT_EMAIL
+        password = settings.EMAIL_PASSWORD
 
         # Send the email
         server = smtplib.SMTP('smtp.gmail.com', 587)

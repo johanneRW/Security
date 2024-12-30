@@ -1,13 +1,19 @@
 from bottle import  get, post, delete, request, template, put, response 
+from database.models.user import RoleEnum
 from utility import utils
 from utility import variables
 from utility import email
 from utility import data
 from icecream import ic
 import json
-import credentials
+import settings
+import time
+from utility import email
 import time
 import uuid
+from utility import utils
+import settings
+from database import data
 
 
 @get("/items/page/<page_number>")
@@ -15,7 +21,7 @@ def _(page_number):
     try:
         csrf_token = utils.get_csrf_token()
         db = utils.db()
-        limit = variables.ITEMS_PER_PAGE
+        limit = settings.ITEMS_PER_PAGE
         #tjekker hvor mage items der skal vises for at regne ud hvormange sider der skal være i alt
         total_items = data.get_number_of_items(db)
 
@@ -30,9 +36,10 @@ def _(page_number):
         is_admin = False
         try:
             utils.validate_user_logged()
-            user = request.get_cookie("user", secret=credentials.COOKIE_SECRET)
+            user = request.get_cookie("user", secret=settings.COOKIE_SECRET)
             is_logged = True
-            is_admin = user.get("role_id") == 1
+            #is_admin = user.get("role_id") == 1
+            is_admin = user.get("user_role") == RoleEnum.ADMIN.value
         except:
             pass
         
@@ -76,7 +83,7 @@ def _():
         user=""
         try:
             utils.validate_user_logged()
-            user = request.get_cookie("user", secret=credentials.COOKIE_SECRET)
+            user = request.get_cookie("user", secret=settings.COOKIE_SECRET)
             is_logged = True
         except:
             response.status = 403
@@ -102,7 +109,7 @@ def _():
     try:
         csrf_token = utils.validate_csrf_token()
         utils.validate_user_logged()
-        user = request.get_cookie("user", secret=credentials.COOKIE_SECRET)
+        user = request.get_cookie("user", secret= settings.COOKIE_SECRET)
 
         item_pk=uuid.uuid4().hex
         item_name=utils.validate_item_name()
@@ -247,7 +254,7 @@ def toggle_item_block(item_uuid):
 
         template_vars = {"user_first_name": user_first_name}
         #email.send_email( user_email, subject, template_name, **template_vars)
-        email.send_email(credentials.DEFAULT_EMAIL, email_subject, email_template, **template_vars)
+        email.send_email(settings.DEFAULT_EMAIL, email_subject, email_template, **template_vars)
 
         return f"""
             <template mix-target="#item_{item_uuid}" mix-replace>
