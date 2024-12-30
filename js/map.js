@@ -20,14 +20,27 @@ function updateMap(items) {
 }
 
 async function showPropertiesOnMap() {
-    const response = await fetch("/?format=json");
-    const items = await response.json();
-    updateMap(items["items"]);
+    try {
+        const response = await fetch("/?format=json");
+        const data = await response.json();
+        
+        if (data.status === "success" && data.items) {
+            updateMap(data.items);
+        } else {
+            console.error("Error loading map data:", data);
+        }
+    } catch (error) {
+        console.error("Error fetching map data:", error);
+    }
 }
 
 function addPropertiesToMap(items) {
-    items = JSON.parse(items);
-    updateMap(items);
+    try {
+        const data = JSON.parse(items);
+        updateMap(data);
+    } catch (error) {
+        console.error("Error parsing map data:", error);
+    }
 }
 
 showPropertiesOnMap();
