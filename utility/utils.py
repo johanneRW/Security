@@ -251,12 +251,12 @@ def validate_role():
 def get_csrf_token():
     """Get CSRF token from cookie, generate new one if not exists"""
     # First check if token exists in cookie
-    token = request.get_cookie("csrf_token", secret=credentials.COOKIE_SECRET)
+    token = request.get_cookie("csrf_token", secret=settings.COOKIE_SECRET)
     
     # Only generate new token if one doesn't exist
     if not token:
         token = secrets.token_hex(32)
-        response.set_cookie("csrf_token", token, secret=credentials.COOKIE_SECRET, httponly=True)
+        response.set_cookie("csrf_token", token, secret=settings.COOKIE_SECRET, httponly=True)
     
     return token
 
@@ -264,7 +264,7 @@ def get_csrf_token():
 
 def validate_csrf_token():
     """Validate CSRF token from form matches cookie and return the token"""
-    token = request.get_cookie("csrf_token", secret=credentials.COOKIE_SECRET)
+    token = request.get_cookie("csrf_token", secret=settings.COOKIE_SECRET)
     if not token:
         raise ValueError("CSRF token not found in cookie")
         
