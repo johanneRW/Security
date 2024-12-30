@@ -41,13 +41,12 @@ function handleImageModal(modalId, btnId) {
             const close = document.querySelector(dialogId + " > #close");
             const cancel = document.querySelector(dialogId + " #cancel");
 
-            // Update fields on modal
-            const imageId = btn.id;
-            if (imageId !== "new") {
-                const hiddenField = document.querySelector(dialogId + " input[type=hidden]");
-                const filename = document.querySelector(dialogId + " p.filename");
-                hiddenField.value = imageId;
-                filename.innerText = imageId;
+            // Update only the oldname field, preserve csrf_token
+            if (btn.id !== "new") {
+                const oldnameInput = modal.querySelector('input[name="oldname"]');
+                const filename = modal.querySelector('p.filename');
+                if (oldnameInput) oldnameInput.value = btn.id;
+                if (filename) filename.innerText = btn.id;
             }
 
             modal.showModal();
