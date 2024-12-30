@@ -1,4 +1,4 @@
-from .models.item import Item ,ItemImage
+from .models.item import Item, ItemImage
 from .models.item_logs import ItemBlockedLog, ItemUpdatedLog 
 from .models.user import User
 from .models.user_logs import PasswordResetLog, UserBlockedLog, UserUpdatedLog, UserVerificationRequest,UserVerificationCompleted,UserDeletedLog
@@ -187,14 +187,18 @@ def get_items_limit_offset(db: Session, limit: int, offset: int = 0):
     # Forbered data til returnering
     items = []
     for item, stars, images in results:
-        # Konverter billeder til en liste
-        images_list = [f"/images/{img}" for img in images.split(",")] if images else []
-        # Lav en dictionary for hvert item
-        item_dict = item.__dict__.copy()
-        item_dict.update({
-            "item_stars": stars,
-            "images": images_list
-        })
+        # Convert SQLAlchemy model to dict
+        item_dict = {
+            "item_pk": item.item_pk,
+            "item_name": item.item_name,
+            "item_lat": float(item.item_lat),  # Convert to float for JSON
+            "item_lon": float(item.item_lon),  # Convert to float for JSON
+            "item_price_per_night": float(item.item_price_per_night),
+            "item_created_at": item.item_created_at,
+            "item_owned_by": item.item_owned_by,
+            "item_stars": float(stars),
+            "images": images.split(",") if images else []
+        }
         items.append(item_dict)
 
     return items
