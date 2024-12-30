@@ -1,10 +1,10 @@
 %include("_header")
 
 <main>
-    <form id="verify">
-        <p>Clik on the button to verify your account</p>
-        <button class="save" mix-put="/verify/{{key}}" mix-data="#verify">
-            Verify
+    <form id="frm_verify">
+        <input type="hidden" name="csrf_token" value="{{csrf_token}}">
+        <button class="save" mix-data="#frm_verify" mix-put="/verify/{{key}}" mix-default="Verify account" mix-await="Please wait ...">
+            Verify account
         </button>
     </form>
 </main>

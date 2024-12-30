@@ -3,6 +3,7 @@
 <div id="{{user['user_pk']}}" class="user">
 
     <form id="user_{{user['user_pk']}}">
+        <input type="hidden" name="csrf_token" value="{{csrf_token}}">
 
         <label for="user_first_name">Name:</label>
         <input name="user_first_name" value="{{user['user_first_name']}}" mix-check="{{regexes.USER_FIRST_NAME_REGEX}}">
@@ -38,6 +39,7 @@
         </header>
         <section>
             <form id="user_delete_{{user['user_pk']}}">
+                <input type="hidden" name="csrf_token" value="{{csrf_token}}">
                 <label for="password">Please enter your password to proceed</label>
                 <input required maxlength={{regexes.USER_PASSWORD_MAX}} name="user_password" type="password"
                     mix-check="{{regexes.USER_PASSWORD_REGEX}}">

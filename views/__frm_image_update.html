@@ -3,6 +3,7 @@
     <button id="close" class="modal-close">&times;</button>
     <section>
         <form id="image_update_{{item['item_pk']}}">
+            <input type="hidden" name="csrf_token" value="{{csrf_token}}">
             <label for="image">Image:</label>
             <input type="file" name="image" accept="image/*" mix-check="{{regexes.ITEM_IMAGE_REGEX}}">
             <input type="hidden" name="oldname" value="">

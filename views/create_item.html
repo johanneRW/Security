@@ -5,6 +5,7 @@
 <div id="new_item" class="item">
 
     <form id="frm_new_item">
+        <input type="hidden" name="csrf_token" value="{{csrf_token}}">
 
         <label for="item_name">Item Name:</label>
         <input name="item_name" value="" mix-check="{{regexes.ITEM_NAME_REGEX}}">

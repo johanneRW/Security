@@ -1,6 +1,7 @@
 % from utility import regexes
 
 <form id="frm_login" autocomplete="off">
+    <input type="hidden" name="csrf_token" value="{{csrf_token}}">
     <label for="user_email">
         <span>Email</span>
     </label>

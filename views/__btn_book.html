@@ -1,6 +1,7 @@
 % from utility import regexes
 
 <form id="item_booking_{{item['item_pk']}}" class="booking-form">
+    <input type="hidden" name="csrf_token" value="{{csrf_token}}">
     <div class="label-text">
         <label for="booking">Number of nights:</label>
         <span>{{regexes.NIGHT_MIN}} to {{regexes.NIGHT_MAX}} nights</span>

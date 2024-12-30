@@ -1,15 +1,15 @@
 % from utility import regexes
 
 <form id="frm_signup" autocomplete="off">
-    <div id="message"></div>
-
-    <div>
+    <input type="hidden" name="csrf_token" value="{{csrf_token}}">
+    
+   <div>
         <label for="user_username">
             <span>Username</span>
             <span>{{regexes.USER_USERNAME_MIN}} to {{regexes.USER_USERNAME_MAX}} characters</span>
         </label>
-        <input name="user_username" type="text" mix-check="{{regexes.USER_USERNAME_REGEX}}">
-    </div>
+        <input name="user_username" type="text" value="" mix-check="{{regexes.USER_USERNAME_REGEX}}">
+   </div>
 
     <div>
         <label for="user_first_name">
@@ -52,7 +52,7 @@
         </select>
     </div>
 
-    <button class="save" mix-post="/signup" mix-data="#frm_signup" mix-default="Signup" mix-await="Please wait ...">
-        Sign up
+    <button class="save" mix-data="#frm_signup" mix-post="/signup" mix-default="Create account" mix-await="Please wait ...">
+        Create account
     </button>
 </form>
