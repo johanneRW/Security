@@ -8,17 +8,28 @@ import git
 import secrets
 from database.models.base import Base, engine
 
+ic("Loading routes...")
 
+import routes.signup
+import routes.login
+import routes.profile
+import routes.users
+import routes.reset_password
+import routes.items
+import routes.images
+import routes.bookings
 
-##### CSRF Protection #####
+ic("Routes loaded successfully")
+
 @hook('before_request')
 def setup_security():
     # Generate nonce for CSP
     request.nonce = secrets.token_hex(16)
+    ic("Nonce generated:", request.nonce)
     
     # Generate CSRF token if not exists
-    if not request.get_cookie("csrf_token", secret=credentials.COOKIE_SECRET):
-        response.set_cookie("csrf_token", secrets.token_hex(32), secret=credentials.COOKIE_SECRET, httponly=True)
+    if not request.get_cookie("csrf_token", secret=settings.COOKIE_SECRET):
+        response.set_cookie("csrf_token", secrets.token_hex(32), secret=settings.COOKIE_SECRET, httponly=True)
     
     # CSRF validation for unsafe methods
     if request.method in ('POST', 'PUT', 'DELETE'):
@@ -36,8 +47,6 @@ def setup_security():
         except Exception as ex:
             ic("CSRF Validation Failed:", str(ex))
             abort(403, str(ex))
-
-##### Content Security Policy (CSP) #####
 
 @hook('after_request')
 def add_security_headers():
@@ -88,16 +97,6 @@ def get_update():
 
 
 ##############################
-import routes.signup
-import routes.login
-import routes.profile
-import routes.users
-import routes.reset_password
-import routes.items
-import routes.images
-import routes.bookings
-
-##############################
 @get("/")
 def _():
     try:
@@ -106,27 +105,25 @@ def _():
 
         # Hent items med limit og offset
         items = data.get_items_limit_offset(db, settings.ITEMS_PER_PAGE)
-        ic(items)
+        
+        # Handle JSON format request
+        if request.query.get("format") == "json":
+            response.content_type = 'application/json'
+            return {"status": "success", "items": items}
 
-        # Standardværdier for brugerstatus
+        # Handle HTML request
         is_logged = False
         is_admin = False
-        user=""
+        user = ""
         csrf_token = utils.get_csrf_token()
         try:    
             utils.validate_user_logged()
             user = request.get_cookie("user", secret=settings.COOKIE_SECRET)
             is_logged = True
-            is_admin = user.get("user_role") == RoleEnum.ADMIN.value
+            is_admin = user.get("user_role").value == RoleEnum.ADMIN.value
         except Exception:
             pass
 
-        # Håndtér forespørgselsformat
-        response_format = request.query.get("format")
-        if response_format == "json":
-            return {"items": items}
-
-        # Returnér HTML-template
         return template(
             "index.html",
             items=items,
@@ -134,12 +131,18 @@ def _():
             is_logged=is_logged,
             user=user,
             is_admin=is_admin,
+            nonce=request.nonce,
+            request=request,
+            csrf_token=csrf_token
         )
     except Exception as ex:
         ic(ex)
+        if request.query.get("format") == "json":
+            response.status = 400
+            response.content_type = 'application/json'
+            return {"status": "error", "message": str(ex)}
         return {"error": str(ex)}
     finally:
-        # Luk SQLAlchemy-sessionen
         if "db" in locals():
             db.close()
 
