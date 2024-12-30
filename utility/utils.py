@@ -6,6 +6,7 @@ import credentials
 from utility import regexes
 from utility import variables
 from werkzeug.utils import secure_filename
+import secrets
 
 
 ##############################
@@ -204,4 +205,35 @@ def validate_number_of_nights():
         raise ValueError(error, 400)
     
     return number_of_nights
+
+##############################
+
+def get_csrf_token():
+    """Get CSRF token from cookie, generate new one if not exists"""
+    # First check if token exists in cookie
+    token = request.get_cookie("csrf_token", secret=credentials.COOKIE_SECRET)
+    
+    # Only generate new token if one doesn't exist
+    if not token:
+        token = secrets.token_hex(32)
+        response.set_cookie("csrf_token", token, secret=credentials.COOKIE_SECRET, httponly=True)
+    
+    return token
+
+##############################
+
+def validate_csrf_token():
+    """Validate CSRF token from form matches cookie and return the token"""
+    token = request.get_cookie("csrf_token", secret=credentials.COOKIE_SECRET)
+    if not token:
+        raise ValueError("CSRF token not found in cookie")
+        
+    form_token = request.forms.get('csrf_token')
+    if not form_token:
+        raise ValueError("Security check failed - missing form token", 403)
+        
+    if token != form_token:
+        raise ValueError("Security check failed - invalid token", 403)
+    
+    return token
 
