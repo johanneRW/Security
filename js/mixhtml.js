@@ -80,12 +80,36 @@ async function mix_fetch_data(el){
         document.querySelector(el.getAttribute("mix-wait")).classList.remove("mix-hidden")
     }
     let conn = null
-    if( ["post", "put", "patch"].includes(method) ){
+    if(["post", "put", "patch", "delete"].includes(method)) {
+        let formData;
+        
+        if(method === "delete") {
+            // For DELETE requests, get the form that contains the delete button
+            const form = el.closest('form')
+            formData = new FormData(form)
+            // If no form found, create new FormData
+            if (!form) {
+                formData = new FormData()
+            }
+        } else {
+            // For other methods, get data from the form
+            const form = document.querySelector(el.getAttribute("mix-data"))
+            formData = new FormData(form)
+        }
+        
+        // Add CSRF token if not present
+        if (!formData.has('csrf_token')) {
+            const token = document.cookie.split('; ')
+                .find(row => row.startsWith('csrf_token='))
+                ?.split('=')[1]
+            if (token) formData.append('csrf_token', token)
+        }
+        
         conn = await fetch(url, {
-            method : method,
-            body : new FormData( document.querySelector(el.getAttribute("mix-data")) )
+            method: method,
+            body: formData
         })        
-    }else{   
+    } else {   
         conn = await fetch(url, {
             method : method
         })
