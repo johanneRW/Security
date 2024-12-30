@@ -1,9 +1,16 @@
-from bottle import  get, post, delete, request, template, put, response 
+from bottle import (
+    get, 
+    post, 
+    delete, 
+    request, 
+    template, 
+    put, 
+    response
+)
 from database.models.user import RoleEnum
 from utility import utils
-from utility import variables
 from utility import email
-from utility import data
+from database import data
 from icecream import ic
 import json
 import settings
@@ -22,7 +29,7 @@ def _(page_number):
         csrf_token = utils.get_csrf_token()
         db = utils.db()
         limit = settings.ITEMS_PER_PAGE
-        #tjekker hvor mage items der skal vises for at regne ud hvormange sider der skal være i alt
+        #tjekker hvor mange items der skal vises for at regne ud hvor mange sider der skal være i alt
         total_items = data.get_number_of_items(db)
 
         total_pages = (total_items + limit - 1) // limit
@@ -173,7 +180,7 @@ def _(item_pk):
         csrf_token = utils.get_csrf_token()
         html = template("_item_detail.html", item=item, csrf_token=csrf_token)
         return f"""
-        <template mix-target="frm_item_{item_pk}" mix-replace>
+        <template mix-target="#frm_item_{item_pk}" mix-replace>
         {html}
         </template>
         """
