@@ -8,7 +8,7 @@ from utility import data
 @post("/bookings/<item_pk>")
 def _(item_pk):
     try:
-        
+        csrf_token = utils.validate_csrf_token()
         user = request.get_cookie("user", secret= credentials.COOKIE_SECRET)
         if user:
 
@@ -21,7 +21,7 @@ def _(item_pk):
             booking_created_at= int(time.time())
             data.create_booking(db, user_pk ,item_pk, booking_created_at , number_of_nights ,booking_price)
         
-            btn_book = template("__btn_book", item=item)
+            btn_book = template("__btn_book", item=item, csrf_token=csrf_token)
             return f"""
             <template mix-target="#item_booking_{item_pk}" mix-replace>
                 {btn_book}

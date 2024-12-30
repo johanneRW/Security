@@ -14,6 +14,7 @@ def _():
         is_logged = False
         user=""
         try:    
+            csrf_token = utils.get_csrf_token()
             utils.validate_user_logged()
             user = request.get_cookie("user", secret=credentials.COOKIE_SECRET)
             is_logged = True
@@ -24,7 +25,7 @@ def _():
             if user.get("role_id") == 1:            
                 db = utils.db()
                 users = data.get_all_users(db)
-                return template("users", users=users,is_logged=is_logged, user=user, is_admin=True)
+                return template("users", users=users, is_logged=is_logged, user=user, is_admin=True, csrf_token=csrf_token)
             else:
                 response.status = 403
                 return "you are not admin"
@@ -38,6 +39,7 @@ def _():
 @post("/toggle_user_block/<user_pk>")
 def toggle_user_block(user_pk):
     try:
+        utils.validate_csrf_token()
         utils.validate_user_logged()
         user = request.get_cookie("user", secret=credentials.COOKIE_SECRET)
 
@@ -82,6 +84,7 @@ def toggle_user_block(user_pk):
         return f"""
             <template mix-target="#user_block_{user_pk}" mix-replace>
                 <form id="user_block_{user_pk}">
+            <input type="hidden" name="csrf_token" value="{utils.get_csrf_token()}">
             <input type="hidden" name="user_blocked" value="{new_blocked_status}">
             <button id="user_block_{user_pk}"
                     mix-data="#user_block_{user_pk}"
@@ -110,24 +113,25 @@ def toggle_user_block(user_pk):
 @put("/users/<user_pk>")
 def _(user_pk):
     try:
-        user = request.get_cookie("user", secret= credentials.COOKIE_SECRET)
+        utils.validate_csrf_token()
+        user = request.get_cookie("user", secret=credentials.COOKIE_SECRET)
         if user:
             first_name = utils.validate_user_first_name()
             last_name = utils.validate_user_last_name()
-            username=utils.validate_user_username()
-            email=utils.validate_email()
+            username = utils.validate_user_username()
+            email = utils.validate_email()
 
             # DB update
             db = utils.db()
             user = data.get_user(db, user_pk)
             if not user: 
                 raise Exception("user not found", 400)
-            data.update_user(db,username,first_name,last_name,email,user_pk)
+            data.update_user(db, username, first_name, last_name, email, user_pk)
             
             # Cookie update
             user = data.get_user(db, user_pk)
             user.pop("user_password") # Do not put the user's password in the cookie
-            ic(user)
+            
             try:
                 import production
                 is_cookie_https = True
@@ -135,7 +139,8 @@ def _(user_pk):
                 is_cookie_https = False        
             response.set_cookie("user", user, secret=credentials.COOKIE_SECRET, httponly=True, secure=is_cookie_https, path="/")
 
-            html = template("_user.html", user=user,is_logged=True)
+            csrf_token = utils.get_csrf_token()
+            html = template("_user.html", user=user, is_logged=True, csrf_token=csrf_token)
             return f"""
             <template mix-target="[id='{user_pk}']" mix-replace>
             {html}
@@ -165,7 +170,8 @@ def _(user_pk):
 @put("/users/<user_pk>/delete")
 def _(user_pk):
     try:
-        user = request.get_cookie("user", secret= credentials.COOKIE_SECRET)
+        utils.validate_csrf_token()
+        user = request.get_cookie("user", secret=credentials.COOKIE_SECRET)
         if user:
             user_password = utils.validate_password()
             # Fetch user's password so we can validate it
@@ -179,18 +185,16 @@ def _(user_pk):
             
             # Delete user
             deleted_at = int(time.time())
-            data.delete_user(db,deleted_at,user_pk)
+            data.delete_user(db, deleted_at, user_pk)
 
             # Send email
-            user_first_name=user_info['user_first_name']   
-            user_email=user_info['user_email']                 
+            user_first_name = user_info['user_first_name']   
+            user_email = user_info['user_email']                 
             subject = "Profile deleted"
             template_name = "email_delete_profile"
             template_vars = {"user_first_name": user_first_name}
-            #email.send_email( user_email, subject, template_name, **template_vars)
             email.send_email(credentials.DEFAULT_EMAIL, subject, template_name, **template_vars)
             
-
             response.delete_cookie("user", path='/')
             return f"""
             <template mix-redirect="/"></template>
@@ -200,6 +204,13 @@ def _(user_pk):
             return "you must be logged in"
     except Exception as ex:
         ic(ex)
+        return """
+        <template mix-target="#toast">
+        <div mix-ttl="3000" class="error">
+            Delete failed
+        </div>
+        </template>
+        """
     finally:
         if "db" in locals(): db.close()
 

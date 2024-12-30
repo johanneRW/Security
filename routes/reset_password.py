@@ -11,17 +11,20 @@ from utility import data
 
 @get("/reset_password/<key>")
 def _(key):
-    return template("update_password",key=key)
+    csrf_token = utils.get_csrf_token()
+    return template("update_password", key=key, csrf_token=csrf_token)
 
 
 @get("/request_reset_password")
 def _():
-    return template("request_reset_password")
+    csrf_token = utils.get_csrf_token()
+    return template("request_reset_password", csrf_token=csrf_token)
 
 
 @post("/request_reset_password")
 def _():
     try:
+        utils.validate_csrf_token()
         user_email = utils.validate_email()
             
         db = utils.db()
@@ -58,11 +61,12 @@ def _():
         #email.send_email( user_email, subject, template_name, **template_vars)
         email.send_email(credentials.DEFAULT_EMAIL, subject, template_name, **template_vars)
 
-        html=template("__frm_send_new_password.html")
+        csrf_token = utils.get_csrf_token()
+        html = template("__frm_send_new_password.html", csrf_token=csrf_token)
         return f"""
             <template mix-target="#toast">
             <div mix-ttl="3000" class="ok">
-                   Email sendt
+                   Email sent
             </div>
             </template>
         <template mix-target="#frm_send_password" mix-replace">
@@ -96,12 +100,15 @@ def _():
 @put("/reset_password/<key>")
 def _(key):
    try:
+        utils.validate_csrf_token()
         db = utils.db()
         time_now = int(time.time())
 
         reset_info = data.get_reset_info(db,key)
+        ic("Reset info:", reset_info)  # Debug log
 
         if reset_info is None:
+            response.status = 404
             return"""
              <template mix-target="#toast">
             <div mix-ttl="3000" class="error">
@@ -112,8 +119,12 @@ def _(key):
 
         reset_time = reset_info['password_reset_at']
         user_pk = reset_info['user_pk']
+        ic("Time now:", time_now)
+        ic("Reset time:", reset_time)
+        ic("User PK:", user_pk)
 
         if time_now - reset_time > 900:
+            response.status = 400
             return """
              <template mix-target="#toast">
             <div mix-ttl="3000" class="error">
@@ -127,7 +138,8 @@ def _(key):
 
         data.update_user_password(db,hashed_password, user_pk)
 
-        html=template("__frm_reset_password.html")
+        csrf_token = utils.get_csrf_token()
+        html = template("__frm_reset_password.html", csrf_token=csrf_token, key=key)
 
         return  f"""
             <template mix-target="#toast">
@@ -138,15 +150,15 @@ def _(key):
             <template mix-target="#frm_password_reset" mix-replace">
             {html}
             </template>
-
             """
 
    except Exception as ex:
+        ic("Reset password error:", ex)  # Debug log
         response.status = 500
         return """
         <template mix-target="#toast">
         <div mix-ttl="3000" class="error">
-            System under maintenance
+            Password reset failed. Please try again.
         </div>
         </template>
         """

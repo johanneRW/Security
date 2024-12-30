@@ -13,6 +13,7 @@ from utility import data
 @post("/items/image/<item_pk>")
 def _(item_pk): 
     try:
+        csrf_token = utils.validate_csrf_token()
         image_folder = utils.get_image_folder()
         
         # Validate and save image
@@ -25,7 +26,7 @@ def _(item_pk):
         data.create_image(db, image_pk, item_pk, image_filename)
 
         item = data.get_item(db, item_pk)
-        html = template("_item_detail.html", item=item)
+        html = template("_item_detail.html", item=item, csrf_token=csrf_token)
         return f"""
         <template mix-target="#frm_item_{item_pk}" mix-replace mix-function="closeModal">
         {html}
@@ -49,6 +50,7 @@ def _(item_pk):
 @put("/items/image/<item_pk>")
 def _(item_pk): 
     try:
+        csrf_token = utils.validate_csrf_token()
         image_folder = utils.get_image_folder()
         
         oldname = utils.validate_oldname()
@@ -62,7 +64,7 @@ def _(item_pk):
 
         item = data.get_item(db, item_pk)
         
-        html = template("_item_detail.html", item=item)
+        html = template("_item_detail.html", item=item, csrf_token=csrf_token)
         return f"""
         <template mix-target="#frm_item_{item_pk}" mix-replace mix-function="closeModal">
         {html}

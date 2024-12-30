@@ -1,22 +1,19 @@
-import uuid
 from bottle import  get, post, delete, request, template, put, response 
 from utility import utils
+from utility import variables
+from utility import email
+from utility import data
 from icecream import ic
 import json
 import credentials
 import time
-from utility import variables
-from utility import email
-import time
 import uuid
-from utility import utils
-import credentials
-from utility import data
 
 
 @get("/items/page/<page_number>")
 def _(page_number):
     try:
+        csrf_token = utils.get_csrf_token()
         db = utils.db()
         limit = variables.ITEMS_PER_PAGE
         #tjekker hvor mage items der skal vises for at regne ud hvormange sider der skal være i alt
@@ -39,12 +36,12 @@ def _(page_number):
         except:
             pass
         
-        #hvis det er sidste side skal der ikke være  være en "more" button
+        #hvis det er sidste side skal der ikke være en "more" button
         is_last_page = int(page_number) >= total_pages
 
         html = ""
         for item in items:
-            html += template("_item", item=item, is_logged=is_logged, is_admin=is_admin)
+            html += template("_item", item=item, is_logged=is_logged, is_admin=is_admin, csrf_token=csrf_token)
         btn_more = template("__btn_more", page_number=next_page)
         if is_last_page: 
             btn_more = ""
@@ -77,7 +74,7 @@ def _():
     try:
         is_logged = False
         user=""
-        try:    
+        try:
             utils.validate_user_logged()
             user = request.get_cookie("user", secret=credentials.COOKIE_SECRET)
             is_logged = True
@@ -90,7 +87,8 @@ def _():
             db = utils.db()
             items =data.get_items_by_user(db, user_pk)
             ic(items)
-            return template("items_for_user", items=items,is_logged=is_logged, user=user)
+            csrf_token = utils.get_csrf_token()
+            return template("items_for_user", items=items, is_logged=is_logged, user=user, csrf_token=csrf_token)
     except Exception as ex:
         ic(ex)
         response.status = 500
@@ -102,8 +100,9 @@ def _():
 @post("/items")
 def _():
     try:
+        csrf_token = utils.validate_csrf_token()
         utils.validate_user_logged()
-        user = request.get_cookie("user", secret= credentials.COOKIE_SECRET)
+        user = request.get_cookie("user", secret=credentials.COOKIE_SECRET)
 
         item_pk=uuid.uuid4().hex
         item_name=utils.validate_item_name()
@@ -112,40 +111,26 @@ def _():
         item_price_per_night=utils.validate_item_price_per_night()
         item_created_at=int(time.time())
         item_owned_by=user['user_pk']
-
-
-        ic(item_owned_by)
-
         
         db = utils.db()
-        
-        data.create_item(
-            db, 
-            item_pk, 
-            item_name,
-            item_lat, 
-            item_lon, 
-            item_price_per_night, 
-            item_created_at, 
-            item_owned_by
-        )
+        data.create_item(db, item_pk, item_name, item_lat, item_lon, 
+                        item_price_per_night, item_created_at, item_owned_by)
         
         item = data.get_item(db, item_pk)
-        ic(item)
-
+       
         
-        html = template("_item_detail.html", item=item)
-        html_new=template("create_item.html")
+        html = template("_item_detail.html", item=item, csrf_token=csrf_token)
+        html_new = template("create_item.html", csrf_token=csrf_token)
        
         return f"""
         <template mix-target="#frm_item_{item_pk}" mix-bottom mix-function="updateModalEvents">
-        {html}
+            {html}
         </template>
         <template mix-target="#items-user" mix-bottom mix-function="updateModalEvents">
-        {html}
+            {html}
         </template>
-         <template mix-target="#frm_new_item" mix-replace">
-        {html_new}
+        <template mix-target="#frm_new_item" mix-replace">
+            {html_new}
         </template>
         """
        
@@ -166,6 +151,7 @@ def _():
 @put("/items/<item_pk>")
 def _(item_pk): 
     try:
+        utils.validate_csrf_token()
         utils.validate_user_logged()
 
         item_name = utils.validate_item_name()
@@ -177,7 +163,8 @@ def _(item_pk):
         data.update_item(db,item_name,item_lat,item_lon,item_price_per_night,item_pk )
         item = data.get_item(db, item_pk)
         
-        html = template("_item_detail.html", item=item)
+        csrf_token = utils.get_csrf_token()
+        html = template("_item_detail.html", item=item, csrf_token=csrf_token)
         return f"""
         <template mix-target="frm_item_{item_pk}" mix-replace>
         {html}
@@ -202,6 +189,7 @@ def _(item_pk):
 @delete("/items/<item_pk>")
 def _(item_pk):
     try:
+        utils.validate_csrf_token()
         utils.validate_user_logged()
         db = utils.db()
         data.delete_item(db,item_pk)
@@ -226,6 +214,7 @@ def _(item_pk):
 @post("/toggle_item_block/<item_uuid>")
 def toggle_item_block(item_uuid):
     try:
+        utils.validate_csrf_token()
         utils.validate_user_logged()
 
         current_blocked_status=int(request.forms.get("item_blocked"))
