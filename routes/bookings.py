@@ -1,4 +1,4 @@
-from bottle import post, request, response, template
+from bottle import get, post, request, response, template
 from utility import utils
 from icecream import ic
 import settings
@@ -50,5 +50,81 @@ def _(item_pk):
             </div>
             </template>
             """
+    finally:
+        if "db" in locals(): db.close()
+        
+
+
+@get("/bookings")
+def bookings():
+    try:
+        user = request.get_cookie("user", secret=settings.COOKIE_SECRET)
+        if not user:
+            response.status = 403
+            return "You must be logged in"
+
+        db = utils.db()
+        user_pk = user['user_pk']
+        bookings = data.get_user_bookings_with_ratings(db, user_pk)
+        return template("bookings.html", bookings=bookings)
+    except Exception as ex:
+        ic(ex)
+        response.status = 500
+        return {"error": "Something went wrong."}
+    finally:
+        if "db" in locals():
+            db.close()
+
+
+@post("/rate_item/<item_pk>")
+def rate_item_endpoint(item_pk):
+    try:
+        # Valider, at brugeren er logget ind
+        user = request.get_cookie("user", secret=settings.COOKIE_SECRET)
+        if not user:
+            response.status = 403
+            return "You must be logged in"
+
+        # Få brugerens primærnøgle
+        user_pk = user['user_pk']
+
+        # Valider input for stjerner via utils.validate_item_stars()
+        stars = int(utils.validate_item_stars())
+
+        # Opret databaseforbindelse
+        db = utils.db()
+
+        # Kald funktionen til at rate ejendommen
+        result = data.rate_item(db, user_pk, item_pk, stars)
+
+        # Håndtér resultatet
+        if "error" in result:
+            response.status = 400
+            return f"""
+            <template mix-target="#toast">
+            <div mix-ttl="3000" class="error">
+                {result['error']}
+            </div>
+            </template>
+            """
+        else:
+            return f"""
+            <template mix-target="#toast">
+            <div mix-ttl="3000" class="ok">
+                {result['success']}
+            </div>
+            </template>
+            """
+
+    except Exception as ex:
+        ic(ex)
+        response.status = 500
+        return """
+        <template mix-target="#toast">
+        <div mix-ttl="3000" class="error">
+            Something went wrong while rating the item.
+        </div>
+        </template>
+        """
     finally:
         if "db" in locals(): db.close()

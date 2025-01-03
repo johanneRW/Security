@@ -32,6 +32,9 @@
             <a href="/users" class="{{ get('active_login', '') }}">All users</a>
             % end
 
+            
+             <a href="/bookings" class="{{ get('active_login', '') }}">Your Bookings</a>
+
             <a href="/profile" class="{{ get('active_login', '') }}">Your Profile</a>
             <a class="logout" href="/logout" class="{{ get('active_login', '') }}">Logout</a>
             % else:
