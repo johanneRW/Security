@@ -1,4 +1,3 @@
-version: "3.8"
 services:
   nginx:
     image: nginx:latest
@@ -44,6 +43,18 @@ services:
       retries: 5
     volumes:
       - db_data:/var/lib/mysql
+
+  audit:
+    image: python:3.12
+    container_name: dependency_audit
+    volumes:
+      - .:/app
+    working_dir: /app
+    entrypoint: >
+      sh -c "
+      pip install pip-audit &&
+      pip-audit -r requirements.txt
+      "
 
 volumes:
   db_data:
