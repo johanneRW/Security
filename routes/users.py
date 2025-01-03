@@ -233,4 +233,87 @@ def _(user_pk):
     finally:
         if "db" in locals(): db.close()
 
+@put("/users/<user_pk>/promote_to_partner")
+def promote_to_partner(user_pk):
+    try:
+        # Valider, at brugeren er logget ind
+        logged_user = request.get_cookie("user", secret=settings.COOKIE_SECRET)
+        if not logged_user:
+            response.status = 403
+            return """
+            <template mix-target="#toast">
+            <div mix-ttl="3000" class="error">
+                You must be logged in to promote your role.
+            </div>
+            </template>
+            """
+        
+        # Tjek om brugeren forsøger at ændre sin egen rolle
+        if logged_user["user_pk"] != user_pk:
+            response.status = 403
+            return """
+            <template mix-target="#toast">
+            <div mix-ttl="3000" class="error">
+                You can only promote your own role.
+            </div>
+            </template>
+            """
+
+        # Databaseforbindelse
+        db = utils.db()
+
+        # Hent brugerens nuværende rolle
+        user_info = data.get_user(db, user_pk)
+        if not user_info:
+            response.status = 404
+            return """
+            <template mix-target="#toast">
+            <div mix-ttl="3000" class="error">
+                User not found.
+            </div>
+            </template>
+            """
+        
+        # Tjek om brugeren allerede er en partner
+        if user_info["user_role"] == RoleEnum.PARTNER.value:
+            return """
+            <template mix-target="#toast">
+            <div mix-ttl="3000" class="error">
+                You are already a partner.
+            </div>
+            </template>
+            """
+
+        # Opdater brugerens rolle til partner
+        updated_user = data.update_user_role_to_partner(db, user_pk)
+
+        # Send email til brugeren om ændringen
+        user_first_name = updated_user.user_first_name
+        user_email = updated_user.user_email
+        subject = "You are now a Partner on Home-Away"
+        template_name = "email_promote_to_partner"
+        template_vars = {"user_first_name": user_first_name}
+        email.send_email(settings.DEFAULT_EMAIL, subject, template_name, **template_vars)
+
+        # Returnér succesbesked
+        return """
+        <template mix-target="#toast">
+        <div mix-ttl="3000" class="ok">
+            Congratulations! Your role has been updated to Partner.
+        </div>
+        </template>
+        """
+    except Exception as ex:
+        ic(ex)
+        response.status = 400
+        return f"""
+        <template mix-target="#toast">
+        <div mix-ttl="3000" class="error">
+            Error promoting role: {str(ex)}
+        </div>
+        </template>
+        """
+    finally:
+        if "db" in locals():
+            db.close()
 

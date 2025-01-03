@@ -20,7 +20,6 @@
         % email = user['user_email'] if 'user_email' in user else ''
         <input name="user_email" value="{{email}}" mix-check="{{regexes.USER_EMAIL_REGEX}}">
 
-
     </form>
 
     <button class="save" mix-put="/users/{{user['user_pk']}}" mix-data="#user_{{user['user_pk']}}" mix-default="Save"
@@ -28,6 +27,33 @@
         Save
     </button>
 
+    <!-- Partner Promotion Button -->
+    % if user['user_role'] != 'partner':
+    <button class="promote" id="showPromoteToPartnerModal">
+        Become a Partner
+    </button>
+
+    <dialog id="promoteToPartnerModal">
+        <button id="closePromote">&times;</button>
+        <header>
+            <h2>Promote to Partner</h2>
+        </header>
+        <section>
+            <form id="user_promote_{{user['user_pk']}}">
+                <label for="password">Please enter your password to confirm</label>
+                <input required maxlength={{regexes.USER_PASSWORD_MAX}} name="user_password" type="password"
+                    mix-check="{{regexes.USER_PASSWORD_REGEX}}">
+                <button class="promote" mix-put="/users/{{user['user_pk']}}/promote_to_partner" mix-default="Promote"
+                    mix-await="Promoting..." mix-data="#user_promote_{{user['user_pk']}}">
+                    Confirm Promotion
+                </button>
+                <button id="cancelPromote">Cancel</button>
+            </form>
+        </section>
+    </dialog>
+    % end
+
+    <!-- Delete User Button -->
     <button class="delete" id="showDeleteUserModal">
         Delete
     </button>

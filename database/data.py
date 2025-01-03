@@ -75,10 +75,14 @@ def create_user(
     user_last_name: str,
     user_email: str,
     hashed_password: str,
-    role: str,  # RoleEnum bruges direkte i stedet for role_id
     user_created_at: int,
     user_verification_key: str
 ):
+    from models.user import RoleEnum  # Importer RoleEnum, hvis det ikke allerede er gjort
+
+    # Sæt rollen til 'user' som standard
+    default_role = RoleEnum.USER
+
     # Opret en ny brugerinstans
     new_user = User(
         user_pk=user_pk,
@@ -87,7 +91,7 @@ def create_user(
         user_last_name=user_last_name,
         user_email=user_email,
         user_password=hashed_password,
-        user_role=role,  # Brug RoleEnum direkte
+        user_role=default_role,  # Brug standardrollen
         user_created_at=user_created_at
     )
 
@@ -107,6 +111,7 @@ def create_user(
     db.refresh(verification_request)
 
     return new_user, verification_request
+
 
 
 
@@ -488,6 +493,27 @@ def delete_user(db: Session, deleted_at: int, user_pk: str):
     db.refresh(deleted_log)  # Opdater objektet med de nyeste værdier
 
     return deleted_log
+
+
+def update_user_role_to_partner(db: Session, user_pk: str):
+    from models.user import RoleEnum  # Sørg for at importere RoleEnum
+
+    # Hent brugeren fra databasen
+    user = db.query(User).filter(User.user_pk == user_pk).first()
+
+    if not user:
+        raise Exception(f"User with id {user_pk} does not exist")
+
+    # Tjek om brugeren allerede er en partner
+    if user.user_role == RoleEnum.PARTNER:
+        raise Exception(f"User with id {user_pk} is already a partner")
+
+    # Opdater rollen til partner
+    user.user_role = RoleEnum.PARTNER
+    db.commit()
+    db.refresh(user)  # Opdater brugerobjektet med de nyeste værdier fra databasen
+
+    return user
 
 
 
