@@ -33,7 +33,7 @@ def _():
         ).encode()
         hashed_password = bcrypt.hashpw(user_password, bcrypt.gensalt())
         #role_id=request.forms.get("role_type", "")
-        role_name=utils.validate_role()
+        #role_name=utils.validate_role()
         user_created_at=int(time.time())
         user_verification_key=uuid.uuid4().hex
 
@@ -45,7 +45,7 @@ def _():
                     user_email,
                     hashed_password,
                     #role_id,
-                    role_name,
+                    #role_name,
                     user_created_at,  
                     user_verification_key)
 
