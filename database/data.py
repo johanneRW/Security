@@ -1,13 +1,13 @@
 from decimal import Decimal
 from .models.item import Item ,ItemImage
-from .models.item_logs import ItemBlockedLog, ItemUpdatedLog 
+from .models.item_logs import ItemBlockedLog, ItemUpdatedLog , ItemVisibilityLog 
 from .models.user import User
 from .models.user_logs import PasswordResetLog, UserBlockedLog, UserUpdatedLog, UserVerificationRequest,UserVerificationCompleted,UserDeletedLog
 from .models.ratings import Rating
 from .models.bookings import Booking
 
 from .events.user_events import insert_user_blocked_listener, update_user_listener
-from .events.item_events import insert_item_blocked_listener, update_item_listener
+from .events.item_events import insert_item_blocked_listener, update_item_listener, insert_item_visibility_listener
 
 from sqlalchemy.orm import Session
 
@@ -16,6 +16,13 @@ from .queryManagers import ItemQueryManager, UserQueryManager
 
 
 def create_image(db: Session, image_pk: str, item_pk: str, image_filename: str):
+    # Tæl antallet af billeder for det givne item
+    image_count = db.query(ItemImage).filter(ItemImage.item_pk == item_pk).count()
+
+    # Tjek om der allerede er 10 billeder
+    if image_count >= 10:
+        raise Exception(f"Cannot add more than 10 images for item {item_pk}")
+
     # Opret en ny instans af ItemImage
     new_image = ItemImage(
         image_pk=image_pk,
@@ -153,8 +160,6 @@ def get_reset_info(db: Session, key: str):
 
 
 
-
-
 def get_item(db: Session, item_pk: str):
     from sqlalchemy import func
     # Udfør venstresammenføjning og gruppering
@@ -185,18 +190,26 @@ def get_item(db: Session, item_pk: str):
 
 
 
-def get_number_of_items(db: Session):
+def get_number_of_items(db: Session, visibility_filter: str = None):
     from sqlalchemy import func
-    # Brug func.count til at tælle antallet af varer
-    total_items = db.query(func.count(Item.item_pk)).scalar()
-    return total_items
+    
+    query = db.query(func.count(Item.item_pk))
+    if visibility_filter:
+        query = query.filter(Item.item_visibility == visibility_filter)
+    return query.scalar()
 
 
 
-def get_items_limit_offset(db: Session, limit: int, offset: int = 0):
+def get_items_limit_offset(
+    db: Session, 
+    limit: int, 
+    offset: int = 0, 
+    visibility_filter: str = None
+):
     from sqlalchemy import func
+
     # Udfør forespørgslen med aggregering og pagination
-    results = (
+    query = (
         db.query(
             Item,  # Hent alle kolonner fra Item-modellen
             func.coalesce(func.avg(Rating.stars), 0).label("item_stars"),  # Beregn gennemsnit af stjerner
@@ -206,10 +219,17 @@ def get_items_limit_offset(db: Session, limit: int, offset: int = 0):
         .outerjoin(ItemImage, Item.item_pk == ItemImage.item_pk)  # Venstresammenføjning med ItemImage
         .group_by(Item.item_pk)  # Gruppér på item_pk
         .order_by(Item.item_created_at)  # Sortér efter oprettelsestidspunkt
-        .limit(limit)  # Sæt limit
-        .offset(offset)  # Sæt offset
-        .all()
     )
+
+    # Tilføj filtrering baseret på synlighed
+    if visibility_filter:
+        query = query.filter(Item.item_visibility == visibility_filter)
+
+    # Tilføj limit og offset
+    query = query.limit(limit).offset(offset)
+
+    # Hent resultaterne
+    results = query.all()
 
     # Forbered data til returnering
     items = []
@@ -218,7 +238,7 @@ def get_items_limit_offset(db: Session, limit: int, offset: int = 0):
         images_list = [f"/images/{img}" for img in images.split(",")] if images else []
         # Lav en dictionary for hvert item
         item_dict = item.__dict__.copy()
-        # Remove "_sa_instance_state" from all items (it cannot be converted to JSON)
+        # Fjern "_sa_instance_state", som ikke kan konverteres til JSON
         del item_dict["_sa_instance_state"]
         item_dict.update({
             "item_stars": float(stars.quantize(Decimal("1.0"))),
@@ -227,6 +247,7 @@ def get_items_limit_offset(db: Session, limit: int, offset: int = 0):
         items.append(item_dict)
 
     return items
+
 
 
 
@@ -479,6 +500,21 @@ def toggle_block_item(db: Session, new_blocked_status: int, updated_at: int, ite
 
     return blocked_log
 
+def toggle_visibility_item(db: Session, new_visibility_status: int, updated_at: int, item_uuid: str):
+    # Opret en ny række i item_visibility_log
+    visibility_log = ItemVisibilityLog(
+        item_pk=item_uuid,
+        item_visibility_updated_at=updated_at,
+        item_visibility_value=new_visibility_status
+    )
+
+    # Tilføj til session og gem ændringer
+    db.add(visibility_log)
+    db.commit()
+    db.refresh(visibility_log)  # Opdater objektet med de nyeste værdier
+
+    return visibility_log
+
 
 def toggle_block_user(db: Session, new_blocked_status: int, updated_at: int, user_pk: str):
     # Opret en ny række i user_blocked_updated_log
@@ -494,6 +530,7 @@ def toggle_block_user(db: Session, new_blocked_status: int, updated_at: int, use
     db.refresh(blocked_log)  # Opdater objektet med de nyeste værdier
 
     return blocked_log
+
 
 
 def create_booking(

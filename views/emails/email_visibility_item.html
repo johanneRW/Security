@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visibility Change Notification</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+        }
+
+        section {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #333;
+        }
+
+        p {
+            margin: 10px 0;
+            color: #555;
+        }
+    </style>
+
+</head>
+
+<body>
+    <section>
+        <h1>Hi {{user_first_name}},</h1>
+        
+        <p>We wanted to notify you that the visibility status of your property has been updated on "Home-Away".</p>
+
+        {% if new_visibility_status == "public" %}
+        <p>Your property is now <strong>public</strong> and visible to all potential customers for bookings.</p>
+        {% elif new_visibility_status == "private" %}
+        <p>Your property is now <strong>private</strong> and no longer visible to customers.</p>
+        {% endif %}
+
+        <p>If you have any questions or require further assistance, please contact our support team.</p>        
+        
+        <p>Best regards,</p>
+        <p>Home-Away</p>
+    </section>
+</body>
+
+</html>

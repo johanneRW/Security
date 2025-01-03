@@ -1,4 +1,5 @@
 from bottle import default_app, get, post, request, run, static_file, template
+from database.models.item import Item, VisibilityEnum
 from database.models.user import RoleEnum
 from utility import utils
 from icecream import ic
@@ -51,20 +52,13 @@ import routes.bookings
 @get("/")
 def _():
     try:
-        # Opret en SQLAlchemy-session
         db = utils.db()
 
-        # Hent items med limit og offset
-        items = data.get_items_limit_offset(db, settings.ITEMS_PER_PAGE)
-        ic(items)
-
-        # Standardværdier for brugerstatus
         is_logged = False
         is_admin = False
         user = ""
 
         try:
-            # Valider om brugeren er logget ind
             utils.validate_user_logged()
             user = request.get_cookie("user", secret=settings.COOKIE_SECRET)
             is_logged = True
@@ -72,12 +66,17 @@ def _():
         except Exception:
             pass
 
-        # Håndtér forespørgselsformat
+        # Hent items baseret på brugerens rolle
+        if is_admin:
+            items = data.get_items_limit_offset(db, limit=settings.ITEMS_PER_PAGE)
+        else:
+            items = data.get_items_limit_offset(db, limit=settings.ITEMS_PER_PAGE, visibility_filter="public")
+
+        # Returnér template eller JSON-format
         response_format = request.query.get("format")
-        if response_format == "json":            
+        if response_format == "json":
             return {"items": items}
 
-        # Returnér HTML-template
         return template(
             "index.html",
             items=items,
@@ -90,9 +89,9 @@ def _():
         ic(ex)
         return {"error": str(ex)}
     finally:
-        # Luk SQLAlchemy-sessionen
         if "db" in locals():
             db.close()
+
 
 ##############################
 if settings.PRODUCTION:
