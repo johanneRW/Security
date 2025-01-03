@@ -24,7 +24,7 @@
             <span>Last name</span>
             <span>{{regexes.USER_LAST_NAME_MIN}} to {{regexes.USER_LAST_NAME_MAX}} characters</span>
         </label>
-        <input Name="user_last_name" type="text" mix-check="{{regexes.USER_LAST_NAME_REGEX}}">
+        <input name="user_last_name" type="text" mix-check="{{regexes.USER_LAST_NAME_REGEX}}">
     </div>
 
     <div>
@@ -44,7 +44,15 @@
             mix-check="{{regexes.USER_PASSWORD_REGEX}}">
     </div>
 
-   <!--  <div>
+    <div>
+        <label for="user_confirm_password">
+            <span>Confirm Password</span>
+            <span>Must match the password</span>
+        </label>
+        <input maxlength="{{regexes.USER_PASSWORD_MAX}}" name="user_confirm_password" type="password">
+    </div>
+
+    <!--  <div>
         <label for="role_type">Account type</label>
         <select name="role_type" id="role_type">
             <option value="user">User</option>

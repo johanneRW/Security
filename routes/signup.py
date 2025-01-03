@@ -33,8 +33,19 @@ def _():
         user_first_name = utils.validate_user_first_name()
         user_last_name = utils.validate_user_last_name()
         user_email = utils.validate_email()
-        user_password = utils.validate_password().encode()
-        hashed_password = bcrypt.hashpw(user_password, bcrypt.gensalt())
+        # Send fornavn og efternavn til validate_password
+        user_password = utils.validate_password(
+            skip_name_validation=False,
+            user_first_name=user_first_name,
+            user_last_name=user_last_name
+        ).strip()
+
+        # Bekræft, at password og confirm_password matcher
+        user_confirm_password = utils.confirm_password()
+
+        # Hash passwordet
+        hashed_password = bcrypt.hashpw(user_password.encode(), bcrypt.gensalt())
+
         #role_id=request.forms.get("role_type", "")
         #role_name=utils.validate_role()
         user_created_at=int(time.time())
@@ -79,16 +90,6 @@ def _():
         ic(ex)  # Log fejlen for debugging
         error_message = str(ex)
 
-        # Håndtering af specifikke fejlmeddelelser
-        if "users.user_email" in error_message:
-            return """
-            <template mix-target="#toast">
-                <div mix-ttl="3000" class="error">
-                    Email not available
-                </div>
-            </template>
-            """    
-
         if "user_email invalid" in error_message:
             return """
             <template mix-target="#toast">
@@ -112,6 +113,15 @@ def _():
             <template mix-target="#toast">
                 <div mix-ttl="3000" class="error">
                     {error_message}
+                </div>
+            </template>
+            """    
+            
+        if "password and confirm_password" in error_message:
+            return """
+            <template mix-target="#toast">
+                <div mix-ttl="3000" class="error">
+                    Password and confirm password do not match.
                 </div>
             </template>
             """    
