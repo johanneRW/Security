@@ -120,12 +120,17 @@ def _():
             # Generate CSRF token without user_pk for non-logged-in users
             csrf_token = utils.generate_csrf_token()
 
-        # Håndtér forespørgselsformat
+        # Hent items baseret på brugerens rolle
+        if is_admin:
+            items = data.get_items_limit_offset(db, limit=settings.ITEMS_PER_PAGE)
+        else:
+            items = data.get_items_limit_offset(db, limit=settings.ITEMS_PER_PAGE, visibility_filter="public")
+
+        # Returnér template eller JSON-format
         response_format = request.query.get("format")
-        if response_format == "json":            
+        if response_format == "json":
             return {"items": items}
 
-        # Returnér HTML-template
         return template(
             "index.html",
             items=items,
@@ -147,6 +152,7 @@ def _():
     finally:
         if "db" in locals():
             db.close()
+
 
 ##############################
 if settings.PRODUCTION:

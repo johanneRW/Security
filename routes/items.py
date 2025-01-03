@@ -29,37 +29,47 @@ def _(page_number):
         csrf_token = utils.generate_csrf_token()
         db = utils.db()
         limit = settings.ITEMS_PER_PAGE
-        #tjekker hvor mange items der skal vises for at regne ud hvor mange sider der skal være i alt
-        total_items = data.get_number_of_items(db)
 
-        total_pages = (total_items + limit - 1) // limit
-        next_page = int(page_number) + 1
-        offset = (int(page_number) - 1) * limit
-  
-        items = data.get_items_limit_offset(db,limit,offset)
-        ic(items)
-        
-
+        # Standardværdier for brugerstatus
         is_logged = False
         is_admin = False
+        user = None
+
         try:
+            # Valider om brugeren er logget ind
             utils.validate_user_logged()
             user = request.get_cookie("user", secret=settings.COOKIE_SECRET)
             is_logged = True
-            #is_admin = user.get("role_id") == 1
             is_admin = user.get("user_role") == RoleEnum.ADMIN.value
         except:
             pass
-        
-        #hvis det er sidste side skal der ikke være en "more" button
+
+        # Filtrer antal items baseret på brugertype
+        if is_admin:
+            # Admins kan se alle items
+            total_items = data.get_number_of_items(db)
+            items = data.get_items_limit_offset(db, limit, offset=(int(page_number) - 1) * limit)
+        else:
+            # Almindelige brugere ser kun "public" items
+            total_items = data.get_number_of_items(db, visibility_filter="public")
+            items = data.get_items_limit_offset(db, limit, offset=(int(page_number) - 1) * limit, visibility_filter="public")
+
+        # Beregn antal sider
+        total_pages = (total_items + limit - 1) // limit
+        next_page = int(page_number) + 1
+
+        # Tjek om det er sidste side
         is_last_page = int(page_number) >= total_pages
 
+        # Generér HTML for items og "More" knap
         html = ""
         for item in items:
             html += template("_item", item=item, is_logged=is_logged, is_admin=is_admin, csrf_token=csrf_token)
         btn_more = template("__btn_more", page_number=next_page)
         if is_last_page: 
             btn_more = ""
+
+        # Returnér HTML og opdatering til kortet
         return f"""
         <template mix-target="#items" mix-bottom>
             {html}
@@ -80,7 +90,10 @@ def _(page_number):
             </template>
             """
     finally:
-        if "db" in locals(): db.close()
+        if "db" in locals():
+            db.close()
+
+
 
 
 
@@ -317,3 +330,78 @@ def toggle_item_block(item_uuid):
             """   
     finally:
         if "db" in locals(): db.close()
+        
+
+@post("/toggle_item_visibility/<item_uuid>")
+def toggle_item_visibility(item_uuid):
+    try:
+        utils.validate_user_logged()
+
+        # Få den aktuelle synlighedsstatus
+        current_visibility_status = request.forms.get("item_visibility")  # Forventet at være "public" eller "private"
+        
+        # Bestem ny synlighedsstatus og relevante variabler
+        if current_visibility_status == "public":
+            new_visibility_status = "private"
+            button_name = "Make Public"
+            email_subject = 'Property is now private'
+            email_template = "email_visibility_change"
+        else:
+            new_visibility_status = "public"
+            button_name = "Make Private"
+            email_subject = 'Property is now public'
+            email_template = "email_visibility_change"
+
+        # Databaseopdatering
+        db = utils.db()
+        updated_at = int(time.time())
+        data.toggle_visibility_item(db, new_visibility_status, updated_at, item_uuid)
+        
+        # Hent brugeroplysninger
+        user_info = data.get_user_by_item(db, item_uuid)
+        ic(user_info)
+        ic(email_subject)
+        ic(email_template)
+
+        user_first_name = user_info[0]['user_first_name']
+        user_email = user_info[0]['user_email']
+        ic(user_first_name)
+        ic(user_email)
+
+        # Send email
+        template_vars = {
+            "user_first_name": user_first_name,
+            "new_visibility_status": new_visibility_status,  # Dynamisk status: "public" eller "private"
+        }
+        #email.send_email(user_email, email_subject, email_template, **template_vars)
+        email.send_email(settings.DEFAULT_EMAIL, email_subject, email_template, **template_vars)
+
+        # Returnér opdateret knap
+        return f"""
+            <template mix-target="#item_{item_uuid}" mix-replace>
+                <form id="item_{item_uuid}">
+                    <input type="hidden" name="item_visibility" value="{new_visibility_status}">
+                    <button id="item_{item_uuid}"
+                            mix-data="#item_{item_uuid}"
+                            mix-post="/toggle_item_visibility/{item_uuid}"
+                            mix-await="Please wait..."
+                            mix-default="{button_name}"
+                            class="toggle"
+                    >
+                        {button_name}
+                    </button>
+                </form>
+            </template>
+        """
+    except Exception as ex:
+        ic(ex)
+        return f"""
+            <template mix-target="#toast">
+            <div mix-ttl="3000" class="error">
+                Error changing item visibility
+            </div>
+            </template>
+        """   
+    finally:
+        if "db" in locals(): db.close()
+

@@ -31,6 +31,7 @@ class Item(Base):
     updated_logs = relationship("ItemUpdatedLog", back_populates="item")
     ratings = relationship("Rating", back_populates="item")
     bookings = relationship("Booking", back_populates="item")
+    visibility_logs = relationship("ItemVisibilityLog", back_populates="item")
     
 class ItemImage(Base):
     __tablename__ = 'items_images'
