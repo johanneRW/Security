@@ -125,10 +125,33 @@ def object_as_dict(obj):
 
 
 def get_reset_info(db: Session, key: str):
-    reset_info = db.query(PasswordResetLog).filter(PasswordResetLog.password_reset_key == key).first()
+    # Join PasswordResetLog med User
+    reset_info = (
+        db.query(PasswordResetLog, User)
+        .join(User, User.user_pk == PasswordResetLog.user_pk)
+        .filter(PasswordResetLog.password_reset_key == key)
+        .first()
+    )
+
     if reset_info:
-        return object_as_dict(reset_info)
+        reset_log, user = reset_info  # Split resultatet i PasswordResetLog og User
+
+        # Kombinér dataene i én dictionary
+        return {
+            "reset_log": {
+                "user_pk": reset_log.user_pk,
+                "password_reset_key": reset_log.password_reset_key,
+                "password_reset_at": reset_log.password_reset_at,
+            },
+            "user": {
+                "user_first_name": user.user_first_name,
+                "user_last_name": user.user_last_name,
+            },
+        }
+
     return None
+
+
 
 
 

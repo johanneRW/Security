@@ -120,7 +120,7 @@ def validate_user_last_name():
 
  
  
-# Funktion til at læse den liste over de mest brugte kodeord fra OWASP
+# Funktion til at læse en liste over de mest brugte kodeord fra OWASP
 def load_common_passwords(file_path="./utility/most-common.txt"):
     try:
         with open(file_path, "r") as file:
@@ -129,12 +129,10 @@ def load_common_passwords(file_path="./utility/most-common.txt"):
         raise Exception("Common passwords file not found") from exc
 
 
-# Ny validate_password funktion
-def validate_password(skip_name_validation=False):
+#Validate (skip_name_validation=True) blive bruget til at validere kodeord ved login hvor der ikke bliver brugt for- og efternavn
+def validate_password(skip_name_validation=False, user_first_name=None, user_last_name=None):
     # Læs brugerdata
     user_password = request.forms.get("user_password", "").strip()
-    user_first_name = request.forms.get("user_first_name", "").strip()
-    user_last_name = request.forms.get("user_last_name", "").strip()
 
     # Fejlbeskeder
     error_length = f"password {regexes.USER_PASSWORD_MIN} to {regexes.USER_PASSWORD_MAX} characters"
@@ -144,17 +142,19 @@ def validate_password(skip_name_validation=False):
     if not re.match(regexes.USER_PASSWORD_REGEX, user_password):
         raise Exception(error_length, 400)
 
-    # Tjek om for- eller efternavn indgår i password (case-insensitive)
-    if not skip_name_validation:
+    # Tjek om for- eller efternavn indgår i password (case-insensitive) for bedre matching
+    if not skip_name_validation and user_first_name and user_last_name:
         if user_first_name.lower() in user_password.lower() or user_last_name.lower() in user_password.lower():
             raise Exception(error_simple, 400)
 
-    # Tjek om password er på listen over mest brugte kodeord
+    # Tjek om password er på listen over mest brugte kodeord fra OWASP
     common_passwords = load_common_passwords()
     if user_password.lower() in common_passwords:
         raise Exception(error_simple, 400)
 
     return user_password
+
+
 
 ##############################
 
@@ -238,7 +238,7 @@ def validate_image():
     # Sikrer, at filnavnet er sikkert
     original_filename = secure_filename(file.filename)
 
-    # Tjek om filnavnet matcher det ønskede mønster (valgfrit)
+    # Tjek om filnavnet matcher det ønskede mønster
     if not re.match(regexes.ITEM_IMAGE_REGEX, original_filename):
         raise Exception(error, 400)
 

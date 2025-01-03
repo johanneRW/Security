@@ -104,7 +104,7 @@ def _():
 
 @put("/reset_password/<key>")
 def _(key):
-   try:
+    try:
         csrf_token = request.forms.get('csrf_token')
         if not utils.validate_csrf_token(csrf_token):
             raise ValueError("Invalid CSRF token")
@@ -131,6 +131,7 @@ def _(key):
         ic("Reset time:", reset_time)
         ic("User PK:", user_pk)
 
+        # Valider, om reset-linket er udløbet
         if time_now - reset_time > 900:
             response.status = 400
             return """
@@ -141,10 +142,22 @@ def _(key):
             </template>
             """
 
-        user_password = utils.validate_password(skip_name_validation=True).encode()
+        # Hent brugerens fornavn og efternavn fra reset-info
+        user_first_name = reset_info["user"]["user_first_name"]
+        user_last_name = reset_info["user"]["user_last_name"]
+
+        # Valider password med brugerdata
+        user_password = utils.validate_password(
+            skip_name_validation=False,
+            user_first_name=user_first_name,
+            user_last_name=user_last_name,
+        ).encode()
+
+        # Hash password
         hashed_password = bcrypt.hashpw(user_password, bcrypt.gensalt())
 
-        data.update_user_password(db,hashed_password, user_pk)
+        # Opdater brugerens password
+        data.update_user_password(db, hashed_password, user_pk)
 
         csrf_token = utils.generate_csrf_token()
         html = template("__frm_reset_password.html", csrf_token=csrf_token, key=key)
@@ -160,7 +173,7 @@ def _(key):
             </template>
             """
 
-   except Exception as ex:
+    except Exception as ex:
         ic("Reset password error:", ex)  # Debug log
         response.status = 500
         return """
@@ -170,6 +183,6 @@ def _(key):
         </div>
         </template>
         """
-
-   finally:
-        if "db" in locals(): db.close()
+    finally:
+        if "db" in locals():
+            db.close()
