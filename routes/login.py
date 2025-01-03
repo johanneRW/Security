@@ -3,7 +3,7 @@ from utility import utils
 from icecream import ic
 import bcrypt
 import settings
-from database import data
+from database.data import user_data
 
 ##############################
 @get("/login")
@@ -28,7 +28,7 @@ def _():
         user_email = utils.validate_email()
         user_password = utils.validate_password(skip_name_validation=True)
         db = utils.db()
-        user = data.get_user_by_email(db, user_email)
+        user = user_data.get_user_by_email(db, user_email)
         ic(user)
         
         if not user:

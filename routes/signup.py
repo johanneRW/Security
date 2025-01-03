@@ -7,7 +7,7 @@ import bcrypt
 import settings
 import time
 from utility import email
-from database import data
+from database.data import user_data
 
 
 @get("/signup")
@@ -52,16 +52,19 @@ def _():
         user_verification_key=uuid.uuid4().hex
 
         db = utils.db()
-        data.create_user(db, user_pk,
-                    user_username,
-                    user_first_name,
-                    user_last_name,
-                    user_email,
-                    hashed_password,
-                    #role_id,
-                    #role_name,
-                    user_created_at,  
-                    user_verification_key)
+        user_data.create_user(
+            db,
+            user_pk,
+            user_username,
+            user_first_name,
+            user_last_name,
+            user_email,
+            hashed_password,
+            #role_id,
+            #role_name,
+            user_created_at,  
+            user_verification_key
+        )
 
         subject = 'Welcome to Home-Away'
         template_name = "email_welcome"
@@ -162,7 +165,7 @@ def _(key):
         
         db = utils.db()
         user_is_verified_at = int(time.time())
-        data.update_verification_status(db, user_is_verified_at, key)
+        user_data.update_verification_status(db, user_is_verified_at, key)
 
         return """<template mix-target="#toast">
                 <div mix-ttl="3000" class="ok">

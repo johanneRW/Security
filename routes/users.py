@@ -6,7 +6,7 @@ from icecream import ic
 import bcrypt 
 from utility import email
 import settings
-from database import data
+from database.data import user_data
 
 
 @get("/users")
@@ -16,39 +16,22 @@ def _():
         user = ""
         try:    
             # validate that user is logged in
-            utils.validate_user_logged()
-            
-            # get the user cookie
-            user = request.get_cookie("user", secret=settings.COOKIE_SECRET)
-            
-            if not user:
-                ic("No user cookie found")
-                raise Exception("User not found")
-                
-            is_logged = True
-            
-            # Check if user is admin
-            user_role = user.get("user_role")
-
-            # Compare the string value of the role
-            if user_role != RoleEnum.ADMIN:
-                ic("User is not admin")
-                response.status = 403
-                return "you are not admin"
-            
-            # Generate CSRF token after validating admin status    
-            csrf_token = utils.generate_csrf_token(user.get("user_pk"))
-            
-            # Get users list
-            db = utils.db()
-            users = data.get_all_users(db)
-            return template("users", users=users, is_logged=is_logged, user=user, is_admin=True, csrf_token=csrf_token)
-            
-        except Exception as ex:
-            ic("Login error:", str(ex))
+            user = utils.validate_user_logged()
+        except:
             response.status = 403
             return "you are not logged in"
-            
+        else:
+            is_logged = True
+            #if user.get("role_id") == 1:  
+            if user.get("user_role") == RoleEnum.ADMIN.value:
+                # Generate CSRF token after validating admin status    
+                csrf_token = utils.generate_csrf_token(user.get("user_pk"))
+                db = utils.db()
+                users = user_data.get_all_users(db)
+                return template("users", users=users, is_logged=is_logged, user=user, is_admin=True, csrf_token=csrf_token)
+            else:
+                response.status = 403
+                return "you are not admin"
     except Exception as ex:
         ic("System error:", str(ex))
         return "system under maintainance"         
@@ -66,9 +49,10 @@ def toggle_user_block(user_pk):
         if not utils.validate_csrf_token(csrf_token, user.get("user_pk")):
             raise ValueError("Invalid CSRF token")
 
-        if user.get("user_role") != RoleEnum.ADMIN:
+        # Check if the user is an admin
+        if user.get("user_role") != RoleEnum.ADMIN.value:
             response.status = 403
-            return "you are not admin"
+            return "You are not authorized"
 
         current_blocked_status = int(request.forms.get("user_blocked"))
         
@@ -82,16 +66,21 @@ def toggle_user_block(user_pk):
             button_name = "Block"
             email_subject = 'User is unblocked'
             email_template = "email_ublocked_user"
-            
-        updated_at = int(time.time())
+            #email_template = "email_unblocked_user"
         
         db = utils.db()
-        data.toggle_block_user(db, new_blocked_status, updated_at, user_pk)
-        
-        user_info = data.get_user_name_and_email(db, user_pk)
+
+        updated_at = int(time.time())
+
+        # Toggle user block status
+        user_data.toggle_block_user(db, new_blocked_status, updated_at, user_pk)
+
+        # Fetch user information
+        user_info = user_data.get_user_name_and_email(db, user_pk)
         user_first_name = user_info['user_first_name']
         user_email = user_info['user_email']
 
+        # Send email notification
         template_vars = {"user_first_name": user_first_name}
         try:
             email.send_email(settings.DEFAULT_EMAIL, email_subject, email_template, **template_vars)
@@ -147,10 +136,10 @@ def _(user_pk):
 
         # DB update
         db = utils.db()
-        data.update_user(db, username, first_name, last_name, email, user_pk)
+        user_data.update_user(db, username, first_name, last_name, email, user_pk)
         
         # Get updated user data
-        updated_user = data.get_user(db, user_pk)
+        updated_user = user_data.get_user(db, user_pk)
         if not updated_user:
             raise Exception("user not found", 400)
             
@@ -193,16 +182,16 @@ def _(user_pk):
             user_password = utils.validate_password()
             # Fetch user's password so we can validate it
             db = utils.db()
-            db_user = data.get_user_password(db, user_pk)   
+            db_user = user_data.get_user_password(db, user_pk)   
             if not bcrypt.checkpw(user_password.encode(), db_user["user_password"]):
                 raise ValueError("Invalid credentials", 400)
             
             # Get user info from DB before deleting it
-            user_info = data.get_user(db, user_pk)
+            user_info = user_data.get_user(db, user_pk)
             
             # Delete user
             deleted_at = int(time.time())
-            data.delete_user(db, deleted_at, user_pk)
+            user_data.delete_user(db, deleted_at, user_pk)
 
             # Send email
             user_first_name = user_info['user_first_name']   
@@ -263,7 +252,7 @@ def promote_to_partner(user_pk):
         db = utils.db()
 
         # Hent brugerens nuværende rolle
-        user_info = data.get_user(db, user_pk)
+        user_info = user_data.get_user(db, user_pk)
         if not user_info:
             response.status = 404
             return """
@@ -285,7 +274,7 @@ def promote_to_partner(user_pk):
             """
 
         # Opdater brugerens rolle til partner
-        updated_user = data.update_user_role_to_partner(db, user_pk)
+        updated_user = user_data.update_user_role_to_partner(db, user_pk)
 
         # Send email til brugeren om ændringen
         user_first_name = updated_user.user_first_name

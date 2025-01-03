@@ -77,7 +77,69 @@ function updateModalEvents () {
     handleImageModal("imageUpdateModal", ".showUpdateImageModal");    
 }
 
+function handleAdminPasswordModal(modalId, btnId) {
+    const btn = document.querySelector(btnId);
+    const modal = document.querySelector(modalId);
+    const close = document.querySelector(modalId + " > #close");
+    const cancel = document.querySelector(modalId + " #cancel");
+
+    if (!btn || !modal) {
+        return;
+    }
+
+    btn.addEventListener("click", function (evt) {
+        evt.preventDefault();
+        modal.showModal();
+    });
+
+    close.addEventListener("click", function () {
+        modal.close();
+    });
+
+    cancel.addEventListener("click", function (evt) {
+        evt.preventDefault();
+        modal.close();
+    });
+}
+
+
+
+
+function handlePromoteToPartnerModal(modalId, btnId) {
+    const btn = document.querySelector(btnId);
+    const modal = document.querySelector(modalId);
+    const close = modal.querySelector("#closePromote");
+    const cancel = modal.querySelector("#cancelPromote");
+
+    if (btn === null || modal === null || close === null || cancel === null) {
+        return;
+    }
+
+    // Åbn dialogen, når knappen klikkes
+    btn.addEventListener("click", function (evt) {
+        evt.preventDefault();
+        modal.showModal();
+        close.blur(); // Fjern fokus fra luk-knappen
+    });
+
+    // Luk dialogen, når "close" knappen klikkes
+    close.addEventListener("click", function () {
+        modal.close();
+    });
+
+    // Luk dialogen, når "cancel" knappen klikkes
+    cancel.addEventListener("click", function (evt) {
+        evt.preventDefault();
+        modal.close();
+    });
+}
+
+// Initialisering af dialog for "Promote to Partner"
+handlePromoteToPartnerModal("#promoteToPartnerModal", "#showPromoteToPartnerModal");
+
+
 handleDeleteModal("#deleteUserModal", "#showDeleteUserModal");
 
 handleImageModal("imageCreateModal", ".showCreateImageModal");
 handleImageModal("imageUpdateModal", ".showUpdateImageModal");
+handleAdminPasswordModal("toggleUserModal", "[id^=showToggleUserModal_]"); // Initialiser admin-password dialog

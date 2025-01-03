@@ -3,7 +3,7 @@ from database.models.user import RoleEnum
 from utility import utils
 from icecream import ic
 import settings
-from database import data
+from database.data import item_data
 import git
 import secrets
 from database.models.base import Base, engine
@@ -122,9 +122,9 @@ def _():
 
         # Hent items baseret på brugerens rolle
         if is_admin:
-            items = data.get_items_limit_offset(db, limit=settings.ITEMS_PER_PAGE)
+            items = item_data.get_items_limit_offset(db, limit=settings.ITEMS_PER_PAGE)
         else:
-            items = data.get_items_limit_offset(db, limit=settings.ITEMS_PER_PAGE, visibility_filter="public")
+            items = item_data.get_items_limit_offset(db, limit=settings.ITEMS_PER_PAGE, visibility_filter="public")
 
         # Returnér template eller JSON-format
         response_format = request.query.get("format")

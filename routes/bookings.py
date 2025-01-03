@@ -3,7 +3,7 @@ from utility import utils
 from icecream import ic
 import settings
 import time
-from database import data
+from database.data import booking_data, item_data
 
 @post("/bookings/<item_pk>")
 def _(item_pk):
@@ -16,12 +16,12 @@ def _(item_pk):
         if user:
             user_pk = user['user_pk']
             db = utils.db()
-            item = data.get_item(db, item_pk)
+            item = item_data.get_item(db, item_pk)
             item_price = item['item_price_per_night']
             number_of_nights = utils.validate_number_of_nights()
             booking_price = float(item_price) * int(number_of_nights)
             booking_created_at = int(time.time())
-            data.create_booking(db, user_pk, item_pk, booking_created_at, number_of_nights, booking_price)
+            booking_data.create_booking(db, user_pk, item_pk, booking_created_at, number_of_nights, booking_price)
         
             csrf_token = utils.generate_csrf_token(user.get("user_pk"))
             btn_book = template("__btn_book", item=item, csrf_token=csrf_token)
@@ -65,7 +65,7 @@ def bookings():
 
         db = utils.db()
         user_pk = user['user_pk']
-        bookings = data.get_user_bookings_with_ratings(db, user_pk)
+        bookings = booking_data.get_user_bookings_with_ratings(db, user_pk)
         return template("bookings.html", bookings=bookings)
     except Exception as ex:
         ic(ex)
@@ -95,7 +95,7 @@ def rate_item_endpoint(item_pk):
         db = utils.db()
 
         # Kald funktionen til at rate ejendommen
-        result = data.rate_item(db, user_pk, item_pk, stars)
+        result = booking_data.rate_item(db, user_pk, item_pk, stars)
 
         # Håndtér resultatet
         if "error" in result:

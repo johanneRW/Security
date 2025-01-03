@@ -7,10 +7,12 @@ from bottle import (
     put, 
     response
 )
+import uuid
+import bcrypt
+
 from database.models.user import RoleEnum
 from utility import utils
 from utility import email
-from database import data
 from icecream import ic
 import json
 import settings
@@ -20,7 +22,7 @@ import time
 import uuid
 from utility import utils
 import settings
-from database import data
+from database.data import item_data, user_data
 
 
 @get("/items/page/<page_number>")
@@ -47,12 +49,12 @@ def _(page_number):
         # Filtrer antal items baseret på brugertype
         if is_admin:
             # Admins kan se alle items
-            total_items = data.get_number_of_items(db)
-            items = data.get_items_limit_offset(db, limit, offset=(int(page_number) - 1) * limit)
+            total_items = item_data.get_number_of_items(db)
+            items = item_data.get_items_limit_offset(db, limit, offset=(int(page_number) - 1) * limit)
         else:
             # Almindelige brugere ser kun "public" items
-            total_items = data.get_number_of_items(db, visibility_filter="public")
-            items = data.get_items_limit_offset(db, limit, offset=(int(page_number) - 1) * limit, visibility_filter="public")
+            total_items = item_data.get_number_of_items(db, visibility_filter="public")
+            items = item_data.get_items_limit_offset(db, limit, offset=(int(page_number) - 1) * limit, visibility_filter="public")
 
         # Beregn antal sider
         total_pages = (total_items + limit - 1) // limit
@@ -113,7 +115,7 @@ def _():
             user_pk=user['user_pk']
             ic(user_pk)
             db = utils.db()
-            items =data.get_items_by_user(db, user_pk)
+            items =item_data.get_items_by_user(db, user_pk)
             ic(items)
             csrf_token = utils.generate_csrf_token()
             return template("items_for_user", items=items, is_logged=is_logged, user=user, csrf_token=csrf_token)
@@ -145,12 +147,23 @@ def _():
         item_owned_by=user['user_pk']
         
         db = utils.db()
-        data.create_item(db, item_pk, item_name, item_lat, item_lon, 
-                        item_price_per_night, item_created_at, item_owned_by)
-        
-        item = data.get_item(db, item_pk)
-       
+
         csrf_token = utils.generate_csrf_token(user.get("user_pk"))
+        item_data.create_item(
+            db, 
+            item_pk, 
+            item_name,
+            item_lat, 
+            item_lon, 
+            item_price_per_night, 
+            item_created_at, 
+            item_owned_by
+        )
+        
+        item = item_data.get_item(db, item_pk)
+        ic(item)
+
+        
         html = template("_item_detail.html", item=item, csrf_token=csrf_token)
         html_new = template("create_item.html", csrf_token=csrf_token)
        
@@ -198,8 +211,8 @@ def _(item_pk):
         item_price_per_night = utils.validate_item_price_per_night()
      
         db = utils.db()
-        data.update_item(db,item_name,item_lat,item_lon,item_price_per_night,item_pk)
-        item = data.get_item(db, item_pk)
+        item_data.update_item(db, item_name, item_lat,item_lon, item_price_per_night, item_pk)
+        item = item_data.get_item(db, item_pk)
         
         csrf_token = utils.generate_csrf_token(user.get("user_pk"))
         html = template("_item_detail.html", item=item, csrf_token=csrf_token)
@@ -237,7 +250,7 @@ def _(item_pk):
             raise ValueError("Invalid CSRF token")
 
         db = utils.db()
-        data.delete_item(db,item_pk)
+        item_data.delete_item(db,item_pk)
         return f"""
             <template mix-target="#item_{item_pk}" mix-replace>
             </template>
@@ -267,25 +280,54 @@ def toggle_item_block(item_uuid):
         user = request.get_cookie("user", secret=settings.COOKIE_SECRET)
         if not utils.validate_csrf_token(csrf_token, user.get("user_pk")):
             raise ValueError("Invalid CSRF token")
+        
+        # Valider, at brugeren er logget ind
+        if not user or user["user_role"] != RoleEnum.ADMIN.value:
+            response.status = 403
+            return {"error": "Unauthorized"}
 
-        current_blocked_status=int(request.forms.get("item_blocked"))
+        # Hent admin-password fra formularen
+        admin_password = request.forms.get("admin_password", "").strip()
+        if not admin_password:
+            response.status = 400
+            return """
+            <template mix-target="#toast">
+            <div mix-ttl="3000" class="error">
+                Admin password is required
+            </div>
+            </template>
+            """
+
+        # Valider admin-password med bcrypt
+        db = utils.db()
+        db_admin = item_data.get_user_password(db, user["user_pk"])  # Hent admin's krypterede password fra DB
+        if not bcrypt.checkpw(admin_password.encode(), db_admin["user_password"]):
+            response.status = 403
+            return """
+            <template mix-target="#toast">
+            <div mix-ttl="3000" class="error">
+                Invalid admin password
+            </div>
+            </template>
+            """
+
+        # Toggle item blocked-status
+        current_blocked_status = int(request.forms.get("item_blocked"))
         if current_blocked_status == 0:
-            new_blocked_status=1
-            button_name="Unblock"
+            new_blocked_status = 1
+            button_name = "Unblock"
             email_subject = 'Property is blocked'
             email_template = "email_blocked_item"
         else:
-            new_blocked_status=0
-            button_name="Block"
+            new_blocked_status = 0
+            button_name = "Block"
             email_subject = 'Property is unblocked'
-            email_template = "email_ublocked_item"
-          
+            email_template = "email_unblocked_item"
 
-        db = utils.db()
+        # Opdater databasen
         updated_at = int(time.time())
-        data.toggle_block_item(db,new_blocked_status, updated_at, item_uuid)
         
-        user_info = data.get_user_by_item(db, item_uuid)
+        user_info = user_data.get_user_by_item(db, item_uuid)
         if not user_info:
             raise ValueError("User not found for this item")
             
@@ -298,10 +340,18 @@ def toggle_item_block(item_uuid):
         user_email = user_info["user_email"]
         ic(user_first_name)
         ic(user_email)
+        item_data.toggle_block_item(db, new_blocked_status, updated_at, item_uuid)
 
+        # Send en email til ejeren
+        user_info = user_data.get_user_by_item(db, item_uuid)
+        user_first_name = user_info[0]['user_first_name']
+        user_email = user_info[0]['user_email']
         template_vars = {"user_first_name": user_first_name}
+        
+        #email.send_email(user_email, email_subject, email_template, **template_vars)
         email.send_email(settings.DEFAULT_EMAIL, email_subject, email_template, **template_vars)
 
+        # Returnér opdateret knap
         return f"""
             <template mix-target="#item_{item_uuid}" mix-replace>
                 <form id="item_{item_uuid}">
@@ -327,9 +377,12 @@ def toggle_item_block(item_uuid):
                 Error blocking or unblocking item
             </div>
             </template>
-            """   
+        """
     finally:
-        if "db" in locals(): db.close()
+        if "db" in locals():
+            db.close()
+
+
         
 
 @post("/toggle_item_visibility/<item_uuid>")
@@ -355,10 +408,10 @@ def toggle_item_visibility(item_uuid):
         # Databaseopdatering
         db = utils.db()
         updated_at = int(time.time())
-        data.toggle_visibility_item(db, new_visibility_status, updated_at, item_uuid)
+        item_data.toggle_visibility_item(db, new_visibility_status, updated_at, item_uuid)
         
         # Hent brugeroplysninger
-        user_info = data.get_user_by_item(db, item_uuid)
+        user_info = user_data.get_user_by_item(db, item_uuid)
         ic(user_info)
         ic(email_subject)
         ic(email_template)

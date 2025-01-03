@@ -29,10 +29,7 @@
 
     <!-- Partner Promotion Button -->
     % if user['user_role'] != 'partner':
-    <button class="promote" id="showPromoteToPartnerModal">
-        Become a Partner
-    </button>
-
+    <button id="showPromoteToPartnerModal">Promote to Partner</button>
     <dialog id="promoteToPartnerModal">
         <button id="closePromote">&times;</button>
         <header>
@@ -51,6 +48,7 @@
             </form>
         </section>
     </dialog>
+    
     % end
 
     <!-- Delete User Button -->
