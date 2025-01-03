@@ -1,5 +1,7 @@
 import os
+import uuid
 from bottle import request, response
+import requests
 import re
 import settings
 from database.models.user import RoleEnum
@@ -57,12 +59,33 @@ def validate_user_id():
 
 
 ##############################
-
+    
 def validate_email():
-    error = f"email invalid"
+    error = "email invalid"
     user_email = request.forms.get("user_email", "").strip()
-    if not re.match(regexes.USER_EMAIL_REGEX, user_email): raise Exception(error, 400)
+
+    # Tjekker, om e-mailen matcher den angivne regex
+    if not re.match(regexes.USER_EMAIL_REGEX, user_email):
+        raise Exception(error, 400)
+
+    # API-kald til Disify for at tjekke e-mailen
+    try:
+        response = requests.get(f"https://www.disify.com/api/email/{user_email}")
+        if response.status_code != 200:
+            raise Exception("API-kald mislykkedes", 500)
+        
+        # Parsing af API-svaret
+        data = response.json()
+        if data.get("disposable", False):  # Hvis e-mailen er midlertidig
+            raise Exception("E-mailen er en midlertidig adresse og kan ikke bruges.", 400)
+    except requests.exceptions.RequestException as e:
+        # Hvis der er fejl i API-kaldet, logges fejlen, men tillader ikke brugeren at registrere sig
+        print(f"Fejl ved API-kald: {e}")
+        raise Exception("Kunne ikke verificere e-mailen. Prøv igen senere.", 500)
+
+    # Hvis e-mailen er valid
     return user_email
+
 
 ##############################
 
@@ -95,23 +118,16 @@ def validate_user_last_name():
 
 ##############################
 
-
-""" def validate_password():
-    error = f"password {regexes.USER_PASSWORD_MIN} to {regexes.USER_PASSWORD_MAX} characters"
-    user_password = request.forms.get("user_password", "").strip()
-    if not re.match(regexes.USER_PASSWORD_REGEX, user_password): raise Exception(error, 400)
-    return user_password 
-    
- """
  
  
-# Funktion til at læse den liste over de mest brugte kodeord
-def load_common_passwords(file_path="./utility/10k-most-common.txt"):
+# Funktion til at læse den liste over de mest brugte kodeord fra OWASP
+def load_common_passwords(file_path="./utility/most-common.txt"):
     try:
         with open(file_path, "r") as file:
             return set(line.strip().lower() for line in file)
     except FileNotFoundError as exc:
         raise Exception("Common passwords file not found") from exc
+
 
 # Ny validate_password funktion
 def validate_password(skip_name_validation=False):
@@ -196,46 +212,57 @@ def validate_item_price_per_night():
 
 ##############################
 
-""" def validate_image():
-    error = "image must be a valid image filename (jpg, jpeg, png, gif, webp)"
-    file = request.files.get('image')
-    if file is None or not file.filename.strip():
-        raise Exception(error, 400)
-    
-    filename = secure_filename(file.filename)
-    if not re.match(regexes.ITEM_IMAGE_REGEX, filename):
-        raise Exception(error, 400)
-    
-    return file, filename """
-    
+
 def validate_image():
     error = "Image must be a valid image file (jpg, jpeg, png, gif, webp)"
+    size_error = "Image file size exceeds the allowed limit (5 MB)"
+    format_error = "Image format is not allowed. Only jpg, jpeg, png, gif, and webp are accepted."
+    #max_file_size = 5 * 1024 * 1024  # Maksimal filstørrelse i bytes (5 MB)
+    max_file_size = settings.MAX_FILE_SIZE
+    #allowed_formats = ["JPEG", "PNG", "GIF", "WEBP"]  # Liste over tilladte formater
+    allowed_formats=settings.ALLOWED_IMAGE_FORMATS
+
     file = request.files.get('image')
-    
+
     # Tjek om filen eksisterer og har et navn
     if file is None or not file.filename.strip():
         raise Exception(error, 400)
-    
+
+    # Tjek filens størrelse
+    file.file.seek(0, 2)  # Gå til slutningen af filen for at få dens størrelse
+    file_size = file.file.tell()
+    if file_size > max_file_size:
+        raise Exception(size_error, 400)
+    file.file.seek(0)  # Reset filstrømmen til starten efter størrelsestjekket
+
     # Sikrer, at filnavnet er sikkert
-    filename = secure_filename(file.filename)
-    
+    original_filename = secure_filename(file.filename)
+
     # Tjek om filnavnet matcher det ønskede mønster (valgfrit)
-    if not re.match(regexes.ITEM_IMAGE_REGEX, filename):
+    if not re.match(regexes.ITEM_IMAGE_REGEX, original_filename):
         raise Exception(error, 400)
-    
+
     # Valider om filens indhold er et billede ved at forsøge at åbne det med Pillow
     try:
         file.file.seek(0)  # Sørg for at starte fra begyndelsen af filstrømmen
         img = Image.open(file.file)
         img.verify()  # Tjekker om det er et gyldigt billede
+
+        # Tjek billedformatet
+        if img.format not in allowed_formats:
+            raise Exception(format_error, 400)
     except Exception:
         raise Exception(error, 400)
-    
+
     # Genindlæs billedet for at sikre, at strømmen kan bruges igen
     file.file.seek(0)  # Nulstil strømmen til starten igen for videre brug
 
-    # Returner det originale filobjekt og det sikre filnavn
-    return file, filename
+    # Tilføj UUID til filnavnet
+    file_extension = original_filename.rsplit('.', 1)[-1]  # Hent filens udvidelse
+    unique_filename = f"{uuid.uuid4().hex}.{file_extension}"  # Generér nyt unikt filnavn
+
+    # Returner det originale filobjekt og det sikre, unikke filnavn
+    return file, unique_filename
 
 ##############################
 
