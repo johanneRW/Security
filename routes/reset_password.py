@@ -96,14 +96,15 @@ def _():
 
 @put("/reset_password/<key>")
 def _(key):
-   try:
+    try:
         db = utils.db()
         time_now = int(time.time())
 
-        reset_info = data.get_reset_info(db,key)
+        # Hent reset-info, inklusive brugerdata
+        reset_info = data.get_reset_info(db, key)
 
         if reset_info is None:
-            return"""
+            return """
              <template mix-target="#toast">
             <div mix-ttl="3000" class="error">
                    Invalid reset key.
@@ -111,9 +112,10 @@ def _(key):
             </template>
             """
 
-        reset_time = reset_info['password_reset_at']
-        user_pk = reset_info['user_pk']
+        reset_time = reset_info["reset_log"]["password_reset_at"]
+        user_pk = reset_info["reset_log"]["user_pk"]
 
+        # Valider, om reset-linket er udløbet
         if time_now - reset_time > 900:
             return """
              <template mix-target="#toast">
@@ -123,14 +125,26 @@ def _(key):
             </template>
             """
 
-        user_password = utils.validate_password(skip_name_validation=True).encode()
+        # Hent brugerens fornavn og efternavn fra reset-info
+        user_first_name = reset_info["user"]["user_first_name"]
+        user_last_name = reset_info["user"]["user_last_name"]
+
+        # Valider password med brugerdata
+        user_password = utils.validate_password(
+            skip_name_validation=False,
+            user_first_name=user_first_name,
+            user_last_name=user_last_name,
+        ).encode()
+
+        # Hash password
         hashed_password = bcrypt.hashpw(user_password, bcrypt.gensalt())
 
-        data.update_user_password(db,hashed_password, user_pk)
+        # Opdater brugerens password
+        data.update_user_password(db, hashed_password, user_pk)
 
-        html=template("__frm_reset_password.html")
-
-        return  f"""
+        # Returner succes-besked
+        html = template("__frm_reset_password.html")
+        return f"""
             <template mix-target="#toast">
             <div mix-ttl="3000" class="ok">
                    Password changed successfully.
@@ -139,11 +153,9 @@ def _(key):
             <template mix-target="#frm_password_reset" mix-replace">
             {html}
             </template>
+        """
 
-            """
-
-   except Exception as ex:
-        raise
+    except Exception as ex:
         response.status = 500
         return """
         <template mix-target="#toast">
@@ -152,6 +164,6 @@ def _(key):
         </div>
         </template>
         """
-
-   finally:
-        if "db" in locals(): db.close()
+    finally:
+        if "db" in locals():
+            db.close()

@@ -25,7 +25,12 @@ def _():
         user_first_name=utils.validate_user_first_name()
         user_last_name=utils.validate_user_last_name()
         user_email=utils.validate_email()
-        user_password=utils.validate_password().encode()
+        # Send fornavn og efternavn til validate_password
+        user_password = utils.validate_password(
+            skip_name_validation=False,
+            user_first_name=user_first_name,
+            user_last_name=user_last_name
+        ).encode()
         hashed_password = bcrypt.hashpw(user_password, bcrypt.gensalt())
         #role_id=request.forms.get("role_type", "")
         role_name=utils.validate_role()
