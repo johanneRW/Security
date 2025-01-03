@@ -8,7 +8,7 @@ import settings
 import time
 
 from utility import email
-from database import data
+from database.data import user_data
 
 
 @get("/signup")
@@ -44,7 +44,7 @@ def _():
         user_verification_key=uuid.uuid4().hex
 
         db = utils.db()
-        data.create_user(db,user_pk,
+        user_data.create_user(db,user_pk,
                     user_username,
                     user_first_name,
                     user_last_name,
@@ -146,7 +146,7 @@ def _(key):
     try:
         db = utils.db()
         user_is_verified_at=int(time.time())
-        data.update_verification_status(db,user_is_verified_at,key)
+        user_data.update_verification_status(db,user_is_verified_at,key)
 
         return """<template mix-target="#toast">
                 <div mix-ttl="3000" class="ok">

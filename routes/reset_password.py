@@ -7,7 +7,7 @@ import settings
 import time
 
 from utility import email
-from database import data
+from database.data import user_data
 
 @get("/reset_password/<key>")
 def _(key):
@@ -25,7 +25,7 @@ def _():
         user_email = utils.validate_email()
             
         db = utils.db()
-        user_info = data.get_user_by_email(db,user_email)
+        user_info = user_data.get_user_by_email(db,user_email)
         if not user_info:
             response.status = 404
             return """
@@ -45,7 +45,7 @@ def _():
         password_reset_key =uuid.uuid4().hex
         password_reset_at=int(time.time())
         
-        data.create_password_reset(db,password_reset_key,password_reset_at,user_pk)
+        user_data.create_password_reset(db,password_reset_key,password_reset_at,user_pk)
 
 
         subject = "Reset password"
@@ -101,7 +101,7 @@ def _(key):
         time_now = int(time.time())
 
         # Hent reset-info, inklusive brugerdata
-        reset_info = data.get_reset_info(db, key)
+        reset_info = user_data.get_reset_info(db, key)
 
         if reset_info is None:
             return """
@@ -140,7 +140,7 @@ def _(key):
         hashed_password = bcrypt.hashpw(user_password, bcrypt.gensalt())
 
         # Opdater brugerens password
-        data.update_user_password(db, hashed_password, user_pk)
+        user_data.update_user_password(db, hashed_password, user_pk)
 
         # Returner succes-besked
         html = template("__frm_reset_password.html")

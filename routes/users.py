@@ -6,7 +6,7 @@ from icecream import ic
 import bcrypt 
 from utility import email
 import settings
-from database import data
+from database.data import user_data
 
 
 @get("/users")
@@ -25,7 +25,7 @@ def _():
             #if user.get("role_id") == 1:  
             if user.get("user_role") == RoleEnum.ADMIN.value:          
                 db = utils.db()
-                users = data.get_all_users(db)
+                users = user_data.get_all_users(db)
                 return template("users", users=users,is_logged=is_logged, user=user, is_admin=True)
             else:
                 response.status = 403
@@ -43,59 +43,68 @@ def toggle_user_block(user_pk):
         utils.validate_user_logged()
         user = request.get_cookie("user", secret=settings.COOKIE_SECRET)
 
-        #if user.get("role_id") != 1:
+        # Check if the user is an admin
         if user.get("user_role") != RoleEnum.ADMIN.value:
             response.status = 403
-            return "you are not admin"
+            return "You are not authorized"
 
-        current_blocked_status=int(request.forms.get("user_blocked"))
+        # Validate admin password from the form
+        admin_password = request.forms.get("admin_password", "").strip()
+        db = utils.db()
+        admin_user = user_data.get_user_password(db, user['user_pk'])  # Fetch the admin's hashed password
+
+        # Check if the provided password matches the admin's password
+        if not bcrypt.checkpw(admin_password.encode(), admin_user["user_password"]):
+            response.status = 403
+            return """
+            <template mix-target="#toast">
+            <div mix-ttl="3000" class="error">
+                Invalid admin password
+            </div>
+            </template>
+            """
+
+        current_blocked_status = int(request.forms.get("user_blocked"))
         if current_blocked_status == 0:
-            new_blocked_status=1
-            button_name="Unblock"
+            new_blocked_status = 1
+            button_name = "Unblock"
             email_subject = 'User is blocked'
             email_template = "email_blocked_user"
         else:
-            new_blocked_status=0
-            button_name="Block"
+            new_blocked_status = 0
+            button_name = "Block"
             email_subject = 'User is unblocked'
-            email_template = "email_ublocked_user"
-          
+            email_template = "email_unblocked_user"
+
         updated_at = int(time.time())
-        
-        db = utils.db()
-        data.toggle_block_user(db, new_blocked_status, updated_at, user_pk)
-        
-        
-        user_info = data.get_user_name_and_email(db,user_pk)
-        ic(user_info)
-        ic(email_subject)
-        ic(email_template)
-        
-        user_first_name=user_info[0]['user_first_name']
-        user_email=user_info[0]['user_email']
-        ic(user_first_name)
-        ic(user_email)
 
+        # Toggle user block status
+        user_data.toggle_block_user(db, new_blocked_status, updated_at, user_pk)
 
+        # Fetch user information
+        user_info = user_data.get_user_name_and_email(db, user_pk)
+        user_first_name = user_info[0]['user_first_name']
+        user_email = user_info[0]['user_email']
+
+        # Send email notification
         template_vars = {"user_first_name": user_first_name}
-        #email.send_email( user_email, subject, template_name, **template_vars)
         email.send_email(settings.DEFAULT_EMAIL, email_subject, email_template, **template_vars)
 
-
+        # Return updated form for frontend
         return f"""
             <template mix-target="#user_block_{user_pk}" mix-replace>
                 <form id="user_block_{user_pk}">
-            <input type="hidden" name="user_blocked" value="{new_blocked_status}">
-            <button id="user_block_{user_pk}"
-                    mix-data="#user_block_{user_pk}"
-                    mix-post="/toggle_user_block/{user_pk}"
-                    mix-await="Please wait..."
-                    mix-default={button_name}
-                    class= "toggle"
-            >
-                {button_name}
-            </button>
-        </form>
+                    <input type="hidden" name="user_blocked" value="{new_blocked_status}">
+                    <button id="user_block_{user_pk}"
+                            mix-data="#user_block_{user_pk}"
+                            mix-post="/toggle_user_block/{user_pk}"
+                            mix-await="Please wait..."
+                            mix-default={button_name}
+                            class="toggle">
+                        {button_name}
+                    </button>
+                </form>
+            </template>
             """
     except Exception as ex:
         response.status = 400
@@ -122,13 +131,13 @@ def _(user_pk):
 
             # DB update
             db = utils.db()
-            user = data.get_user(db, user_pk)
+            user = user_data.get_user(db, user_pk)
             if not user: 
                 raise Exception("user not found", 400)
-            data.update_user(db,username,first_name,last_name,email,user_pk)
+            user_data.update_user(db,username,first_name,last_name,email,user_pk)
             
             # Cookie update
-            user = data.get_user(db, user_pk)
+            user = user_data.get_user(db, user_pk)
             user.pop("user_password") # Do not put the user's password in the cookie
             ic(user)
             response.set_cookie("user", user, secret=settings.COOKIE_SECRET, httponly=True, secure=settings.COOKIE_SECURE, path="/")
@@ -168,16 +177,16 @@ def _(user_pk):
             user_password = utils.validate_password()
             # Fetch user's password so we can validate it
             db = utils.db()
-            db_user = data.get_user_password(db, user_pk)   
+            db_user = user_data.get_user_password(db, user_pk)   
             if not bcrypt.checkpw(user_password.encode(), db_user["user_password"]):
                 raise ValueError("Invalid credentials", 400)
             
             # Get user info from DB before deleting it
-            user_info = data.get_user(db, user_pk)
+            user_info = user_data.get_user(db, user_pk)
             
             # Delete user
             deleted_at = int(time.time())
-            data.delete_user(db,deleted_at,user_pk)
+            user_data.delete_user(db,deleted_at,user_pk)
 
             # Send email
             user_first_name=user_info['user_first_name']   
@@ -231,7 +240,7 @@ def promote_to_partner(user_pk):
         db = utils.db()
 
         # Hent brugerens nuværende rolle
-        user_info = data.get_user(db, user_pk)
+        user_info = user_data.get_user(db, user_pk)
         if not user_info:
             response.status = 404
             return """
@@ -253,7 +262,7 @@ def promote_to_partner(user_pk):
             """
 
         # Opdater brugerens rolle til partner
-        updated_user = data.update_user_role_to_partner(db, user_pk)
+        updated_user = user_data.update_user_role_to_partner(db, user_pk)
 
         # Send email til brugeren om ændringen
         user_first_name = updated_user.user_first_name
