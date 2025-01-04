@@ -24,11 +24,11 @@
             % if get("is_logged", False):
             <p>You are logged in as: {{user['user_first_name']}}</p>
 
-            % if user and (user['user_role'].value in ["admin", "partner"]):
+            % if user and (user['user_role'] in ["admin", "partner"]):
             <a href="/items/user" class="{{ get('active_login', '') }}">Your property</a>
             % end
 
-            % if user and user['user_role'].value == "admin":
+            % if user and user['user_role'] == "admin":
             <a href="/users" class="{{ get('active_login', '') }}">All users</a>
             % end
 
