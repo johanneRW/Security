@@ -89,7 +89,9 @@ def _():
 def _():
     try:
         db = utils.db()
-        items = data.get_items_limit_offset(db, settings.ITEMS_PER_PAGE)
+
+        # Hent items med limit og offset
+        items = item_data.get_items_limit_offset(db, settings.ITEMS_PER_PAGE)
         
         if request.query.get("format") == "json":
             response.content_type = 'application/json'
