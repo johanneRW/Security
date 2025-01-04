@@ -1,5 +1,5 @@
 import uuid
-from bottle import get, post, template, put, response
+from bottle import get, post, template, put, response, request
 from utility import utils
 from icecream import ic
 import bcrypt
@@ -13,8 +13,7 @@ from database import data
 @get("/signup")
 def _():
     try:
-        # For GET requests, just get the token from the cookie
-        csrf_token = utils.get_csrf_token()
+        csrf_token = utils.generate_csrf_token()
         return template("signup", csrf_token=csrf_token)
     except Exception as ex:
         ic(ex)
@@ -24,9 +23,11 @@ def _():
 @post("/signup")
 def _():
     try:
-        # Validate CSRF token and use it in the response
-        csrf_token = utils.validate_csrf_token()
-
+        # Get token from form and validate
+        csrf_token = request.forms.get('csrf_token')
+        if not utils.validate_csrf_token(csrf_token):
+            raise ValueError("Invalid CSRF token")
+            
         user_pk = uuid.uuid4().hex
         user_username = utils.validate_user_username()
         user_first_name = utils.validate_user_first_name()
@@ -130,16 +131,24 @@ def _():
 
 @get("/verify/<key>")
 def _(key):
-    # For GET requests, just get the token from the cookie
-    csrf_token = utils.get_csrf_token()
+    # Generate new stateless token
+    csrf_token = utils.generate_csrf_token()
     return template("verify_key", key=key, csrf_token=csrf_token)
 
 
 @put("/verify/<key>")
 def _(key):
     try:
-        # Validate CSRF token for PUT request
-        utils.validate_csrf_token()
+        # Get token from form or headers for SPA requests
+        csrf_token = request.forms.get('csrf_token')
+        if not csrf_token and request.query.get('spa') == 'yes':
+            csrf_token = request.headers.get('X-CSRF-Token')
+            
+        if not csrf_token:
+            raise ValueError("Missing CSRF token")
+            
+        if not utils.validate_csrf_token(csrf_token):
+            raise ValueError("Invalid CSRF token")
         
         db = utils.db()
         user_is_verified_at = int(time.time())
