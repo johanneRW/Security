@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Integer, Float, ForeignKey
+from sqlalchemy import Column, String, Integer, Float, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import relationship
 from .base import Base
 
@@ -12,3 +12,7 @@ class Booking(Base):
 
     user = relationship("User", back_populates="bookings")
     item = relationship("Item", back_populates="bookings")
+    
+    __table_args__ = (
+        UniqueConstraint('user_pk', 'item_pk', 'booking_created_at', name='uix_booking'),
+    )
