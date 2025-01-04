@@ -8,34 +8,7 @@
 <div>
     % if bookings:
     % for booking in bookings:
-    <div class="booking" id="booking_{{booking['item_pk']}}">
-        <h3>{{booking['item_name']}}</h3>
-        <p>Booked for {{booking['booking_number_of_nights']}} nights</p>
-        <p>Total Price: {{booking['booking_price']}} DKK</p>
-        <p>Booking Date: {{booking['booking_created_at']}}</p>
-
-        <!-- Rating Form -->
-        % if not booking['user_rating'] and booking['item_owner'] != user['user_pk']:
-        <form id="rate_item_form_{{booking['item_pk']}}">
-            <label for="stars_{{booking['item_pk']}}">Rate this property:</label>
-            <select name="stars" id="stars_{{booking['item_pk']}}" required mix-check="{{regexes.ITEM_STARS_REGEX}}">
-                <option value="1">1 Star</option>
-                <option value="2">2 Stars</option>
-                <option value="3">3 Stars</option>
-                <option value="4">4 Stars</option>
-                <option value="5">5 Stars</option>
-            </select>                
-            <button class="rate" mix-post="/rate_item/{{booking['item_pk']}}"
-                mix-default="Submit Rating" mix-await="Submitting...">
-                Submit
-            </button>
-        </form>
-        % elif booking['item_owner'] == user['user_pk']:
-        <p>You cannot rate your own property.</p>
-        % else:
-        <p>Your Rating: {{booking['user_rating']}} stars</p>
-        % end
-    </div>
+    %include("_booking_details")
     % end
     % else:
     <p>You have not made any bookings yet.</p>

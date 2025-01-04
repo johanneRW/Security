@@ -97,6 +97,8 @@ def rate_item_endpoint(item_pk):
 
         # Kald funktionen til at rate ejendommen
         result = booking_data.rate_item(db, user_pk, item_pk, stars)
+        booking = booking_data.get_booking_by_user_and_item_with_ratings(db, user_pk, item_pk)
+        html = template("_booking_details.html", booking=booking, user=user)
 
         # Håndtér resultatet
         if "error" in result:
@@ -115,9 +117,14 @@ def rate_item_endpoint(item_pk):
                 {result['success']}
             </div>
             </template>
+            
+            <template mix-target="#booking_{item_pk}" mix-replace">
+            {html}
+            </template>
             """
 
     except Exception as ex:
+        raise
         ic(ex)
         response.status = 500
         return """

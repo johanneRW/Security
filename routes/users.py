@@ -236,7 +236,7 @@ def promote_to_partner(user_pk):
             </div>
             </template>
             """
-        
+
         # Tjek om brugeren forsøger at ændre sin egen rolle
         if logged_user["user_pk"] != user_pk:
             response.status = 403
@@ -248,8 +248,19 @@ def promote_to_partner(user_pk):
             </template>
             """
 
-        # Databaseforbindelse
+        # Valider brugerens adgangskode
+        user_password = utils.validate_password()
         db = utils.db()
+        db_user_password = user_data.get_user_password(db, user_pk)
+        if not bcrypt.checkpw(user_password.encode(), db_user_password.encode()):
+            response.status = 400
+            return """
+            <template mix-target="#toast">
+            <div mix-ttl="3000" class="error">
+                Invalid credentials. Promotion failed.
+            </div>
+            </template>
+            """
 
         # Hent brugerens nuværende rolle
         user_info = user_data.get_user(db, user_pk)
@@ -262,7 +273,7 @@ def promote_to_partner(user_pk):
             </div>
             </template>
             """
-        
+
         # Tjek om brugeren allerede er en partner
         if user_info["user_role"] == RoleEnum.PARTNER.value:
             return """
@@ -275,6 +286,15 @@ def promote_to_partner(user_pk):
 
         # Opdater brugerens rolle til partner
         updated_user = user_data.update_user_role_to_partner(db, user_pk)
+        
+        # Opdater brugerens cookie
+        updated_cookie = {
+            "user_pk": updated_user.user_pk,
+            "user_role": RoleEnum.PARTNER.value,
+            "user_email": updated_user.user_email,
+            "user_first_name": updated_user.user_first_name
+        }
+        response.set_cookie("user", updated_cookie, secret=settings.COOKIE_SECRET, httponly=True, secure=settings.COOKIE_SECURE, path="/")
 
         # Send email til brugeren om ændringen
         user_first_name = updated_user.user_first_name
@@ -293,6 +313,7 @@ def promote_to_partner(user_pk):
         </template>
         """
     except Exception as ex:
+        raise
         ic(ex)
         response.status = 400
         return f"""
@@ -305,4 +326,5 @@ def promote_to_partner(user_pk):
     finally:
         if "db" in locals():
             db.close()
+
 

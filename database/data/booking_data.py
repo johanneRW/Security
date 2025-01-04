@@ -104,7 +104,7 @@ def rate_item(db: Session, user_pk: str, item_pk: str, stars: int):
                 and_(
                     Booking.user_pk == user_pk,
                     Booking.item_pk == item_pk,
-                    Booking.booking_created_at + (Booking.booking_number_of_nights * 86400) <= now  # Booking overstået
+                
                 )
             )
             .first()
@@ -146,3 +146,49 @@ def rate_item(db: Session, user_pk: str, item_pk: str, stars: int):
     except Exception as ex:
         db.rollback()
         return {"error": "An error occurred", "details": str(ex)}
+    
+    
+
+def get_booking_by_user_and_item_with_ratings(db: Session, user_pk: str, item_pk: str):
+    try:
+        # Forespørg for at hente booking med ratings og ejeroplysninger
+        result = (
+            db.query(
+                Booking.item_pk,
+                Booking.booking_created_at,
+                Booking.booking_number_of_nights,
+                Booking.booking_price,
+                Item.item_name,
+                Item.item_owned_by.label("item_owner"),  # Ejerens ID
+                func.coalesce(Rating.stars, 0).label("user_rating")  # Brugerens rating (hvis den findes)
+            )
+            .join(Item, Booking.item_pk == Item.item_pk)  # Join med Item-tabellen
+            .outerjoin(
+                Rating,
+                (Rating.item_pk == Booking.item_pk) & (Rating.user_pk == Booking.user_pk)
+            )  # Join med Rating-tabellen for brugerens rating
+            .filter(Booking.user_pk == user_pk, Booking.item_pk == item_pk)  # Filtrér efter user_pk og item_pk
+            .first()
+        )
+
+        # Returnér som et dictionary, hvis booking findes
+        if result:
+            # Konverter booking_created_at til datoformat (dd-mm-yyyy)
+            booking_date = datetime.utcfromtimestamp(result.booking_created_at).strftime('%d-%m-%Y')
+
+            return {
+                "item_pk": result.item_pk,
+                "item_name": result.item_name,
+                "booking_created_at": booking_date,  # Bruger læsevenligt datoformat
+                "booking_number_of_nights": result.booking_number_of_nights,
+                "booking_price": result.booking_price,
+                "user_rating": result.user_rating,  # Rating givet af brugeren
+                "item_owner": result.item_owner  # Ejerens ID
+            }
+
+        # Hvis ingen booking findes, returnér None
+        return None
+
+    except Exception as ex:
+        print(f"Error fetching booking: {ex}")
+        raise

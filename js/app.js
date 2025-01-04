@@ -79,39 +79,6 @@ function updateModalEvents () {
     handleImageModal("imageUpdateModal", ".showUpdateImageModal");    
 }
 
-function openAdminPasswordModal(itemPk) {
-    const modal = document.getElementById(`adminPasswordModal${itemPk}`);
-    if (modal) {
-        modal.showModal(); // Åbn dialogen
-    }
-}
-
-function handleAdminPasswordModals() {
-    const modals = document.querySelectorAll("dialog[id^='adminPasswordModalItem_']");
-    modals.forEach(modal => {
-        const closeBtn = modal.querySelector("button[id^='closeAdminPasswordModalItem_']");
-        const cancelBtn = modal.querySelector("button[id^='cancelAdminPasswordItem_']");
-        
-        if (closeBtn) {
-            closeBtn.addEventListener("click", () => {
-                modal.close(); // Luk dialogen
-            });
-        }
-        if (cancelBtn) {
-            cancelBtn.addEventListener("click", (event) => {
-                event.preventDefault();
-                modal.close(); // Luk dialogen
-            });
-        }
-    });
-}
-
-// Initialiser event listeners
-document.addEventListener("DOMContentLoaded", () => {
-    handleAdminPasswordModals();
-});
-
-
 
 
 function handlePromoteToPartnerModal(modalId, btnId) {
@@ -148,10 +115,8 @@ function handlePromoteToPartnerModal(modalId, btnId) {
     });
 }
 
-// Initialisering af dialog for "Promote to Partner"
+
 handlePromoteToPartnerModal("#promoteToPartnerModal", "#showPromoteToPartnerModal");
-
-
 handleDeleteModal("#deleteUserModal", "#showDeleteUserModal");
 
 handleImageModal("imageCreateModal", ".showCreateImageModal");
