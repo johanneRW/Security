@@ -49,38 +49,38 @@ def toggle_user_block(user_pk):
         if not utils.validate_csrf_token(csrf_token, user.get("user_pk")):
             raise ValueError("Invalid CSRF token")
 
-        # Check if the user is an admin
+        #if user.get("role_id") != 1:
         if user.get("user_role") != RoleEnum.ADMIN.value:
             response.status = 403
-            return "You are not authorized"
+            return "you are not admin"
 
-        current_blocked_status = int(request.forms.get("user_blocked"))
-        
-        if current_blocked_status == 0:
-            new_blocked_status = 1
-            button_name = "Unblock"
+        current_blocked_status=True if request.forms.get("user_blocked") == "True" else False
+        if current_blocked_status == False:
+            new_blocked_status=True
+            button_name="Unblock"
             email_subject = 'User is blocked'
             email_template = "email_blocked_user"
         else:
-            new_blocked_status = 0
-            button_name = "Block"
+            new_blocked_status=False
+            button_name="Block"
             email_subject = 'User is unblocked'
             email_template = "email_ublocked_user"
-            #email_template = "email_unblocked_user"
+          
+        updated_at = int(time.time())
         
         db = utils.db()
-
-        updated_at = int(time.time())
-
-        # Toggle user block status
         user_data.toggle_block_user(db, new_blocked_status, updated_at, user_pk)
-
-        # Fetch user information
-        user_info = user_data.get_user_name_and_email(db, user_pk)
-        user_first_name = user_info['user_first_name']
-        user_email = user_info['user_email']
-
-        # Send email notification
+        
+        
+        user_info = user_data.get_user_name_and_email(db,user_pk)
+        ic(user_info)
+        ic(email_subject)
+        ic(email_template)
+        
+        user_first_name=user_info['user_first_name']
+        user_email=user_info['user_email']
+        ic(user_first_name)
+        ic(user_email)
         template_vars = {"user_first_name": user_first_name}
         try:
             email.send_email(settings.DEFAULT_EMAIL, email_subject, email_template, **template_vars)

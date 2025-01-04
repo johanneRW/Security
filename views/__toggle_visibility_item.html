@@ -2,10 +2,10 @@
     <input type="hidden" name="item_visibility" value="{{item['item_visibility']}}">
     <button class="toggle" id="item_{{item['item_pk']}}" mix-data="#visibility_item_{{item['item_pk']}}"
         mix-post="/toggle_item_visibility/{{item['item_pk']}}">
-        % if item['item_visibility'] == "private":
-        Make Public
-        % else:
+        % if item['item_visibility'] == "public":
         Make Private
+        % else:
+        Make Public
         % end
     </button>
 </form>

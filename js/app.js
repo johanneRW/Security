@@ -79,30 +79,37 @@ function updateModalEvents () {
     handleImageModal("imageUpdateModal", ".showUpdateImageModal");    
 }
 
-function handleAdminPasswordModal(modalId, btnId) {
-    const btn = document.querySelector(btnId);
-    const modal = document.querySelector(modalId);
-    const close = document.querySelector(modalId + " > #close");
-    const cancel = document.querySelector(modalId + " #cancel");
-
-    if (!btn || !modal) {
-        return;
+function openAdminPasswordModal(itemPk) {
+    const modal = document.getElementById(`adminPasswordModal${itemPk}`);
+    if (modal) {
+        modal.showModal(); // Åbn dialogen
     }
+}
 
-    btn.addEventListener("click", function (evt) {
-        evt.preventDefault();
-        modal.showModal();
-    });
-
-    close.addEventListener("click", function () {
-        modal.close();
-    });
-
-    cancel.addEventListener("click", function (evt) {
-        evt.preventDefault();
-        modal.close();
+function handleAdminPasswordModals() {
+    const modals = document.querySelectorAll("dialog[id^='adminPasswordModalItem_']");
+    modals.forEach(modal => {
+        const closeBtn = modal.querySelector("button[id^='closeAdminPasswordModalItem_']");
+        const cancelBtn = modal.querySelector("button[id^='cancelAdminPasswordItem_']");
+        
+        if (closeBtn) {
+            closeBtn.addEventListener("click", () => {
+                modal.close(); // Luk dialogen
+            });
+        }
+        if (cancelBtn) {
+            cancelBtn.addEventListener("click", (event) => {
+                event.preventDefault();
+                modal.close(); // Luk dialogen
+            });
+        }
     });
 }
+
+// Initialiser event listeners
+document.addEventListener("DOMContentLoaded", () => {
+    handleAdminPasswordModals();
+});
 
 
 
@@ -149,4 +156,4 @@ handleDeleteModal("#deleteUserModal", "#showDeleteUserModal");
 
 handleImageModal("imageCreateModal", ".showCreateImageModal");
 handleImageModal("imageUpdateModal", ".showUpdateImageModal");
-handleAdminPasswordModal("toggleUserModal", "[id^=showToggleUserModal_]"); // Initialiser admin-password dialog
+

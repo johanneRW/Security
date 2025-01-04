@@ -9,36 +9,8 @@
     <p>Email:</p>
     <p>{{user['user_email']}}</p>
 
-    <!-- Admin Toggle Button -->
-    % if get("is_logged", False) and get("is_admin", False) and user.get("user_role") != "admin":
-    <button id="showToggleUserModal_{{user['user_pk']}}" class="toggle">
-        % if user.get("is_blocked"):
-        Unblock
-        % else:
-        Block
-        % end
-    </button>
-    % end
 
-    <!-- Dialog til Admin-password -->
-    <dialog id="adminPasswordModalUser_{{user['user_pk']}}">
-        <button id="closeAdminPasswordModalUser_{{user['user_pk']}}">&times;</button>
-        <header>
-            <h2>Confirm Admin Password</h2>
-        </header>
-        <section>
-            <form id="adminPasswordFormUser_{{user['user_pk']}}">
-                <label for="admin_password">Enter Admin Password:</label>
-                <input required maxlength={{regexes.USER_PASSWORD_MAX}} name="admin_password" type="password"
-                    mix-check="{{regexes.USER_PASSWORD_REGEX}}">
-                <button class="confirm" mix-post="/toggle_block_user/{{user['user_pk']}}"
-                    mix-data="#adminPasswordFormUser_{{user['user_pk']}}" mix-default="Confirm"
-                    mix-await="Processing...">
-                    Confirm
-                </button>
-                <button id="cancelAdminPasswordUser_{{user['user_pk']}}">Cancel</button>
-            </form>
-        </section>
-    </dialog>
-    
+    % if get("is_logged", False) and get("is_admin", False) and user.get("user_role") != "admin":
+    %include("__toggle_block_user")
+    % end
 </div>

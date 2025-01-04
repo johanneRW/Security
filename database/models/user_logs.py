@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Integer, ForeignKey, UniqueConstraint
+from sqlalchemy import Boolean, Column, String, Integer, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import relationship
 from .base import Base
 
@@ -7,7 +7,7 @@ class UserBlockedLog(Base):
 
     user_pk = Column(String(36), ForeignKey('users.user_pk'), primary_key=True)
     user_blocked_updated_at = Column(Integer, primary_key=True)
-    user_blocked_value = Column(Integer, nullable=False)
+    user_blocked_value = Column(Boolean, nullable=False)
 
     user = relationship("User", back_populates="blocked_logs")
 

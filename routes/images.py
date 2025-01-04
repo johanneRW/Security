@@ -38,7 +38,7 @@ def _(item_pk):
 
         html = template("_item_detail.html", item=item, csrf_token=csrf_token)
         return f"""
-        <template mix-target="#frm_item_{item_pk}" mix-replace mix-function="closeModal">
+        <template mix-target="#item_{item_pk}" mix-replace mix-function="closeModal">
         {html}
         </template>
         """
@@ -84,7 +84,7 @@ def _(item_pk):
         csrf_token = utils.generate_csrf_token(user.get("user_pk"))
         html = template("_item_detail.html", item=item, csrf_token=csrf_token)
         return f"""
-        <template mix-target="#frm_item_{item_pk}" mix-replace mix-function="closeModal">
+        <template mix-target="#item_{item_pk}" mix-replace mix-function="closeModal">
         {html}
         </template>
         """

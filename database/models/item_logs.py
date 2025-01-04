@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Integer, ForeignKey
+from sqlalchemy import Boolean, Column, String, Integer, ForeignKey
 from sqlalchemy.orm import relationship
 from .base import Base
 from sqlalchemy import UniqueConstraint
@@ -9,7 +9,7 @@ class ItemBlockedLog(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)  # Ny primærnøgle
     item_pk = Column(String(36), ForeignKey('items.item_pk'), nullable=False)
     item_blocked_updated_at = Column(Integer, nullable=False)
-    item_blocked_value = Column(Integer, nullable=False)
+    item_blocked_value = Column(Boolean, nullable=False)
 
     __table_args__ = (
         UniqueConstraint('item_pk', 'item_blocked_updated_at', name='uix_item_blocked'),

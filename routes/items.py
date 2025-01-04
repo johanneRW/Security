@@ -284,47 +284,22 @@ def toggle_item_block(item_uuid):
         # Valider, at brugeren er logget ind
         if not user or user["user_role"] != RoleEnum.ADMIN.value:
             response.status = 403
-            return {"error": "Unauthorized"}
+            return "you are not admin"
 
-        # Hent admin-password fra formularen
-        admin_password = request.forms.get("admin_password", "").strip()
-        if not admin_password:
-            response.status = 400
-            return """
-            <template mix-target="#toast">
-            <div mix-ttl="3000" class="error">
-                Admin password is required
-            </div>
-            </template>
-            """
-
-        # Valider admin-password med bcrypt
-        db = utils.db()
-        db_admin = item_data.get_user_password(db, user["user_pk"])  # Hent admin's krypterede password fra DB
-        if not bcrypt.checkpw(admin_password.encode(), db_admin["user_password"]):
-            response.status = 403
-            return """
-            <template mix-target="#toast">
-            <div mix-ttl="3000" class="error">
-                Invalid admin password
-            </div>
-            </template>
-            """
-
-        # Toggle item blocked-status
-        current_blocked_status = int(request.forms.get("item_blocked"))
-        if current_blocked_status == 0:
-            new_blocked_status = 1
-            button_name = "Unblock"
+        current_blocked_status=True if request.forms.get("item_blocked") == "True" else False
+        if current_blocked_status is False:
+            new_blocked_status=True
+            button_name="Unblock"
             email_subject = 'Property is blocked'
             email_template = "email_blocked_item"
         else:
-            new_blocked_status = 0
-            button_name = "Block"
+            new_blocked_status=False
+            button_name="Block"
             email_subject = 'Property is unblocked'
-            email_template = "email_unblocked_item"
+            email_template = "email_ublocked_item"
+          
 
-        # Opdater databasen
+        db = utils.db()
         updated_at = int(time.time())
         
         user_info = user_data.get_user_by_item(db, item_uuid)
@@ -347,11 +322,10 @@ def toggle_item_block(item_uuid):
         user_first_name = user_info[0]['user_first_name']
         user_email = user_info[0]['user_email']
         template_vars = {"user_first_name": user_first_name}
-        
-        #email.send_email(user_email, email_subject, email_template, **template_vars)
+                
+        #email.send_email( user_email, subject, template_name, **template_vars)
         email.send_email(settings.DEFAULT_EMAIL, email_subject, email_template, **template_vars)
 
-        # Returnér opdateret knap
         return f"""
             <template mix-target="#item_{item_uuid}" mix-replace>
                 <form id="item_{item_uuid}">
@@ -377,10 +351,9 @@ def toggle_item_block(item_uuid):
                 Error blocking or unblocking item
             </div>
             </template>
-        """
+            """   
     finally:
-        if "db" in locals():
-            db.close()
+        if "db" in locals(): db.close()
 
 
         
@@ -398,12 +371,12 @@ def toggle_item_visibility(item_uuid):
             new_visibility_status = "private"
             button_name = "Make Public"
             email_subject = 'Property is now private'
-            email_template = "email_visibility_change"
+            email_template = "email_visibility_item"
         else:
             new_visibility_status = "public"
             button_name = "Make Private"
             email_subject = 'Property is now public'
-            email_template = "email_visibility_change"
+            email_template = "email_visibility_item"
 
         # Databaseopdatering
         db = utils.db()

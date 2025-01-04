@@ -10,6 +10,14 @@
             % end
         </div>
     </div>
+     <!-- Privat ikon/tekst for admins -->
+     % if get("is_admin", False) and item["item_visibility"] == "private":
+     <div class="admin-private-indicator">
+         <span class="private-icon">🔒</span>
+         <span class="private-text">Private</span>
+     </div>
+     % end
+ 
     <div class="item-card">
         <span class="item-name">{{item["item_name"]}}</span>
         <span class="star">
@@ -21,14 +29,7 @@
         </span>
     </div>
 
-    <!-- Privat ikon/tekst for admins -->
-    % if get("is_admin", False) and item["item_visibility"] == "private":
-    <div class="admin-private-indicator">
-        <span class="private-icon">🔒</span>
-        <span class="private-text">Private</span>
-    </div>
-    % end
-
+   
     <div>
         <span class="font-medium">
             % price = int(item["item_price_per_night"])
@@ -41,35 +42,12 @@
         % end
 
         <!-- Toggle block/unblock for admins with password confirmation -->
+        %
         % if get("is_logged", False) and get("is_admin", False):
-        <button id="toggleBlockedItemBtn_{{item['item_pk']}}" class="toggle">
-            % if item['item_is_blocked']:
-            Unblock Item
-            % else:
-            Block Item
-            % end
-        </button>
+        %include("__toggle_block_item")
+        % end
+       
 
-        <!-- Dialog for admin password -->
-        <dialog id="adminPasswordModalItem_{{item['item_pk']}}">
-            <button id="closeAdminPasswordModalItem_{{item['item_pk']}}">&times;</button>
-            <header>
-                <h2>Confirm Admin Password</h2>
-            </header>
-            <section>
-                <form id="adminPasswordFormItem_{{item['item_pk']}}">
-                    <label for="admin_password">Enter Admin Password:</label>
-                    <input required maxlength={{regexes.USER_PASSWORD_MAX}} name="admin_password" type="password"
-                        mix-check="{{regexes.USER_PASSWORD_REGEX}}">
-                    <button class="confirm" mix-post="/toggle_block_item/{{item['item_pk']}}"
-                        mix-data="#adminPasswordFormItem_{{item['item_pk']}}" mix-default="Confirm"
-                        mix-await="Processing...">
-                        Confirm
-                    </button>
-                    <button id="cancelAdminPasswordItem_{{item['item_pk']}}">Cancel</button>
-                </form>
-            </section>
-        </dialog>
         % end
     </div>
     % end
