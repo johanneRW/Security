@@ -26,7 +26,7 @@ from database import data
 @get("/items/page/<page_number>")
 def _(page_number):
     try:
-        csrf_token = utils.get_csrf_token()
+        csrf_token = utils.generate_csrf_token()
         db = utils.db()
         limit = settings.ITEMS_PER_PAGE
         #tjekker hvor mange items der skal vises for at regne ud hvor mange sider der skal være i alt
@@ -101,7 +101,7 @@ def _():
             db = utils.db()
             items =data.get_items_by_user(db, user_pk)
             ic(items)
-            csrf_token = utils.get_csrf_token()
+            csrf_token = utils.generate_csrf_token()
             return template("items_for_user", items=items, is_logged=is_logged, user=user, csrf_token=csrf_token)
     except Exception as ex:
         ic(ex)
@@ -114,11 +114,15 @@ def _():
 @post("/items")
 def _():
     try:
-        csrf_token = utils.validate_csrf_token()
-        utils.validate_user_logged()
-        user = request.get_cookie("user", secret= settings.COOKIE_SECRET)
-
-        item_pk=uuid.uuid4().hex
+        user = utils.validate_user_logged()
+        
+        # Get token and validate with user_pk
+        csrf_token = request.forms.get('csrf_token')
+        if not utils.validate_csrf_token(csrf_token, user.get("user_pk")):
+            response.status = 403
+            return "Invalid CSRF token"
+            
+        item_pk = uuid.uuid4().hex
         item_name=utils.validate_item_name()
         item_lat=utils.validate_item_lat()
         item_lon=utils.validate_item_lon()
@@ -132,7 +136,7 @@ def _():
         
         item = data.get_item(db, item_pk)
        
-        
+        csrf_token = utils.generate_csrf_token(user.get("user_pk"))
         html = template("_item_detail.html", item=item, csrf_token=csrf_token)
         html_new = template("create_item.html", csrf_token=csrf_token)
        
@@ -165,8 +169,14 @@ def _():
 @put("/items/<item_pk>")
 def _(item_pk): 
     try:
-        utils.validate_csrf_token()
+        # Validate user is logged in
         utils.validate_user_logged()
+        
+        # Get token and validate with user_pk
+        csrf_token = request.forms.get('csrf_token')
+        user = request.get_cookie("user", secret=settings.COOKIE_SECRET)
+        if not utils.validate_csrf_token(csrf_token, user.get("user_pk")):
+            raise ValueError("Invalid CSRF token")
 
         item_name = utils.validate_item_name()
         item_lat = utils.validate_item_lat()
@@ -174,10 +184,10 @@ def _(item_pk):
         item_price_per_night = utils.validate_item_price_per_night()
      
         db = utils.db()
-        data.update_item(db,item_name,item_lat,item_lon,item_price_per_night,item_pk )
+        data.update_item(db,item_name,item_lat,item_lon,item_price_per_night,item_pk)
         item = data.get_item(db, item_pk)
         
-        csrf_token = utils.get_csrf_token()
+        csrf_token = utils.generate_csrf_token(user.get("user_pk"))
         html = template("_item_detail.html", item=item, csrf_token=csrf_token)
         return f"""
         <template mix-target="#frm_item_{item_pk}" mix-replace>
@@ -203,8 +213,15 @@ def _(item_pk):
 @delete("/items/<item_pk>")
 def _(item_pk):
     try:
-        utils.validate_csrf_token()
+        # Validate user is logged in
         utils.validate_user_logged()
+        
+        # Get token and validate with user_pk
+        csrf_token = request.forms.get('csrf_token')
+        user = request.get_cookie("user", secret=settings.COOKIE_SECRET)
+        if not utils.validate_csrf_token(csrf_token, user.get("user_pk")):
+            raise ValueError("Invalid CSRF token")
+
         db = utils.db()
         data.delete_item(db,item_pk)
         return f"""
@@ -228,8 +245,14 @@ def _(item_pk):
 @post("/toggle_item_block/<item_uuid>")
 def toggle_item_block(item_uuid):
     try:
-        utils.validate_csrf_token()
+        # Validate user is logged in
         utils.validate_user_logged()
+        
+        # Get token and validate with user_pk
+        csrf_token = request.forms.get('csrf_token')
+        user = request.get_cookie("user", secret=settings.COOKIE_SECRET)
+        if not utils.validate_csrf_token(csrf_token, user.get("user_pk")):
+            raise ValueError("Invalid CSRF token")
 
         current_blocked_status=int(request.forms.get("item_blocked"))
         if current_blocked_status == 0:
@@ -248,37 +271,42 @@ def toggle_item_block(item_uuid):
         updated_at = int(time.time())
         data.toggle_block_item(db,new_blocked_status, updated_at, item_uuid)
         
-        
-        user_info = data.get_user_by_item(db,item_uuid)
+        user_info = data.get_user_by_item(db, item_uuid)
+        if not user_info:
+            raise ValueError("User not found for this item")
+            
         ic(user_info)
         ic(email_subject)
         ic(email_template)
         
-        user_first_name=user_info[0]['user_first_name']
-        user_email=user_info[0]['user_email']
+        # Access dictionary values directly
+        user_first_name = user_info["user_first_name"]
+        user_email = user_info["user_email"]
         ic(user_first_name)
         ic(user_email)
 
         template_vars = {"user_first_name": user_first_name}
-        #email.send_email( user_email, subject, template_name, **template_vars)
         email.send_email(settings.DEFAULT_EMAIL, email_subject, email_template, **template_vars)
 
         return f"""
             <template mix-target="#item_{item_uuid}" mix-replace>
                 <form id="item_{item_uuid}">
-            <input type="hidden" name="item_blocked" value="{new_blocked_status}">
-            <button id="item_{item_uuid}"
-                    mix-data="#item_{item_uuid}"
-                    mix-post="/toggle_item_block/{item_uuid}"
-                    mix-await="Please wait..."
-                    mix-default={button_name}
-                    class= "toggle"
-            >
-                {button_name}
-            </button>
-        </form>
+                    <input type="hidden" name="csrf_token" value="{utils.generate_csrf_token(user.get('user_pk'))}">
+                    <input type="hidden" name="item_blocked" value="{new_blocked_status}">
+                    <button id="item_{item_uuid}"
+                        mix-data="#item_{item_uuid}"
+                        mix-post="/toggle_item_block/{item_uuid}"
+                        mix-await="Please wait..."
+                        mix-default={button_name}
+                        class= "toggle"
+                    >
+                        {button_name}
+                    </button>
+                </form>
             """
     except Exception as ex:
+        ic(ex)
+        response.status = 400
         return f"""
             <template mix-target="#toast">
             <div mix-ttl="3000" class="error">
