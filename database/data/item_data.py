@@ -1,7 +1,7 @@
 from decimal import Decimal
 from sqlalchemy.orm import Session
 from sqlalchemy import desc, func
-from ..models.item import Item ,ItemImage
+from ..models.item import Item ,ItemImage, VisibilityEnum
 from ..models.item_logs import ItemBlockedLog, ItemUpdatedLog , ItemVisibilityLog 
 from ..models.ratings import Rating
 from ..models.bookings import Booking
@@ -257,11 +257,17 @@ def toggle_visibility_item(db: Session, new_visibility_status: int, updated_at: 
         item_visibility_updated_at=updated_at,
         item_visibility_value=new_visibility_status
     )
+    
+    item = db.query(Item).filter(Item.item_pk == item_uuid).first()
+    if item:
+        item.item_visibility = VisibilityEnum(new_visibility_status)
+
 
     # Tilføj til session og gem ændringer
     db.add(visibility_log)
     db.commit()
     db.refresh(visibility_log)  # Opdater objektet med de nyeste værdier
+    db.refresh(item)
 
-    return visibility_log
+    return item
 

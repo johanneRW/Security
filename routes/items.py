@@ -416,8 +416,8 @@ def toggle_item_visibility(item_uuid):
         ic(email_subject)
         ic(email_template)
 
-        user_first_name = user_info[0]['user_first_name']
-        user_email = user_info[0]['user_email']
+        user_first_name = user_info['user_first_name']
+        user_email = user_info['user_email']
         ic(user_first_name)
         ic(user_email)
 
@@ -431,11 +431,11 @@ def toggle_item_visibility(item_uuid):
 
         # Returnér opdateret knap
         return f"""
-            <template mix-target="#item_{item_uuid}" mix-replace>
-                <form id="item_{item_uuid}">
+            <template mix-target="#visibility_item_{item_uuid}" mix-replace>
+                <form id="visibility_item_{item_uuid}">
                     <input type="hidden" name="item_visibility" value="{new_visibility_status}">
                     <button id="item_{item_uuid}"
-                            mix-data="#item_{item_uuid}"
+                            mix-data="#visibility_item_{item_uuid}"
                             mix-post="/toggle_item_visibility/{item_uuid}"
                             mix-await="Please wait..."
                             mix-default="{button_name}"
@@ -447,6 +447,7 @@ def toggle_item_visibility(item_uuid):
             </template>
         """
     except Exception as ex:
+        raise
         ic(ex)
         return f"""
             <template mix-target="#toast">
