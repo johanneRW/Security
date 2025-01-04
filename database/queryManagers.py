@@ -10,7 +10,7 @@ from .models.bookings import Booking
 
 class UserQueryManager:
     @staticmethod
-    def get_users_with_status(session, email=None, is_verified=None, is_deleted=None):
+    def get_users_with_status(session, email=None, user_pk=None, is_verified=None, is_deleted=None):
         # Subquery: Check if the user is verified
         subquery_verified = (
             session.query(UserVerificationCompleted.user_pk)
@@ -50,7 +50,9 @@ class UserQueryManager:
             )
         )
 
-        # Tilføj filtre baseret på parametre
+        # Add filters based on parameters
+        if user_pk:
+            query = query.filter(User.user_pk == user_pk)
         if email:
             query = query.filter(User.user_email == email)
         if is_verified is not None:
