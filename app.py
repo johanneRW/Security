@@ -27,23 +27,22 @@ def setup_security():
     request.nonce = secrets.token_hex(16)
     ic("Nonce generated:", request.nonce)
     
-    # Generate CSRF token if not exists
-    if not request.get_cookie("csrf_token", secret=settings.COOKIE_SECRET):
-        response.set_cookie("csrf_token", secrets.token_hex(32), secret=settings.COOKIE_SECRET, httponly=True)
-    
     # CSRF validation for unsafe methods
     if request.method in ('POST', 'PUT', 'DELETE'):
-        # Skip CSRF for API endpoints if needed
-        if request.path.startswith('/api/'): 
-            return
             
-        ic("CSRF Validation Starting")
-        ic("Request Method:", request.method)
-        ic("Request Path:", request.path)
-        
         try:
-            utils.validate_csrf_token()
-            ic("CSRF Validation Successful!")
+            # Get token from form
+            csrf_token = request.forms.get('csrf_token')
+            if not csrf_token:
+                raise ValueError("Missing CSRF token")
+                
+            # Get current user if logged in
+            user = request.get_cookie("user", secret=settings.COOKIE_SECRET)
+            user_pk = user.get("user_pk") if user else None
+                
+            if not utils.validate_csrf_token(csrf_token, user_pk):
+                raise ValueError("Invalid CSRF token")
+                
         except Exception as ex:
             ic("CSRF Validation Failed:", str(ex))
             abort(403, str(ex))
@@ -100,29 +99,26 @@ def get_update():
 @get("/")
 def _():
     try:
-        # Opret en SQLAlchemy-session
         db = utils.db()
-
-        # Hent items med limit og offset
         items = data.get_items_limit_offset(db, settings.ITEMS_PER_PAGE)
         
-        # Handle JSON format request
         if request.query.get("format") == "json":
             response.content_type = 'application/json'
             return {"status": "success", "items": items}
 
-        # Handle HTML request
         is_logged = False
         is_admin = False
         user = ""
-        csrf_token = utils.get_csrf_token()
         try:    
             utils.validate_user_logged()
             user = request.get_cookie("user", secret=settings.COOKIE_SECRET)
             is_logged = True
             is_admin = user.get("user_role").value == RoleEnum.ADMIN.value
+            # Generate CSRF token with user_pk for logged-in users
+            csrf_token = utils.generate_csrf_token(user.get("user_pk"))
         except Exception:
-            pass
+            # Generate CSRF token without user_pk for non-logged-in users
+            csrf_token = utils.generate_csrf_token()
 
         return template(
             "index.html",
@@ -157,7 +153,17 @@ else:
     
     Base.metadata.create_all(engine)
     print("Database and models initialized successfully.")
-
+    
+    # Database seeding - only if seed.py exists
+    try:
+        from seed import seed_database
+        print("Running database seed...")
+        seed_database()
+    except ImportError:
+        print("No seed.py file found - skipping database seeding")
+    except Exception as e:
+        print(f"Error during seeding: {str(e)}")
+    
     run(host="0.0.0.0", port=81, debug=True, reloader=True, interval=0)
 
 
