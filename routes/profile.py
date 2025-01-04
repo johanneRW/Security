@@ -1,4 +1,4 @@
-from bottle import get, response, template, request
+from bottle import get, response, template, request, redirect
 from utility import utils
 from icecream import ic
 import settings
@@ -10,7 +10,11 @@ def _():
         utils.no_cache()
         utils.validate_user_logged()
         user = request.get_cookie("user", secret=settings.COOKIE_SECRET)
-        csrf_token = utils.get_csrf_token()
+        if not user:
+            redirect("/login")
+            
+        # Generate new CSRF token with user_pk
+        csrf_token = utils.generate_csrf_token(user.get("user_pk"))
         return template("profile.html", is_logged=True, user=user, csrf_token=csrf_token)
     except Exception as ex:
         ic(ex)
