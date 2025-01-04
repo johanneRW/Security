@@ -7,6 +7,7 @@
     <!-- Rating Form -->
     % if not booking['user_rating'] and booking['item_owner'] != user['user_pk']:
     <form id="rate_item_form_{{booking['item_pk']}}">
+        <input type="hidden" name="csrf_token" value="{{csrf_token}}" />
         <label for="stars_{{booking['item_pk']}}">Rate this property:</label>
         <select name="stars" id="stars_{{booking['item_pk']}}" required mix-check="{{regexes.ITEM_STARS_REGEX}}">
             <option value="1">1 Star</option>

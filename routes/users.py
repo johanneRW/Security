@@ -225,6 +225,8 @@ def _(user_pk):
 @put("/users/<user_pk>/promote_to_partner")
 def promote_to_partner(user_pk):
     try:
+        csrf_token = utils.validate_csrf_token()
+        
         # Valider, at brugeren er logget ind
         logged_user = request.get_cookie("user", secret=settings.COOKIE_SECRET)
         if not logged_user:

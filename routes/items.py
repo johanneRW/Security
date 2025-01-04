@@ -361,6 +361,7 @@ def toggle_item_block(item_uuid):
 @post("/toggle_item_visibility/<item_uuid>")
 def toggle_item_visibility(item_uuid):
     try:
+        csrf_token = utils.validate_csrf_token()
         utils.validate_user_logged()
 
         # Få den aktuelle synlighedsstatus
@@ -406,6 +407,7 @@ def toggle_item_visibility(item_uuid):
         return f"""
             <template mix-target="#visibility_item_{item_uuid}" mix-replace>
                 <form id="visibility_item_{item_uuid}">
+                    <input type="hidden" name="csrf_token" value="{csrf_token}">
                     <input type="hidden" name="item_visibility" value="{new_visibility_status}">
                     <button id="item_{item_uuid}"
                             mix-data="#visibility_item_{item_uuid}"

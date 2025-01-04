@@ -37,6 +37,7 @@
         </header>
         <section>
             <form id="user_promote_{{user['user_pk']}}">
+                <input type="hidden" name="csrf_token" value="{{csrf_token}}">
                 <label for="password">Please enter your password to confirm</label>
                 <input required maxlength={{regexes.USER_PASSWORD_MAX}} name="user_password" type="password"
                     mix-check="{{regexes.USER_PASSWORD_REGEX}}">

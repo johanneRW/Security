@@ -1,4 +1,5 @@
 <form id="visibility_item_{{item['item_pk']}}">
+    <input type="hidden" name="csrf_token" value="{{csrf_token}}">
     <input type="hidden" name="item_visibility" value="{{item['item_visibility']}}">
     <button class="toggle" id="item_{{item['item_pk']}}" mix-data="#visibility_item_{{item['item_pk']}}"
         mix-post="/toggle_item_visibility/{{item['item_pk']}}">
