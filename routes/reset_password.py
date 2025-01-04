@@ -1,5 +1,5 @@
 import uuid
-from bottle import  get, post, template, put, response
+from bottle import  get, post, template, put, response, request
 from utility import utils
 from icecream import ic
 import bcrypt
@@ -11,20 +11,24 @@ from database import data
 
 @get("/reset_password/<key>")
 def _(key):
-    csrf_token = utils.get_csrf_token()
+    csrf_token = utils.generate_csrf_token()
     return template("update_password", key=key, csrf_token=csrf_token)
 
 
 @get("/request_reset_password")
 def _():
-    csrf_token = utils.get_csrf_token()
+    csrf_token = utils.generate_csrf_token()
     return template("request_reset_password", csrf_token=csrf_token)
 
 
 @post("/request_reset_password")
 def _():
     try:
-        utils.validate_csrf_token()
+        # Get token from form and validate
+        csrf_token = request.forms.get('csrf_token')
+        if not utils.validate_csrf_token(csrf_token):
+            raise ValueError("Invalid CSRF token")
+            
         user_email = utils.validate_email()
             
         db = utils.db()
@@ -61,7 +65,7 @@ def _():
         #email.send_email( user_email, subject, template_name, **template_vars)
         email.send_email(settings.DEFAULT_EMAIL, subject, template_name, **template_vars)
 
-        csrf_token = utils.get_csrf_token()
+        csrf_token = utils.generate_csrf_token()
         html = template("__frm_send_new_password.html", csrf_token=csrf_token)
         return f"""
             <template mix-target="#toast">
@@ -100,7 +104,10 @@ def _():
 @put("/reset_password/<key>")
 def _(key):
    try:
-        utils.validate_csrf_token()
+        csrf_token = request.forms.get('csrf_token')
+        if not utils.validate_csrf_token(csrf_token):
+            raise ValueError("Invalid CSRF token")
+        
         db = utils.db()
         time_now = int(time.time())
 
@@ -138,7 +145,7 @@ def _(key):
 
         data.update_user_password(db,hashed_password, user_pk)
 
-        csrf_token = utils.get_csrf_token()
+        csrf_token = utils.generate_csrf_token()
         html = template("__frm_reset_password.html", csrf_token=csrf_token, key=key)
 
         return  f"""
