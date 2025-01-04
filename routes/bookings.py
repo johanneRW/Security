@@ -8,19 +8,22 @@ from database import data
 @post("/bookings/<item_pk>")
 def _(item_pk):
     try:
-        csrf_token = utils.validate_csrf_token()
-        user = request.get_cookie("user", secret= settings.COOKIE_SECRET)
-        if user:
-
-            user_pk=user['user_pk']
-            db = utils.db()
-            item=data.get_item(db,item_pk)
-            item_price=item['item_price_per_night']
-            number_of_nights=utils.validate_number_of_nights()
-            booking_price=float(item_price)*int(number_of_nights)
-            booking_created_at= int(time.time())
-            data.create_booking(db, user_pk ,item_pk, booking_created_at , number_of_nights ,booking_price)
+        csrf_token = request.forms.get('csrf_token')
+        user = request.get_cookie("user", secret=settings.COOKIE_SECRET)
+        if not utils.validate_csrf_token(csrf_token, user.get("user_pk")):
+            raise ValueError("Invalid CSRF token")
         
+        if user:
+            user_pk = user['user_pk']
+            db = utils.db()
+            item = data.get_item(db, item_pk)
+            item_price = item['item_price_per_night']
+            number_of_nights = utils.validate_number_of_nights()
+            booking_price = float(item_price) * int(number_of_nights)
+            booking_created_at = int(time.time())
+            data.create_booking(db, user_pk, item_pk, booking_created_at, number_of_nights, booking_price)
+        
+            csrf_token = utils.generate_csrf_token(user.get("user_pk"))
             btn_book = template("__btn_book", item=item, csrf_token=csrf_token)
             return f"""
             <template mix-target="#item_booking_{item_pk}" mix-replace>
