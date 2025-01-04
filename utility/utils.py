@@ -250,7 +250,7 @@ def validate_role():
 
 ##############################
 
-def generate_stateless_csrf_token(user_pk=None):
+def generate_csrf_token(user_pk=None):
     """Generate a stateless CSRF token containing timestamp and user info"""
     timestamp = int(time.time())
     nonce = secrets.token_hex(8)  # 8 bytes is sufficient for CSRF
@@ -268,7 +268,7 @@ def generate_stateless_csrf_token(user_pk=None):
     
     return f"{raw_token}:{signature}"
 
-def validate_stateless_csrf_token(token, user_pk=None):
+def validate_csrf_token(token, user_pk=None):
     """Validate a stateless CSRF token"""
     try:
         # Split token parts
