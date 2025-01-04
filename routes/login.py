@@ -1,4 +1,4 @@
-from bottle import get, post, response, template
+from bottle import get, post, response, template, request
 from utility import utils
 from icecream import ic
 import bcrypt
@@ -10,8 +10,7 @@ from database import data
 def _():
     utils.no_cache()
     try:
-        # For GET requests, just get the token from the cookie
-        csrf_token = utils.get_csrf_token()
+        csrf_token = utils.generate_csrf_token()
         return template("login", csrf_token=csrf_token)
     except Exception as ex:
         print(ex)
@@ -21,8 +20,10 @@ def _():
 @post("/login")
 def _():
     try:
-        # Validate CSRF token and use it in the response
-        csrf_token = utils.validate_csrf_token()
+        # Get token from form and validate
+        csrf_token = request.forms.get('csrf_token')
+        if not utils.validate_csrf_token(csrf_token):
+            raise ValueError("Invalid CSRF token")
         
         user_email = utils.validate_email()
         user_password = utils.validate_password(skip_name_validation=True)
