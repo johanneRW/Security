@@ -21,7 +21,6 @@ async function mixhtml(el=false){
     if( el.hasAttribute("mix-put") ){ url = el.getAttribute("mix-put") }
     if( el.hasAttribute("mix-delete") ){ url = el.getAttribute("mix-delete") }
     if(url == ""){ cl(`mix-method missing, therefore url not found`); return }
-    cl(`url: ${url}`)
 
     if( document.querySelector(`[mix-on-url="${url}"]`) ){
         cl("SPA already loaded, showing elements")
@@ -34,33 +33,34 @@ async function mixhtml(el=false){
 }
 
 // ##############################
-async function mix_fetch_data(el){
-    // cl(`mix_fetch_data()`)
-
+async function mix_fetch_data(el){    
     let method = ""
     if( el.hasAttribute("mix-get") ){ method = "get" }
     if( el.hasAttribute("mix-post") ){ method = "post" }
     if( el.hasAttribute("mix-put") ){ method = "put" }
     if( el.hasAttribute("mix-delete") ){ method = "delete" }
-
-    // cl(`ok : mix_fetch_data() method to fetch data is ${el.getAttribute("mix-method")}`)   
+    
+    if(method == "post" || method == "put"){
+        const formSelector = el.getAttribute("mix-data");
+        const form = document.querySelector(formSelector);
+        
+        if(form) {
+            const formData = new FormData(form);
+        }
+    }
+    
     let url = el.getAttribute("mix-"+method).includes("?") ? `${el.getAttribute("mix-"+method)}&spa=yes` : `${el.getAttribute("mix-"+method)}?spa=yes` 
     
-    // cl("url: " + url)
-
     if(method == "post" || method == "put"){
         if( ! el.getAttribute("mix-data") ){cl(`error : mix_fetch_data() mix-data missing`); return}
         if( ! document.querySelector(el.getAttribute("mix-data")) ){cl(`error - mix-data element doesn't exist`); return} 
         const frm = document.querySelector(el.getAttribute("mix-data"))
-        // Validation inside each element of the form
         let errors = false
         const attrs = frm.querySelectorAll("[mix-check]")
         for(let i = 0; i < attrs.length; i++){
             attrs[i].classList.remove("mix-error") 
-            // const regex = "^"+attrs[i].getAttribute("mix-check")+"$"
             const regex = attrs[i].getAttribute("mix-check")
             re = new RegExp(regex)
-            cl(re.test(attrs[i].value))
             if( ! re.test(attrs[i].value) ){
                 cl("mix-check failed")
                 attrs[i].classList.add("mix-error") 
@@ -81,34 +81,35 @@ async function mix_fetch_data(el){
     }
     let conn = null
     if(["post", "put", "patch", "delete"].includes(method)) {
-        let formData;
+        let formData = new FormData(document.querySelector(el.getAttribute("mix-data")))
         
-        if(method === "delete") {
-            // For DELETE requests, get the form that contains the delete button
-            const form = el.closest('form')
-            formData = new FormData(form)
-            // If no form found, create new FormData
-            if (!form) {
-                formData = new FormData()
-            }
-        } else {
-            // For other methods, get data from the form
-            const form = document.querySelector(el.getAttribute("mix-data"))
-            formData = new FormData(form)
+        // Debug headers
+        const headers = {}
+        const csrfToken = formData.get('csrf_token')
+        if (csrfToken) {
+            headers['X-CSRF-TOKEN'] = csrfToken
         }
         
-        // Add CSRF token if not present
-        if (!formData.has('csrf_token')) {
-            const token = document.cookie.split('; ')
-                .find(row => row.startsWith('csrf_token='))
-                ?.split('=')[1]
-            if (token) formData.append('csrf_token', token)
+        try {
+            conn = await fetch(url, {
+                method: method,
+                body: formData,
+                headers: headers,
+                credentials: 'include'
+            })
+            
+            const responseText = await conn.text()
+            
+            // Re-parse the response for further processing
+            conn = new Response(responseText, {
+                status: conn.status,
+                headers: conn.headers
+            })
+            
+        } catch (error) {
+            console.error("Fetch error:", error)
+            throw error
         }
-        
-        conn = await fetch(url, {
-            method: method,
-            body: formData
-        })        
     } else {   
         conn = await fetch(url, {
             method : method
@@ -186,12 +187,10 @@ function process_template(mix_url){
         return 
     }
     document.querySelectorAll('template[mix-target]').forEach(template => {
-        // console.log("template", template)  
 
         if( template.getAttribute("mix-newurl") && new_url == false ){
             new_url = template.getAttribute("mix-newurl")
         }
-        // cl(`new_url: ${new_url}`)
 
         if( ! template.getAttribute("mix-target") ){console.log(`process_template() - error - mix-target missing`); return}    
         console.log(`ok : mix() the response data will affect '${template.getAttribute("mix-target")}'`)
@@ -239,7 +238,6 @@ function mixonurl(mix_url, push_to_history = true){
     document.querySelectorAll(`[mix-on-url='${mix_url}']`).forEach( el => {
         // cl(el)
         const title = el.getAttribute("mix-title") || false
-        // console.log(`ok : x() the xTitle is '${title}'`)
         if(title){ document.title = title}   
 
         if(el.getAttribute("mix-push-url") && push_to_history){
