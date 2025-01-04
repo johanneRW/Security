@@ -168,12 +168,22 @@ def get_number_of_items(db: Session):
 
 def get_items_limit_offset(db: Session, limit: int, offset: int = 0):
     from sqlalchemy import func
+    # Get the latest blocked status subquery
+    latest_blocked_log = (
+        db.query(ItemBlockedLog.item_blocked_value)
+        .filter(ItemBlockedLog.item_pk == Item.item_pk)
+        .order_by(ItemBlockedLog.item_blocked_updated_at.desc())
+        .limit(1)
+        .correlate(Item)
+    )
+
     # Udfør forespørgslen med aggregering og pagination
     results = (
         db.query(
             Item,  # Hent alle kolonner fra Item-modellen
             func.coalesce(func.avg(Rating.stars), 0).label("item_stars"),  # Beregn gennemsnit af stjerner
-            func.group_concat(ItemImage.image_filename.distinct()).label("images")  # Aggreger billeder
+            func.group_concat(ItemImage.image_filename.distinct()).label("images"),  # Aggreger billeder
+            func.coalesce(latest_blocked_log.as_scalar(), 0).label("item_is_blocked")  # Get blocked status
         )
         .outerjoin(Rating, Item.item_pk == Rating.item_pk)  # Venstresammenføjning med Rating
         .outerjoin(ItemImage, Item.item_pk == ItemImage.item_pk)  # Venstresammenføjning med ItemImage
@@ -186,7 +196,7 @@ def get_items_limit_offset(db: Session, limit: int, offset: int = 0):
 
     # Forbered data til returnering
     items = []
-    for item, stars, images in results:
+    for item, stars, images, is_blocked in results:
         # Convert SQLAlchemy model to dict
         item_dict = {
             "item_pk": item.item_pk,
@@ -197,10 +207,10 @@ def get_items_limit_offset(db: Session, limit: int, offset: int = 0):
             "item_created_at": item.item_created_at,
             "item_owned_by": item.item_owned_by,
             "item_stars": float(stars),
-            "images": images.split(",") if images else []
+            "images": images.split(",") if images else [],
+            "item_is_blocked": is_blocked  # Add blocked status to the dictionary
         }
         items.append(item_dict)
-
     return items
 
 
@@ -245,7 +255,7 @@ def get_user(db, user_pk):
     # Brug UserQueryManager med direkte filtrering
     users = UserQueryManager.get_users_with_status(
         session=db,
-        email=None,
+        user_pk=user_pk,
         is_verified=None,
         is_deleted=None
     )
