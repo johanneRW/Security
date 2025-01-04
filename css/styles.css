@@ -99,6 +99,13 @@ main {
     margin-top: 7rem;
 }
 
+.absolute-title {
+    position: absolute;
+    top: 66px;
+    width: 100%; 
+    text-align: center;
+    padding: 10px 0;
+}
 
 
 .index {

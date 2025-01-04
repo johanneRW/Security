@@ -44,17 +44,5 @@ services:
     volumes:
       - db_data:/var/lib/mysql
 
-  audit:
-    image: python:3.12
-    container_name: dependency_audit
-    volumes:
-      - .:/app
-    working_dir: /app
-    entrypoint: >
-      sh -c "
-      pip install pip-audit &&
-      pip-audit -r requirements.txt
-      "
-
 volumes:
   db_data:

@@ -1,6 +1,6 @@
 from decimal import Decimal
 from sqlalchemy.orm import Session
-from sqlalchemy import func
+from sqlalchemy import desc, func
 from ..models.item import Item ,ItemImage
 from ..models.item_logs import ItemBlockedLog, ItemUpdatedLog , ItemVisibilityLog 
 from ..models.ratings import Rating
@@ -109,13 +109,30 @@ def get_items_limit_offset(
     offset: int = 0, 
     visibility_filter: str = None
 ):
+    # Subquery for at finde den nyeste blocked-log for hvert item
+    latest_blocked_log = (
+        db.query(
+            ItemBlockedLog.item_pk,
+            func.max(ItemBlockedLog.item_blocked_updated_at).label("latest_blocked")
+        )
+        .group_by(ItemBlockedLog.item_pk)
+        .subquery()
+    )
 
-    # Udfør forespørgslen med aggregering og pagination
+    # Hovedforespørgsel
     query = (
         db.query(
             Item,  # Hent alle kolonner fra Item-modellen
             func.coalesce(func.avg(Rating.stars), 0).label("item_stars"),  # Beregn gennemsnit af stjerner
-            func.group_concat(ItemImage.image_filename.distinct()).label("images")  # Aggreger billeder
+            func.group_concat(ItemImage.image_filename.distinct()).label("images"),  # Aggreger billeder
+            func.coalesce(
+                db.query(ItemBlockedLog.item_blocked_value)  # Subquery for blocked_value
+                .filter(
+                    ItemBlockedLog.item_pk == Item.item_pk,
+                    ItemBlockedLog.item_blocked_updated_at == latest_blocked_log.c.latest_blocked
+                )
+                .as_scalar(), 0
+            ).label("item_is_blocked"),  # Hent blocked-status
         )
         .outerjoin(Rating, Item.item_pk == Rating.item_pk)  # Venstresammenføjning med Rating
         .outerjoin(ItemImage, Item.item_pk == ItemImage.item_pk)  # Venstresammenføjning med ItemImage
@@ -135,7 +152,7 @@ def get_items_limit_offset(
 
     # Forbered data til returnering
     items = []
-    for item, stars, images in results:
+    for item, stars, images, blocked in results:
         # Konverter billeder til en liste
         images_list = [f"/images/{img}" for img in images.split(",")] if images else []
         # Lav en dictionary for hvert item
@@ -143,13 +160,14 @@ def get_items_limit_offset(
         # Fjern "_sa_instance_state", som ikke kan konverteres til JSON
         del item_dict["_sa_instance_state"]
         item_dict.update({
-            "item_stars": float(stars.quantize(Decimal("1.0"))),
-            "images": images_list
+            "item_stars": float(stars),
+            "images": images_list,
+            "item_visibility": item_dict["item_visibility"].value if item_dict["item_visibility"] else "PRIVATE",
+            "item_is_blocked": bool(blocked),
         })
         items.append(item_dict)
 
     return items
-
 
 def get_items_by_user(db: Session, user_pk: str):
     # Forespørg items for den specifikke bruger

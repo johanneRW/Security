@@ -4,7 +4,6 @@ from utility import utils
 from icecream import ic
 import settings
 from database.data import item_data
-import git
 import secrets
 from database.models.base import Base, engine
 
@@ -84,16 +83,6 @@ def _():
     return static_file("favicon.ico", ".")
 
 
-""" @post('/secret_url_for_git_hook')
-def get_update():
-    repo = git.Repo('./home_away')
-    origin = repo.remotes.origin
-    repo.create_head('master', origin.refs.master).set_tracking_branch(origin.refs.master).checkout()
-    repo.head.reset(index=True, working_tree=True)
-    origin.pull()
-    return ""
- """
-
 
 ##############################
 @get("/")
@@ -143,6 +132,7 @@ def _():
             csrf_token=csrf_token
         )
     except Exception as ex:
+        raise
         ic(ex)
         if request.query.get("format") == "json":
             response.status = 400

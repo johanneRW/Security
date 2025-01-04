@@ -195,7 +195,7 @@ def validate_item_lon():
 ##############################
 
 def validate_item_stars():
-    error = f"Stars must be between {regexes.STAR_MIN} and {regexes.STAR_MIN}"
+    error = f"Stars must be between {regexes.STAR_MIN} and {regexes.STAR_MAX}"
     item_stars = request.forms.get("item_stars", "").strip()
     if not re.match(regexes.ITEM_STARS_REGEX, item_stars):
         raise Exception(error, 400)

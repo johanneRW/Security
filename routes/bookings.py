@@ -65,9 +65,10 @@ def bookings():
 
         db = utils.db()
         user_pk = user['user_pk']
-        bookings = booking_data.get_user_bookings_with_ratings(db, user_pk)
-        return template("bookings.html", bookings=bookings)
+        bookings = booking_data.get_user_bookings_with_ratings_and_owner(db, user_pk)
+        return template("bookings.html", bookings=bookings, is_logged=True,  user=user)
     except Exception as ex:
+        raise
         ic(ex)
         response.status = 500
         return {"error": "Something went wrong."}

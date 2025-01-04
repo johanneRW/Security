@@ -70,6 +70,8 @@ function closeModal () {
     for (const openModal of openModals) {
         openModal.close();
     }
+
+    updateModalEvents();
 }
 
 function updateModalEvents () {
@@ -108,10 +110,15 @@ function handleAdminPasswordModal(modalId, btnId) {
 function handlePromoteToPartnerModal(modalId, btnId) {
     const btn = document.querySelector(btnId);
     const modal = document.querySelector(modalId);
+
+    if (btn === null || modal === null) {
+        return;
+    }
+
     const close = modal.querySelector("#closePromote");
     const cancel = modal.querySelector("#cancelPromote");
 
-    if (btn === null || modal === null || close === null || cancel === null) {
+    if (close === null || cancel === null) {
         return;
     }
 

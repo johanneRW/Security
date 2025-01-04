@@ -35,8 +35,10 @@ def create_booking(
     return booking
 
 
-def get_user_bookings_with_ratings(db: Session, user_pk: str):
-    # Forespørgsel til at hente bookinger og ratings
+from datetime import datetime
+
+def get_user_bookings_with_ratings_and_owner(db: Session, user_pk: str):
+    # Forespørgsel til at hente bookinger, ratings og ejeren af ejendommen
     results = (
         db.query(
             Booking.item_pk,
@@ -44,6 +46,7 @@ def get_user_bookings_with_ratings(db: Session, user_pk: str):
             Booking.booking_number_of_nights,
             Booking.booking_price,
             Item.item_name,
+            Item.item_owned_by,  # Tilføj ejeren af ejendommen
             func.coalesce(
                 Rating.stars, 0  # Hvis ingen rating er tilgængelig, returner 0
             ).label("user_rating")
@@ -61,16 +64,21 @@ def get_user_bookings_with_ratings(db: Session, user_pk: str):
     # Konverter resultater til liste af dictionaries
     bookings_with_ratings = []
     for result in results:
+        # Konverter booking_created_at til datoformat (dd-mm-yyyy)
+        booking_date = datetime.utcfromtimestamp(result.booking_created_at).strftime('%d-%m-%Y')
+
         bookings_with_ratings.append({
             "item_pk": result.item_pk,
             "item_name": result.item_name,
-            "booking_created_at": result.booking_created_at,
+            "booking_created_at": booking_date,  # Bruger læsevenligt datoformat
             "booking_number_of_nights": result.booking_number_of_nights,
             "booking_price": result.booking_price,
-            "user_rating": result.user_rating  # Rating givet af brugeren
+            "user_rating": result.user_rating,  # Rating givet af brugeren
+            "item_owner": result.item_owned_by  # Tilføj ejerens ID
         })
 
     return bookings_with_ratings
+
 
 
 
