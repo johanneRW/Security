@@ -7,6 +7,8 @@ from utility import regexes
 from werkzeug.utils import secure_filename
 from database.models.base import Session
 import secrets
+import time
+import hashlib
 
 
 ##############################
@@ -248,32 +250,54 @@ def validate_role():
 
 ##############################
 
-def get_csrf_token():
-    """Get CSRF token from cookie, generate new one if not exists"""
-    # First check if token exists in cookie
-    token = request.get_cookie("csrf_token", secret=settings.COOKIE_SECRET)
+def generate_stateless_csrf_token(user_pk=None):
+    """Generate a stateless CSRF token containing timestamp and user info"""
+    timestamp = int(time.time())
+    nonce = secrets.token_hex(8)  # 8 bytes is sufficient for CSRF
     
-    # Only generate new token if one doesn't exist
-    if not token:
-        token = secrets.token_hex(32)
-        response.set_cookie("csrf_token", token, secret=settings.COOKIE_SECRET, httponly=True)
+    # Combine data
+    token_parts = [str(timestamp), nonce]
+    if user_pk:
+        token_parts.append(str(user_pk))
     
-    return token
+    # Create token with signature
+    raw_token = ':'.join(token_parts)
+    signature = hashlib.sha256(
+        f"{raw_token}:{settings.COOKIE_SECRET}".encode()
+    ).hexdigest()[:16]  # First 16 chars of signature is enough
+    
+    return f"{raw_token}:{signature}"
 
-##############################
-
-def validate_csrf_token():
-    """Validate CSRF token from form matches cookie and return the token"""
-    token = request.get_cookie("csrf_token", secret=settings.COOKIE_SECRET)
-    if not token:
-        raise ValueError("CSRF token not found in cookie")
+def validate_stateless_csrf_token(token, user_pk=None):
+    """Validate a stateless CSRF token"""
+    try:
+        # Split token parts
+        parts = token.split(':')
+        if len(parts) < 3:  # minimum: timestamp, nonce, signature
+            return False
+            
+        timestamp = int(parts[0])
+        nonce = parts[1]
+        provided_signature = parts[-1]  # Last part is always signature
+        token_user_pk = parts[2] if len(parts) > 3 else None
         
-    form_token = request.forms.get('csrf_token')
-    if not form_token:
-        raise ValueError("Security check failed - missing form token", 403)
+        # Verify timestamp (15 minute expiry)
+        if time.time() - timestamp > 900:
+            return False
+            
+        # Verify user if provided
+        if user_pk and str(user_pk) != token_user_pk:
+            return False
+            
+        # Rebuild signature
+        raw_token = ':'.join(parts[:-1])  # Everything except signature
+        expected_signature = hashlib.sha256(
+            f"{raw_token}:{settings.COOKIE_SECRET}".encode()
+        ).hexdigest()[:16]
         
-    if token != form_token:
-        raise ValueError("Security check failed - invalid token", 403)
-    
-    return token
+        return provided_signature == expected_signature
+        
+    except Exception as ex:
+        ic("Token validation failed:", str(ex))
+        return False
 
