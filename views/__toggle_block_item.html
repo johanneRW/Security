@@ -1,7 +1,8 @@
 <form id="item_{{item['item_pk']}}">
+    <input type="hidden" name="csrf_token" value="{{csrf_token}}">
     <input type="hidden" name="item_blocked" value="{{item['item_is_blocked']}}">
     <button class="toggle" id="item_{{item['item_pk']}}" mix-data="#item_{{item['item_pk']}}"
-        mix-post="/toggle_item_block/{{item['item_pk']}}">
+        mix-post="/toggle_item_block/{{item['item_pk']}}" mix-await="Please wait...">
         % if item['item_is_blocked']:
         Unblock
         % else:

@@ -3,9 +3,14 @@
 <main>
     <form id="frm_verify">
         <input type="hidden" name="csrf_token" value="{{csrf_token}}">
-        <button class="save" mix-data="#frm_verify" mix-put="/verify/{{key}}" mix-default="Verify account" mix-await="Please wait ...">
+        <button class="save" 
+                mix-data="#frm_verify" 
+                mix-put="/verify/{{key}}" 
+                mix-default="Verify account" 
+                mix-await="Please wait ...">
             Verify account
         </button>
     </form>
 </main>
+
 %include("_footer")
