@@ -1,4 +1,4 @@
-from bottle import post, put, template, response
+from bottle import post, put, template, response, request
 from utility import utils
 from icecream import ic
 import uuid
@@ -7,12 +7,18 @@ import time
 import uuid
 from utility import utils
 from database import data
+import settings
 
 
 @post("/items/image/<item_pk>")
 def _(item_pk): 
     try:
-        csrf_token = utils.validate_csrf_token()
+        # Get token and validate with user_pk
+        csrf_token = request.forms.get('csrf_token')
+        user = request.get_cookie("user", secret=settings.COOKIE_SECRET)
+        if not utils.validate_csrf_token(csrf_token, user.get("user_pk")):
+            raise ValueError("Invalid CSRF token")
+            
         image_folder = utils.get_image_folder()
         
         # Validate and save image
@@ -25,6 +31,8 @@ def _(item_pk):
         data.create_image(db, image_pk, item_pk, image_filename)
 
         item = data.get_item(db, item_pk)
+        # Generate new token for response
+        csrf_token = utils.generate_csrf_token(user.get("user_pk"))
         html = template("_item_detail.html", item=item, csrf_token=csrf_token)
         return f"""
         <template mix-target="#frm_item_{item_pk}" mix-replace mix-function="closeModal">
@@ -49,7 +57,12 @@ def _(item_pk):
 @put("/items/image/<item_pk>")
 def _(item_pk): 
     try:
-        csrf_token = utils.validate_csrf_token()
+        # Get token and validate with user_pk
+        csrf_token = request.forms.get('csrf_token')
+        user = request.get_cookie("user", secret=settings.COOKIE_SECRET)
+        if not utils.validate_csrf_token(csrf_token, user.get("user_pk")):
+            raise ValueError("Invalid CSRF token")
+            
         image_folder = utils.get_image_folder()
         
         oldname = utils.validate_oldname()
@@ -63,6 +76,8 @@ def _(item_pk):
 
         item = data.get_item(db, item_pk)
         
+        # Generate new token for response
+        csrf_token = utils.generate_csrf_token(user.get("user_pk"))
         html = template("_item_detail.html", item=item, csrf_token=csrf_token)
         return f"""
         <template mix-target="#frm_item_{item_pk}" mix-replace mix-function="closeModal">
