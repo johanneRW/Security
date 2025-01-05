@@ -43,11 +43,8 @@ def _():
             </template>
             """
         
-        ic(user_info)
         user_pk=user_info['user_pk']
         user_first_name=user_info['user_first_name']
-        ic(user_first_name)
-        ic(user_pk)
         
         password_reset_key =uuid.uuid4().hex
         password_reset_at=int(time.time())
@@ -113,8 +110,7 @@ def _(key):
 
         # Hent reset-info, inklusive brugerdata
         reset_info = user_data.get_reset_info(db, key)
-        ic("Reset info:", reset_info)  # Debug log
-
+       
         if reset_info is None:
             response.status = 404
             return"""
@@ -127,9 +123,6 @@ def _(key):
 
         reset_time = reset_info['password_reset_at']
         user_pk = reset_info['user_pk']
-        ic("Time now:", time_now)
-        ic("Reset time:", reset_time)
-        ic("User PK:", user_pk)
 
         # Valider, om reset-linket er udløbet
         if time_now - reset_time > 900:

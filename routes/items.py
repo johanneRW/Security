@@ -113,10 +113,8 @@ def _():
             return "you are not logged in"
         else:
             user_pk=user['user_pk']
-            ic(user_pk)
             db = utils.db()
-            items = data.get_items_by_user(db, user_pk)
-            ic(items)
+            items = item_data.get_items_by_user(db, user_pk)
             csrf_token = utils.generate_csrf_token(user.get("user_pk"))
             return template("items_for_user", items=items, is_logged=is_logged, user=user, csrf_token=csrf_token)
     except Exception as ex:
@@ -295,15 +293,10 @@ def toggle_item_block(item_uuid):
         if not user_info:
             raise ValueError("User not found for this item")
             
-        ic(user_info)
-        ic(email_subject)
-        ic(email_template)
-        
+    
         # Access dictionary values directly
         user_first_name = user_info["user_first_name"]
         user_email = user_info["user_email"]
-        ic(user_first_name)
-        ic(user_email)
         item_data.toggle_block_item(db, new_blocked_status, updated_at, item_uuid)
 
         # Send en email til ejeren
@@ -380,15 +373,10 @@ def toggle_item_visibility(item_uuid):
         
         # Hent brugeroplysninger
         user_info = user_data.get_user_by_item(db, item_uuid)
-        ic(user_info)
-        ic(email_subject)
-        ic(email_template)
 
         user_first_name = user_info['user_first_name']
         user_email = user_info['user_email']
-        ic(user_first_name)
-        ic(user_email)
-
+       
         # Send email
         template_vars = {
             "user_first_name": user_first_name,

@@ -103,7 +103,6 @@ def _():
         try:    
             utils.validate_user_logged()
             user = request.get_cookie("user", secret=settings.COOKIE_SECRET)
-            ic(user)
             is_logged = True
             is_admin = user.get("user_role") == RoleEnum.ADMIN.value
             # Generate CSRF token with user_pk for logged-in users

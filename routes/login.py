@@ -29,7 +29,7 @@ def _():
         user_password = utils.validate_password(skip_name_validation=True)
         db = utils.db()
         user = user_data.get_user_by_email(db, user_email)
-        ic(user)
+       
         
         if not user:
             raise ValueError("User not found or not verified", 404)
@@ -39,7 +39,7 @@ def _():
             raise ValueError("Invalid credentials", 400)
     
         user.pop("user_password") # Do not put the user's password in the cookie
-        ic(user)
+       
         response.set_cookie("user", user, secret=settings.COOKIE_SECRET, httponly=True, secure=settings.COOKIE_SECURE)
         
         frm_login = template("__frm_login", csrf_token=csrf_token)
