@@ -226,6 +226,7 @@ def delete_item(db: Session, item_pk: str):
     db.query(ItemUpdatedLog).filter(ItemUpdatedLog.item_pk == item_pk).delete()
     db.query(ItemImage).filter(ItemImage.item_pk == item_pk).delete()
     db.query(Booking).filter(Booking.item_pk == item_pk).delete()
+    db.query(ItemVisibilityLog).filter(ItemVisibilityLog.item_pk == item_pk).delete()
     
     # Slet selve itemet
     db.query(Item).filter(Item.item_pk == item_pk).delete()

@@ -35,7 +35,6 @@ def create_booking(
     return booking
 
 
-from datetime import datetime
 
 def get_user_bookings_with_ratings_and_owner(db: Session, user_pk: str):
     # Forespørgsel til at hente bookinger, ratings og ejeren af ejendommen

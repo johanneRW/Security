@@ -95,7 +95,7 @@ def get_user(db, user_pk):
     # Brug UserQueryManager med direkte filtrering
     users = UserQueryManager.get_users_with_status(
         session=db,
-        email=None,
+        user_pk=user_pk,
         is_verified=None,
         is_deleted=None
     )
