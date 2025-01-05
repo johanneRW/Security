@@ -115,9 +115,9 @@ def _():
             user_pk=user['user_pk']
             ic(user_pk)
             db = utils.db()
-            items =item_data.get_items_by_user(db, user_pk)
+            items = data.get_items_by_user(db, user_pk)
             ic(items)
-            csrf_token = utils.generate_csrf_token(user_pk)
+            csrf_token = utils.generate_csrf_token(user.get("user_pk"))
             return template("items_for_user", items=items, is_logged=is_logged, user=user, csrf_token=csrf_token)
     except Exception as ex:
         ic(ex)
