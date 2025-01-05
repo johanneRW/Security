@@ -28,23 +28,23 @@ from database.data import item_data, user_data
 @get("/items/page/<page_number>")
 def _(page_number):
     try:
-        csrf_token = utils.generate_csrf_token()
-        db = utils.db()
-        limit = settings.ITEMS_PER_PAGE
-
         # Standardværdier for brugerstatus
         is_logged = False
         is_admin = False
         user = None
-
         try:
             # Valider om brugeren er logget ind
             utils.validate_user_logged()
             user = request.get_cookie("user", secret=settings.COOKIE_SECRET)
             is_logged = True
             is_admin = user.get("user_role") == RoleEnum.ADMIN.value
+            csrf_token = utils.generate_csrf_token(user.get("user_pk"))
         except:
-            pass
+            # Generate CSRF token without user_pk for non-logged-in users
+            csrf_token = utils.generate_csrf_token()
+
+        db = utils.db()
+        limit = settings.ITEMS_PER_PAGE
 
         # Filtrer antal items baseret på brugertype
         if is_admin:
@@ -67,7 +67,7 @@ def _(page_number):
         html = ""
         for item in items:
             html += template("_item", item=item, is_logged=is_logged, is_admin=is_admin, csrf_token=csrf_token)
-        btn_more = template("__btn_more", page_number=next_page)
+        btn_more = template("__btn_more", page_number=next_page, csrf_token=csrf_token)
         if is_last_page: 
             btn_more = ""
 
@@ -117,7 +117,7 @@ def _():
             db = utils.db()
             items =item_data.get_items_by_user(db, user_pk)
             ic(items)
-            csrf_token = utils.generate_csrf_token()
+            csrf_token = utils.generate_csrf_token(user_pk)
             return template("items_for_user", items=items, is_logged=is_logged, user=user, csrf_token=csrf_token)
     except Exception as ex:
         ic(ex)
@@ -147,23 +147,12 @@ def _():
         item_owned_by=user['user_pk']
         
         db = utils.db()
-
-        csrf_token = utils.generate_csrf_token(user.get("user_pk"))
-        item_data.create_item(
-            db, 
-            item_pk, 
-            item_name,
-            item_lat, 
-            item_lon, 
-            item_price_per_night, 
-            item_created_at, 
-            item_owned_by
-        )
+        item_data.create_item(db, item_pk, item_name, item_lat, item_lon, 
+                        item_price_per_night, item_created_at, item_owned_by)
         
         item = item_data.get_item(db, item_pk)
-        ic(item)
-
-        
+       
+        csrf_token = utils.generate_csrf_token(user.get("user_pk"))
         html = template("_item_detail.html", item=item, csrf_token=csrf_token)
         html_new = template("create_item.html", csrf_token=csrf_token)
        
@@ -256,6 +245,7 @@ def _(item_pk):
             </template>
             """
     except Exception as ex:
+        raise
         ic(ex)
         response.status = 400 
         return f"""

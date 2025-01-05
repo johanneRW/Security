@@ -12,7 +12,6 @@ def _(item_pk):
         user = request.get_cookie("user", secret=settings.COOKIE_SECRET)
         if not utils.validate_csrf_token(csrf_token, user.get("user_pk")):
             raise ValueError("Invalid CSRF token")
-        
         if user:
             user_pk = user['user_pk']
             db = utils.db()
@@ -58,19 +57,17 @@ def _(item_pk):
 @get("/bookings")
 def bookings():
     try:
-        csrf_token = utils.generate_csrf_token()
-
         user = request.get_cookie("user", secret=settings.COOKIE_SECRET)
         if not user:
             response.status = 403
             return "You must be logged in"
 
-        db = utils.db()
         user_pk = user['user_pk']
+        csrf_token = utils.generate_csrf_token(user_pk)
+        db = utils.db()
         bookings = booking_data.get_user_bookings_with_ratings_and_owner(db, user_pk)
         return template("bookings.html", bookings=bookings, is_logged=True, user=user, csrf_token=csrf_token)
     except Exception as ex:
-        raise
         ic(ex)
         response.status = 500
         return {"error": "Something went wrong."}
@@ -82,8 +79,6 @@ def bookings():
 @post("/rate_item/<item_pk>")
 def rate_item_endpoint(item_pk):
     try:
-        csrf_token = utils.validate_csrf_token()
-
         # Valider, at brugeren er logget ind
         user = request.get_cookie("user", secret=settings.COOKIE_SECRET)
         if not user:
@@ -92,6 +87,10 @@ def rate_item_endpoint(item_pk):
 
         # Få brugerens primærnøgle
         user_pk = user['user_pk']
+
+        # Valider CSRF token for bruger
+        csrf_token = request.forms.get('csrf_token')
+        utils.validate_csrf_token(csrf_token, user_pk)
 
         # Valider input for stjerner via utils.validate_item_stars()
         stars = int(utils.validate_item_stars())

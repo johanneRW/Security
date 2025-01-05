@@ -103,8 +103,9 @@ def _():
         try:    
             utils.validate_user_logged()
             user = request.get_cookie("user", secret=settings.COOKIE_SECRET)
+            ic(user)
             is_logged = True
-            is_admin = user.get("user_role").value == RoleEnum.ADMIN.value
+            is_admin = user.get("user_role") == RoleEnum.ADMIN.value
             # Generate CSRF token with user_pk for logged-in users
             csrf_token = utils.generate_csrf_token(user.get("user_pk"))
         except Exception:
@@ -168,7 +169,7 @@ else:
     except Exception as e:
         print(f"Error during seeding: {str(e)}")
     
-    run(host="0.0.0.0", port=81, debug=True, reloader=True, interval=0)
+    run(host="0.0.0.0", port=81, debug=True, reloader=True, interval=10)
 
 
 

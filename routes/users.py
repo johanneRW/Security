@@ -174,16 +174,17 @@ def _(user_pk):
 @put("/users/<user_pk>/delete")
 def _(user_pk):
     try:
+        user = request.get_cookie("user", secret=settings.COOKIE_SECRET)
         csrf_token = request.forms.get('csrf_token')
         if not utils.validate_csrf_token(csrf_token, user.get("user_pk")):
             raise ValueError("Invalid CSRF token")
-        user = request.get_cookie("user", secret=settings.COOKIE_SECRET)
+        
         if user:
             user_password = utils.validate_password()
             # Fetch user's password so we can validate it
             db = utils.db()
-            db_user = user_data.get_user_password(db, user_pk)   
-            if not bcrypt.checkpw(user_password.encode(), db_user["user_password"]):
+            db_user_password = user_data.get_user_password(db, user_pk)   
+            if not bcrypt.checkpw(user_password.encode(), db_user_password.encode()):
                 raise ValueError("Invalid credentials", 400)
             
             # Get user info from DB before deleting it
@@ -211,6 +212,7 @@ def _(user_pk):
             response.status = 403
             return "you must be logged in"
     except Exception as ex:
+        raise
         ic(ex)
         return """
         <template mix-target="#toast">
