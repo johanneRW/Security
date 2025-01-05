@@ -45,7 +45,6 @@ def _(item_pk):
        
     except Exception as ex:
         ic(ex)
-        raise
         response.status = 400 
         return f"""
             <template mix-target="#toast">

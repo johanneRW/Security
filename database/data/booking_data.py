@@ -190,4 +190,3 @@ def get_booking_by_user_and_item_with_ratings(db: Session, user_pk: str, item_pk
 
     except Exception as ex:
         print(f"Error fetching booking: {ex}")
-        raise

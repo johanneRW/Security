@@ -135,7 +135,6 @@ def _():
             csrf_token=csrf_token
         )
     except Exception as ex:
-        raise
         ic(ex)
         if request.query.get("format") == "json":
             response.status = 400

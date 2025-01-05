@@ -78,7 +78,6 @@ def _():
         </template>
         """
     except Exception as ex:
-        raise
         ic(ex)
         if "user_email invalid" in str(ex):
             response.status = 400

@@ -127,7 +127,6 @@ def rate_item_endpoint(item_pk):
             """
 
     except Exception as ex:
-        raise
         ic(ex)
         response.status = 500
         return """

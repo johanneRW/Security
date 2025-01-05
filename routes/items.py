@@ -245,7 +245,6 @@ def _(item_pk):
             </template>
             """
     except Exception as ex:
-        raise
         ic(ex)
         response.status = 400 
         return f"""
@@ -417,7 +416,6 @@ def toggle_item_visibility(item_uuid):
             </template>
         """
     except Exception as ex:
-        raise
         ic(ex)
         return f"""
             <template mix-target="#toast">

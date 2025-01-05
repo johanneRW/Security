@@ -212,7 +212,6 @@ def _(user_pk):
             response.status = 403
             return "you must be logged in"
     except Exception as ex:
-        raise
         ic(ex)
         return """
         <template mix-target="#toast">
@@ -319,7 +318,6 @@ def promote_to_partner(user_pk):
         </template>
         """
     except Exception as ex:
-        raise
         ic(ex)
         response.status = 400
         return f"""

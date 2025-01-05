@@ -38,12 +38,14 @@
             mix-default="Save" mix-await="Updating item...">
             Save changes
         </button>
-        <button class="delete" mix-delete="/items/{{item['item_pk']}}" mix-default="Delete" mix-await="Deleting...">
+
+        <button class="delete" mix-delete="/items/{{item['item_pk']}}"  mix-default="Delete" mix-await="Deleting...">
             Delete property
         </button>
 
-       
     </form>
+       
+   
      <!-- Include for toggle visibility -->
      %include("__toggle_visibility_item")
 </div>
