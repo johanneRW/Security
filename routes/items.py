@@ -351,8 +351,13 @@ def toggle_item_block(item_uuid):
 @post("/toggle_item_visibility/<item_uuid>")
 def toggle_item_visibility(item_uuid):
     try:
-        csrf_token = utils.validate_csrf_token()
         utils.validate_user_logged()
+        
+        # Get token and validate with user_pk
+        csrf_token = request.forms.get('csrf_token')
+        user = request.get_cookie("user", secret=settings.COOKIE_SECRET)
+        if not utils.validate_csrf_token(csrf_token, user.get("user_pk")):
+            raise ValueError("Invalid CSRF token")
 
         # Få den aktuelle synlighedsstatus
         current_visibility_status = request.forms.get("item_visibility")  # Forventet at være "public" eller "private"
