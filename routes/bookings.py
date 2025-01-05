@@ -58,7 +58,7 @@ def _(item_pk):
 @get("/bookings")
 def bookings():
     try:
-        csrf_token = utils.get_csrf_token()
+        csrf_token = utils.generate_csrf_token()
 
         user = request.get_cookie("user", secret=settings.COOKIE_SECRET)
         if not user:
