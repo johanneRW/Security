@@ -33,9 +33,6 @@ services:
     restart: always
     env_file:
       - home_away.env
-    #port only for workbencacces, remove when running prodiction
-    ports:
-      - "3307:3306"
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
